@@ -23,6 +23,8 @@ compile_commands.json
 *.lib
 *.pdb
 
+*.zip
+
 # VS Code
 .vscode/*
 !.vscode/launch.json
