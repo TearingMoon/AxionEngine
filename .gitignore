@@ -1,0 +1,40 @@
+/build/
+/build-*/
+/bin/
+/bin-*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.ninja
+.ninja_*
+compile_commands.json
+
+# Binaries
+/*.exe
+/*.dll
+/*.so
+/*.dylib
+/*.out
+/*.app
+*/GameEngine
+*/bin/
+*.a
+*.lib
+*.pdb
+
+# VS Code
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Packages (if you ever add them)
+packages/

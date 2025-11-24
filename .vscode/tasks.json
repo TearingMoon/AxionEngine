@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configure",
+      "type": "shell",
+      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "cmake --build build -j",
+      "problemMatcher": []
+    },
+    {
+      "label": "Configure+Build",
+      "dependsOn": ["Configure", "Build"],
+      "dependsOrder": "sequence"
+    }
+  ]
+}
