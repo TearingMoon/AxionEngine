@@ -8,8 +8,8 @@
 struct WindowConfig
 {
     std::string title = "Axion Engine";
-    Transform2DSimple transform = {SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600};
-    Uint32 flags = 0;
+    Transform2DSimple transform = {{SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED}, {800, 600}, 0};
+    Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
     bool operator==(const WindowConfig &other) const
     {

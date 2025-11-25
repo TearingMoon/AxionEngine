@@ -12,4 +12,5 @@ RenderManager::~RenderManager()
 
 void RenderManager::Update()
 {
+    
 }

@@ -7,6 +7,7 @@
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/core/EngineContext.hpp"
 #include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
+#include "axion_engine/runtime/components/camera/CameraComponent.hpp"
 
 class Scene : public ContextAware
 {
@@ -44,6 +45,9 @@ protected:
     virtual void OnSceneUpdate() {}
     virtual void OnSceneRender() {}
 
+    void SetCurrentCamera(CameraComponent *camera) { currentCamera_ = camera; }
+    CameraComponent *GetCurrentCamera() const { return currentCamera_; }
+
 private:
     void Enter()
     {
@@ -71,4 +75,6 @@ private:
 
     std::vector<std::unique_ptr<GameObject>> objects_;
     std::vector<GameObject *> destroyQueue_;
+
+    CameraComponent *currentCamera_ = nullptr;
 };

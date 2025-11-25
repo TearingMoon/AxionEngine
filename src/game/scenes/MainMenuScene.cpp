@@ -6,7 +6,9 @@ void MainMenuScene::OnSceneEnter()
 
     GameObject *firstGO = CreateGameObject();
     firstGO->AddComponent<ScriptableTest>();
-    firstGO->AddComponent<SphereColliderComponent>();
+    auto firstGoCollider = firstGO->AddComponent<SphereColliderComponent>();
+    firstGoCollider->SetRadius(5.0f);
+    firstGoCollider->SetColliderType(COLLIDER_TYPE::PHYSICS);
 }
 
 void MainMenuScene::OnSceneUpdate()

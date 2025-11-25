@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(PkgConfig REQUIRED)
+find_package(glm CONFIG REQUIRED)
+
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
 file(GLOB_RECURSE ALL_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/**/*.cpp")
@@ -18,6 +20,6 @@ target_include_directories(Game PRIVATE
 )
 
 target_link_directories(Game PRIVATE ${SDL2_LIBRARY_DIRS})
-target_link_libraries(Game PRIVATE ${SDL2_LIBRARIES})
+target_link_libraries(Game PRIVATE ${SDL2_LIBRARIES} glm::glm)
 
 set_target_properties(Game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

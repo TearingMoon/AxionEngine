@@ -13,10 +13,10 @@ int main(int argc, char *args[])
     EngineConfig engineConfig;
     engineConfig.updateDelay = 16; // Approx ~60 FPS
 
-    WindowConfig windowConfig;
-    windowConfig.title = "Axion Engine Window";
-    windowConfig.transform.scale.x = 800;
-    windowConfig.transform.scale.y = 600;
+    WindowConfig windowConfig = {
+        "Axion Engine Window",
+        {{SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED}, {800, 600}, 0}
+    };
 
     Engine engine(engineConfig, windowConfig);
 

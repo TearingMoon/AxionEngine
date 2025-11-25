@@ -12,7 +12,6 @@ public:
         printf("- ScriptableTest Mounted!\n");
     }
 
-    // TODO: Review if this is called correctly
     void OnEnabled(EngineContext &context) override
     {
         printf("- ScriptableTest Enabled!\n");
