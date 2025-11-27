@@ -7,6 +7,9 @@ Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(), 
     // Initialize SDL
     sdlManager_.InitSDL();
 
+    // Add window to context
+    context_.window = &window_;
+
     // Initialize Managers
     printf("Initializing Engine Managers...\n");
     time_ = std::make_unique<TimeManager>();

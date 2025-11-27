@@ -4,8 +4,11 @@
 #include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
 #include "axion_engine/managers/time/TimeManager.hpp"
 #include "axion_engine/runtime/components/collider/SphereColliderComponent.hpp"
+#include "axion_engine/runtime/components/camera/CameraComponent.hpp"
+#include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
 
 #include "game/scripts/ScriptableTest.hpp"
+#include "game/scripts/ScriptableDeleteTest.hpp"
 
 class MainMenuScene : public Scene
 {
@@ -24,4 +27,6 @@ public:
 private:
     bool deleteFlag = false;
     float timer = 0.0f;
+
+    GameObject *deleteTestObject = nullptr;
 };

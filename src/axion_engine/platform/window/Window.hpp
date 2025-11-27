@@ -13,6 +13,10 @@ public:
 
     void RestartWindow(const WindowConfig &config);
 
+    SDL_Window *GetSDLWindow() const { return window_.get(); }
+    SDL_Surface *GetSurface() const { return surface_; }
+    SDL_Renderer *GetRenderer() const { return renderer_; }
+
 private:
     struct SDL_WindowDeleter
     {
@@ -22,8 +26,10 @@ private:
                 SDL_DestroyWindow(ptr);
         }
     };
-    std::unique_ptr<SDL_Window, SDL_WindowDeleter> window_ {nullptr};
+    std::unique_ptr<SDL_Window, SDL_WindowDeleter> window_{nullptr};
     SDL_Surface *surface_ = nullptr;
+    SDL_Renderer *renderer_ = nullptr;
+
     bool initialized_ = false;
 
     bool Initialize(const WindowConfig &config);
@@ -31,4 +37,5 @@ private:
 
     static SDL_Window *CreateWindow(const WindowConfig &config) noexcept;
     static SDL_Surface *GetWindowSurface(SDL_Window *window) noexcept;
+    static SDL_Renderer *GetWindowRenderer(SDL_Window *window) noexcept;
 };

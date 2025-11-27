@@ -5,6 +5,7 @@ class InputManager;
 class SceneManager;
 class PhysicsManager;
 class RenderManager;
+class Window;
 
 struct EngineContext
 {
@@ -13,4 +14,5 @@ struct EngineContext
     SceneManager *scene;
     PhysicsManager *physics;
     RenderManager *render;
+    Window *window;
 };

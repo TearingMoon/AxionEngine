@@ -43,9 +43,17 @@ bool Window::Initialize(const WindowConfig &config)
         return false;
     }
 
-    // Set the new window and surface
+    auto newRenderer = GetWindowRenderer(newWindow);
+    if (!newRenderer)
+    {
+        Reset();
+        return false;
+    }
+
+    // Set the new window, surface and renderer
     window_.reset(newWindow);
     surface_ = newSurface;
+    renderer_ = newRenderer;
 
     // Placeholder surface
     SDL_FillRect(surface_, nullptr, SDL_MapRGB(surface_->format, 0, 0, 0));
@@ -59,6 +67,7 @@ void Window::Reset() noexcept
 {
     window_.reset();
     surface_ = nullptr;
+    renderer_ = nullptr;
     initialized_ = false;
 }
 
@@ -66,10 +75,10 @@ SDL_Window *Window::CreateWindow(const WindowConfig &config) noexcept
 {
     SDL_Window *win = SDL_CreateWindow(
         config.title.c_str(),
-        config.transform.position.x,
-        config.transform.position.y,
-        config.transform.scale.x,
-        config.transform.scale.y,
+        config.position.x,
+        config.position.y,
+        config.size.x,
+        config.size.y,
         config.flags);
 
     if (!win)
@@ -88,4 +97,13 @@ SDL_Surface *Window::GetWindowSurface(SDL_Window *window) noexcept
         printf("Could not get window surface! SDL_Error: %s\n", SDL_GetError());
 
     return surface;
+}
+
+SDL_Renderer *Window::GetWindowRenderer(SDL_Window *window) noexcept
+{
+    SDL_Renderer *renderer = SDL_GetRenderer(window);
+    if (!renderer)
+        printf("Could not get window renderer! SDL_Error: %s\n", SDL_GetError());
+
+    return renderer;
 }

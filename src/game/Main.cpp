@@ -11,12 +11,13 @@ int main(int argc, char *args[])
 {
 
     EngineConfig engineConfig;
-    engineConfig.updateDelay = 16; // Approx ~60 FPS
+    engineConfig.updateDelay = 16; // 16 Approx ~60 FPS
 
     WindowConfig windowConfig = {
         "Axion Engine Window",
-        {{SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED}, {800, 600}, 0}
-    };
+        {SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED},
+        {800, 600},
+        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE};
 
     Engine engine(engineConfig, windowConfig);
 

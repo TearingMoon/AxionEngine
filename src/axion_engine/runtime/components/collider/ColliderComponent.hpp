@@ -7,10 +7,10 @@ enum COLLIDER_TYPE
     PHYSICS
 };
 
-class BaseColliderComponent : public Component
+class ColliderComponent : public Component
 {
 public:
-    BaseColliderComponent() = default;
+    ColliderComponent() = default;
     bool IsTrigger() const { return type_ == COLLIDER_TYPE::TRIGGER; }
     void SetColliderType(COLLIDER_TYPE type) { type_ = type; }
 

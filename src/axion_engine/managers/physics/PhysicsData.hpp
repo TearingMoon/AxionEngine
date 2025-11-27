@@ -2,11 +2,11 @@
 #include <unordered_set>
 
 class GameObject;
-class BaseColliderComponent;
+class ColliderComponent;
 
 struct ColliderEntry
 {
-    BaseColliderComponent *collider;
+    ColliderComponent *collider;
     GameObject *owner;
     bool isTrigger;
 };

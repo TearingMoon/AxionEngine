@@ -80,7 +80,8 @@
     "__split_buffer": "cpp",
     "__tree": "cpp",
     "queue": "cpp",
-    "__bit_reference": "cpp"
+    "__bit_reference": "cpp",
+    "__config": "cpp"
   },
   "cSpell.words": [
     "Axion",

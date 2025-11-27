@@ -4,10 +4,7 @@
 GameObject::GameObject(Scene &parentScene) : parentScene_(parentScene)
 {
     // Add base components here
-    components_.emplace_back(std::make_unique<TransformComponent>());
-
-    // Store reference to TransformComponent
-    transform_ = GetComponent<TransformComponent>(); // TODO: If this component is missing, it will crash
+    transform_ = AddComponent<TransformComponent>();
 }
 
 void GameObject::Tick()
@@ -93,7 +90,7 @@ bool GameObject::HasCollider() const
 { // TODO: Check if this is the most efficient way, maybe store a bool that is updated when adding/removing components?
     for (const auto &comp : components_)
     {
-        if (dynamic_cast<BaseColliderComponent *>(comp.get()))
+        if (dynamic_cast<ColliderComponent *>(comp.get()))
         {
             return true;
         }

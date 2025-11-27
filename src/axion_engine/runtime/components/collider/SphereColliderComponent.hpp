@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BaseColliderComponent.hpp"
+#include "ColliderComponent.hpp"
 
-class SphereColliderComponent : public BaseColliderComponent
+class SphereColliderComponent : public ColliderComponent
 {
 public:
     SphereColliderComponent() = default;

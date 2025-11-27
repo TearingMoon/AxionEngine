@@ -18,8 +18,33 @@ public:
     }
 
     bool updateFlag = true;
+
+    bool deltaTimeSaved = false;
+    std::vector<float> DeltaTimes;
     void Update(EngineContext &context) override
     {
+
+        // Save the first 100 DeltaTime updates
+        if (DeltaTimes.size() < 100)
+        {
+            DeltaTimes.push_back(
+                context.time->GetDeltaTime());
+        }
+        else if (!deltaTimeSaved)
+        {
+            printf("Saved 100 DeltaTime updates.\n");
+            // Calculate average delta time
+            float sum = 0.0f;
+            for (float dt : DeltaTimes)
+            {
+                sum += dt;
+            }
+            float average = sum / DeltaTimes.size();
+            printf("- Average Update Time: %.6f seconds.\n", average);
+            printf("- Average Update FPS: %.2f\n", 1.0f / average);
+            deltaTimeSaved = true;
+        }
+
         if (updateFlag)
         {
             printf("- ScriptableTest Updated!\n");
@@ -40,15 +65,5 @@ public:
     void Start(EngineContext &context) override
     {
         printf("- ScriptableTest Started!\n");
-    }
-
-    void OnDisabled(EngineContext &context) override
-    {
-        printf("- ScriptableTest Disabled!\n");
-    }
-
-    void OnDestroy(EngineContext &context) override
-    {
-        printf("- ScriptableTest Destroyed!\n");
     }
 };

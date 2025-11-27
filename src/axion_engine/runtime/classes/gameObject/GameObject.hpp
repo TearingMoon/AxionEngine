@@ -6,8 +6,7 @@
 #include "axion_engine/core/EngineContext.hpp"
 #include "axion_engine/runtime/components/Component.hpp"
 #include "axion_engine/runtime/components/transform/TransformComponent.hpp"
-#include "axion_engine/runtime/components/collider/BaseColliderComponent.hpp"
-
+#include "axion_engine/runtime/components/collider/ColliderComponent.hpp"
 
 class Scene;
 
@@ -41,6 +40,7 @@ public:
 
 private:
     Scene &parentScene_;
+    GameObject *parent_ = nullptr;
     TransformComponent *transform_;
 
     EngineContext &ctx_();
