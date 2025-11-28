@@ -7,7 +7,8 @@ void MainMenuScene::OnSceneEnter()
     // Camera GameObject
     auto cameraGO = CreateGameObject();
     auto cameraComponent = cameraGO->AddComponent<CameraComponent>();
-    cameraComponent->SetPerspective(60.0f, 4.0f / 3.0f, 0.1f, 1000.0f);
+    cameraComponent->SetOrthographic(800.0f, 600.0f, -1.0f, 1.0f);
+    SetCurrentCamera(cameraComponent);
 
     // First GameObject
     auto firstGO = CreateGameObject();

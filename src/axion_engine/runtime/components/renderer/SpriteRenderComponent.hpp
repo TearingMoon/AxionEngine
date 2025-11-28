@@ -38,6 +38,26 @@ public:
         outItems.push_back(item);
     }
 
+    bool HasSourceRect() const
+    {
+        return hasSrcRect_;
+    }
+
+    const SDL_Rect &GetSourceRect() const
+    {
+        return srcRect_;
+    }
+
+    glm::vec2 GetSize() const
+    {
+        return size_;
+    }
+
+    SDL_Color GetColor() const
+    {
+        return color_;
+    }
+
 private:
     SDL_Texture *texture_ = nullptr;
     SDL_Rect srcRect_{0, 0, 0, 0};

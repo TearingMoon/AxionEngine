@@ -37,6 +37,7 @@ public:
     }
 
     EngineContext &GetContext() { return ctx_; }
+    CameraComponent *GetCurrentCamera() const { return currentCamera_; }
 
 protected:
     virtual void OnSceneEnter() {}
@@ -46,7 +47,6 @@ protected:
     virtual void OnSceneRender() {}
 
     void SetCurrentCamera(CameraComponent *camera) { currentCamera_ = camera; }
-    CameraComponent *GetCurrentCamera() const { return currentCamera_; }
 
 private:
     void Enter()

@@ -38,6 +38,8 @@ public:
 
     bool HasCollider() const;
 
+    TransformComponent *GetTransform() const { return transform_; }
+
 private:
     Scene &parentScene_;
     GameObject *parent_ = nullptr;

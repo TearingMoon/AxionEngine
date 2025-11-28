@@ -22,6 +22,12 @@ void SDLManager::InitSDL()
         return;
     }
 
+    // if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
+    // {
+    //     printf("SDL image could not initialize! SDL_Error: %s\n", SDL_GetError());
+    //     return;
+    // }
+
     printf("SDL initialized successfully. \n");
     initialized_ = true;
 }
