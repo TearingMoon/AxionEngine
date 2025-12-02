@@ -10,6 +10,8 @@ find_package(glm CONFIG REQUIRED)
 
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
+pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
+
 file(GLOB_RECURSE ALL_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/**/*.cpp")
 
 add_executable(Game ${ALL_SOURCES})
@@ -17,9 +19,18 @@ add_executable(Game ${ALL_SOURCES})
 target_include_directories(Game PRIVATE
   ${CMAKE_SOURCE_DIR}/src
   ${SDL2_INCLUDE_DIRS}
+  ${SDL2_IMAGE_INCLUDE_DIRS}
 )
 
-target_link_directories(Game PRIVATE ${SDL2_LIBRARY_DIRS})
-target_link_libraries(Game PRIVATE ${SDL2_LIBRARIES} glm::glm)
+# TODO: Add SDL2 image to this file
+
+target_link_directories(Game PRIVATE 
+${SDL2_LIBRARY_DIRS}
+${SDL2_IMAGE_LIBRARY_DIRS}
+)
+target_link_libraries(Game PRIVATE 
+${SDL2_LIBRARIES}
+${SDL2_IMAGE_LIBRARIES} 
+glm::glm)
 
 set_target_properties(Game PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

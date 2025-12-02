@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include <SDL2/SDL_image.h>
 #include <memory>
 
 #include "WindowConfig.hpp"
@@ -13,8 +14,7 @@ public:
 
     void RestartWindow(const WindowConfig &config);
 
-    SDL_Texture* LoadTexture(SDL_Renderer* renderer, const std::string& path);
-
+    SDL_Texture *LoadTexture(SDL_Renderer *renderer, const std::string &path);
 
     SDL_Window *GetSDLWindow() const { return window_.get(); }
     SDL_Surface *GetSurface() const { return surface_; }
