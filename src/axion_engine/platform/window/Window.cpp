@@ -27,7 +27,7 @@ void Window::RestartWindow(const WindowConfig &config)
     }
 }
 
-SDL_Texture *Window::LoadTexture(SDL_Renderer *renderer, const std::string &path)
+SDL_Texture *Window::LoadTexture(SDL_Renderer *renderer, const std::string &path) //TODO: 
 {
     SDL_Surface *surface = IMG_Load(path.c_str());
     if (!surface)

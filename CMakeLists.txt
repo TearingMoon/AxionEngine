@@ -16,6 +16,14 @@ file(GLOB_RECURSE ALL_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/**/*.cp
 
 add_executable(Game ${ALL_SOURCES})
 
+# copy resources to binary folder
+add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/src/game/assets
+        ${CMAKE_BINARY_DIR}/bin/assets
+)
+
 target_include_directories(Game PRIVATE
   ${CMAKE_SOURCE_DIR}/src
   ${SDL2_INCLUDE_DIRS}
@@ -28,6 +36,7 @@ target_link_directories(Game PRIVATE
 ${SDL2_LIBRARY_DIRS}
 ${SDL2_IMAGE_LIBRARY_DIRS}
 )
+
 target_link_libraries(Game PRIVATE 
 ${SDL2_LIBRARIES}
 ${SDL2_IMAGE_LIBRARIES} 

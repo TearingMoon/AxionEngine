@@ -17,6 +17,8 @@ void MainMenuScene::OnSceneEnter()
     firstGoCollider->SetRadius(5.0f);
     firstGoCollider->SetColliderType(COLLIDER_TYPE::PHYSICS);
     auto firstGoRenderer = firstGO->AddComponent<SpriteRenderComponent>();
+    auto sprite = LoadTexture("bin/assets/test.png"); //FIXME: The sprite doesn't get loaded
+    firstGoRenderer->SetTexture(sprite);
 
     // Delete Test GameObject
     deleteTestObject = CreateGameObject();

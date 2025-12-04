@@ -3,6 +3,7 @@
 
 #include "EngineConfig.hpp"
 #include "EngineContext.hpp"
+
 #include "axion_engine/platform/sdl_manager/SDLManager.hpp"
 #include "axion_engine/platform/window/Window.hpp"
 
@@ -11,6 +12,7 @@
 #include "axion_engine/managers/scene/SceneManager.hpp"
 #include "axion_engine/managers/physics/PhysicsManager.hpp"
 #include "axion_engine/managers/render/RenderManager.hpp"
+#include "axion_engine/managers/assets/AssetsManager.hpp"
 
 enum ENGINE_STATE
 {
@@ -47,6 +49,7 @@ private:
     std::unique_ptr<SceneManager> scene_;
     std::unique_ptr<PhysicsManager> physics_;
     std::unique_ptr<RenderManager> render_;
+    std::unique_ptr<AssetsManager> assets_;
 
     void EventLoop();
     void AppLoop();
