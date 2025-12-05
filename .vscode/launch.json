@@ -17,7 +17,7 @@
       "cwd": "${workspaceFolder}",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
-      "externalConsole": true,
+      "externalConsole": false,
       "setupCommands": [
         {
           "description": "Enable pretty-printing",
