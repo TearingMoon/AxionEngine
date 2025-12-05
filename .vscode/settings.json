@@ -1,7 +1,7 @@
 {
-  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools", // IntelliSense from CMake
-  "cmake.generator": "Ninja", // Optional: Ninja = faster, remove if not installed
-  "cmake.buildDirectory": "${workspaceFolder}/build", // Always build to ./build
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "cmake.generator": "Ninja",
+  "cmake.buildDirectory": "${workspaceFolder}/build",
   "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
   "C_Cpp.intelliSenseEngine": "default",
   "C_Cpp.configurationWarnings": "disabled",
@@ -93,5 +93,5 @@
     "TOUPPER",
     "UCFG",
     "Updateable"
-  ] // Reconfigure when building if needed
+  ]
 }

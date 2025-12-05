@@ -17,7 +17,6 @@ public:
     SDL_Texture *LoadTexture(SDL_Renderer *renderer, const std::string &path);
 
     SDL_Window *GetSDLWindow() const { return window_.get(); }
-    SDL_Surface *GetSurface() const { return surface_; }
     SDL_Renderer *GetRenderer() const { return renderer_; }
 
 private:
@@ -30,7 +29,6 @@ private:
         }
     };
     std::unique_ptr<SDL_Window, SDL_WindowDeleter> window_{nullptr};
-    SDL_Surface *surface_ = nullptr;
     SDL_Renderer *renderer_ = nullptr;
 
     bool initialized_ = false;
@@ -39,6 +37,5 @@ private:
     void Reset() noexcept;
 
     static SDL_Window *CreateWindow(const WindowConfig &config) noexcept;
-    static SDL_Surface *GetWindowSurface(SDL_Window *window) noexcept;
-    static SDL_Renderer *GetWindowRenderer(SDL_Window *window) noexcept;
+    static SDL_Renderer *CreateRenderer(SDL_Window *window) noexcept;
 };
