@@ -1,6 +1,7 @@
 #pragma once
 
 #include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
+#include "axion_engine/managers/input/InputManager.hpp"
 
 class ScriptableTest : public ScriptableComponent
 {
@@ -59,6 +60,26 @@ public:
         {
             printf("- ScriptableTest Fixed Updated!\n");
             fixedUpdateFlag = false;
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_A)){
+            //Rotate the entity by 1 degree on the Z axis
+            GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, 1.0f);
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_D)){
+            //Rotate the entity by -1 degree on the Z axis
+            GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, -1.0f);
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_W)){
+            //Move the entity up by 0.1 units
+            GetOwner()->GetTransform()->position.y += 1;
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_S)){
+            //Move the entity down by 0.1 units
+            GetOwner()->GetTransform()->position.y -= 1;
         }
     }
 

@@ -24,6 +24,13 @@ public:
         return m;
     }
 
+    void Rotate(float pitch, float yaw, float roll)
+    {
+        rotationEuler.x += pitch;
+        rotationEuler.y += yaw;
+        rotationEuler.z += roll;
+    }
+
     glm::mat4 GetWorldMatrix() const { return GetMatrix(); }
     glm::vec3 GetWorldPosition() const { return position; }
 };

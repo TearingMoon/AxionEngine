@@ -17,6 +17,9 @@ void MainMenuScene::OnSceneEnter()
     firstGoCollider->SetRadius(5.0f);
     firstGoCollider->SetColliderType(COLLIDER_TYPE::PHYSICS);
     auto firstGoRenderer = firstGO->AddComponent<SpriteRenderComponent>();
+    firstGoRenderer->SetTexture(assets().LoadTexture("TestSprite", "test.png"));
+    firstGoRenderer->SetSize({100.0f, 100.0f});
+
 
     // Delete Test GameObject
     deleteTestObject = CreateGameObject();

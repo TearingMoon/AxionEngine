@@ -11,7 +11,6 @@
     },
     {
       "name": "windows-vcpkg-debug",
-      "generator": "Ninja",
       "binaryDir": "build/windows-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",

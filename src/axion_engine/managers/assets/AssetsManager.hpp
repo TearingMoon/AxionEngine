@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <filesystem>
 
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/platform/window/Window.hpp"

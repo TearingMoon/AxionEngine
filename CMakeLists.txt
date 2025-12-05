@@ -55,3 +55,15 @@ set_target_properties(Game PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin
     RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin
 )
+
+# Copy assets to binary folder
+
+set(ASSETS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/game/assets)
+set(ASSETS_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/assets)
+add_custom_target(copy_assets ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${ASSETS_SOURCE_DIR}
+            ${ASSETS_OUTPUT_DIR}
+    COMMENT "Copying assets to output directory"
+)
+add_dependencies(Game copy_assets)

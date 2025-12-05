@@ -26,6 +26,9 @@ Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(), 
 
     render_ = std::make_unique<RenderManager>(context_);
     context_.render = render_.get();
+
+    assets_ = std::make_unique<AssetsManager>(context_);
+    context_.assets = assets_.get();
 }
 
 Engine::~Engine()

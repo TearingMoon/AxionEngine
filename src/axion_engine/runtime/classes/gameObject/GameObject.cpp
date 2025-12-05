@@ -79,7 +79,7 @@ void GameObject::Disable()
 {
     if (!isEnabled_)
         return;
-    isEnabled_ == false;
+    isEnabled_ = false;
     for (auto &component : components_)
     {
         component->OnDisabled(ctx_());

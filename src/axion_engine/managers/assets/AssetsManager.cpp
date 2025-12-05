@@ -69,15 +69,28 @@ void AssetsManager::UnloadAllTextures()
 
 inline std::string AssetsManager::GetAssetsRoot()
 {
+    namespace fs = std::filesystem;
+
     char *basePath = SDL_GetBasePath();
-    if (!basePath)
+
+    fs::path root;
+
+    if (basePath)
     {
-        return "assets/";
+        root = fs::path(basePath);
+        SDL_free(basePath);
+    }
+    else
+    {
+        // Fallback: current working directory
+        root = fs::current_path();
     }
 
-    std::string root(basePath);
-    SDL_free(basePath);
+    root /= "assets";
 
-    root += "assets/";
-    return root;
+    std::string result = root.generic_string();
+    if (!result.empty() && result.back() != '/')
+        result.push_back('/');
+
+    return result;
 }
