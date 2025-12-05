@@ -1,6 +1,7 @@
 #pragma once
 
 #include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
+#include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
 #include "axion_engine/managers/input/InputManager.hpp"
 
 class ScriptableTest : public ScriptableComponent
@@ -8,9 +9,12 @@ class ScriptableTest : public ScriptableComponent
 public:
     ScriptableTest() {}
 
+    SpriteRenderComponent *spriteRenderer = nullptr;
     void OnMounted(EngineContext &context) override
     {
         printf("- ScriptableTest Mounted!\n");
+
+        spriteRenderer = GetOwner()->GetComponent<SpriteRenderComponent>();
     }
 
     void OnEnabled(EngineContext &context) override
@@ -80,6 +84,14 @@ public:
         if (context.input->IsKeyDown(SDL_SCANCODE_S)){
             //Move the entity down by 0.1 units
             GetOwner()->GetTransform()->position.y -= 1;
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_KP_PLUS)){
+            spriteRenderer->SetSize(spriteRenderer->GetSize() + glm::vec2(1.0f, 1.0f));
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_KP_MINUS)){
+            spriteRenderer->SetSize(spriteRenderer->GetSize() - glm::vec2(1.0f, 1.0f));
         }
     }
 

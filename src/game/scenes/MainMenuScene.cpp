@@ -20,7 +20,6 @@ void MainMenuScene::OnSceneEnter()
     firstGoRenderer->SetTexture(assets().LoadTexture("TestSprite", "test.png"));
     firstGoRenderer->SetSize({100.0f, 100.0f});
 
-
     // Delete Test GameObject
     deleteTestObject = CreateGameObject();
     deleteTestObject->AddComponent<ScriptableDeleteTest>();

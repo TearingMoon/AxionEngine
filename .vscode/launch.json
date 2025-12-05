@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${command:cmake.launchTargetPath}",
       "cwd": "${workspaceFolder}",
-      "console": "externalTerminal"
+      "console": "integratedTerminal"
     },
     {
       "name": "Launch Game (Linux, gdb)",
