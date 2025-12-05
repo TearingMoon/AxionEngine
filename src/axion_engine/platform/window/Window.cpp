@@ -31,21 +31,6 @@ void Window::RestartWindow(const WindowConfig &config)
     }
 }
 
-SDL_Texture *Window::LoadTexture(SDL_Renderer *renderer, const std::string &path) //TODO: 
-{
-    SDL_Surface *surface = IMG_Load(path.c_str());
-    if (!surface)
-    {
-        ERROR("IMG_Load failed: %s\n", IMG_GetError());
-        return nullptr;
-    }
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    return texture;
-}
-
 bool Window::Initialize(const WindowConfig &config)
 {
     auto newWindow = CreateWindow(config);

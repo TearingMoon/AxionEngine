@@ -49,17 +49,6 @@ protected:
 
     void SetCurrentCamera(CameraComponent *camera) { currentCamera_ = camera; }
 
-    SDL_Texture *LoadTexture(const std::string &path) //TODO: Check this, i dont really like it
-    {
-        if (ctx_.window && ctx_.window->GetRenderer())
-        {
-            SDL_Renderer *renderer = ctx_.window->GetRenderer();
-            SDL_Texture *texture = ctx_.window->LoadTexture(renderer, path);
-            return texture;
-        }
-        return nullptr;
-    }
-
 private:
     void Enter()
     {

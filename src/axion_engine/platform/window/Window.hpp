@@ -17,8 +17,6 @@ public:
 
     void RestartWindow(const WindowConfig &config);
 
-    SDL_Texture *LoadTexture(SDL_Renderer *renderer, const std::string &path);
-
     SDL_Window *GetSDLWindow() const { return window_.get(); }
     SDL_Renderer *GetRenderer() const { return renderer_; }
 
