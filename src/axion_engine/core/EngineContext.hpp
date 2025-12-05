@@ -21,5 +21,4 @@ struct EngineContext
     RenderManager *render;
     AssetsManager *assets;
     Window *window;
-    AssetsManager *assets;
 };
