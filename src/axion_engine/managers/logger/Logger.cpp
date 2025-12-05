@@ -1,4 +1,4 @@
-#include "logger.hpp"
+#include "Logger.hpp"
 
 Logger::Logger(std::size_t maxLogs) : maxLogs_(maxLogs)
 {

@@ -19,15 +19,9 @@ Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(con
     context_.window = &window_;
 
     // Initialize Managers
-<<<<<<< HEAD
-    printf("Initializing Engine Managers...\n");
-
-    time_ = std::make_unique<TimeManager>();
-=======
     logger_->Separator("Initializing Engine Managers");
 
     time_ = std::make_unique<TimeManager>(context_);
->>>>>>> a80e1648f8d824665d11dfa529d98454ff1cad2d
     context_.time = time_.get();
 
     input_ = std::make_unique<InputManager>(context_);
@@ -44,11 +38,8 @@ Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(con
 
     assets_ = std::make_unique<AssetsManager>(context_);
     context_.assets = assets_.get();
-<<<<<<< HEAD
-=======
 
     logger_->Separator("Engine Managers Initialized");
->>>>>>> a80e1648f8d824665d11dfa529d98454ff1cad2d
 }
 
 Engine::~Engine()

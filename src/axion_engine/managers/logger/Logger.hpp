@@ -5,6 +5,8 @@
 #include <filesystem>
 #include <SDL.h>
 #include <format>
+#include <vector>
+#include <algorithm>
 
 class Logger
 {
