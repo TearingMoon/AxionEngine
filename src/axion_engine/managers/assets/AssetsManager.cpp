@@ -3,7 +3,7 @@
 AssetsManager::AssetsManager(EngineContext &ctx) : ContextAware(ctx)
 {
     // Get the assets root path
-    assetsRoot_ = GetAssetsRoot();
+    assetsRoot_ = GetPath("assets/");
     INFO("AssetsManager initialized.");
 }
 
@@ -65,32 +65,4 @@ void AssetsManager::UnloadAllTextures()
         SDL_DestroyTexture(tex);
     }
     textures_.clear();
-}
-
-inline std::string AssetsManager::GetAssetsRoot()
-{
-    namespace fs = std::filesystem;
-
-    char *basePath = SDL_GetBasePath();
-
-    fs::path root;
-
-    if (basePath)
-    {
-        root = fs::path(basePath);
-        SDL_free(basePath);
-    }
-    else
-    {
-        // Fallback: current working directory
-        root = fs::current_path();
-    }
-
-    root /= "assets";
-
-    std::string result = root.generic_string();
-    if (!result.empty() && result.back() != '/')
-        result.push_back('/');
-
-    return result;
 }

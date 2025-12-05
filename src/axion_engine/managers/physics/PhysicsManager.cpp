@@ -30,7 +30,7 @@ void PhysicsManager::FixedUpdate(float dt)
         return;
 
     // Get all game objects with colliders
-    std::vector<GameObject *> GameObjectsWithCollider = PtrVectorFilter().filter_ptr_vector(
+    std::vector<GameObject *> GameObjectsWithCollider = filter_ptr_vector(
         currentScene->GetGameObjects(),
         [](GameObject &obj)
         {

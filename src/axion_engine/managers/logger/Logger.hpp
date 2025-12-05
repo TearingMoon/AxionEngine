@@ -8,6 +8,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "axion_utilities/path/PathFinder.hpp"
+
 class Logger
 {
 
@@ -30,7 +32,6 @@ private:
     std::ofstream logFile_;
     std::string logPath_;
 
-    std::string GetLoggerPath();
     void CleanupOldLogs();
 };
 

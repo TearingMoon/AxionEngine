@@ -16,7 +16,7 @@ Logger::Logger(std::size_t maxLogs) : maxLogs_(maxLogs)
     oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S");
     std::string logName = oss.str();
 
-    logPath_ = GetLoggerPath();
+    logPath_ = GetPath("logs/");
     std::filesystem::create_directories(logPath_);
 
     std::string logFilePath = logPath_ + logName + ".log";
@@ -68,34 +68,6 @@ void Logger::Separator(std::string title, char sepChar, int totalWidth)
     }
 
     logFile_ << std::endl;
-}
-
-std::string Logger::GetLoggerPath()
-{
-    namespace fs = std::filesystem;
-
-    char *basePath = SDL_GetBasePath();
-
-    fs::path root;
-
-    if (basePath)
-    {
-        root = fs::path(basePath);
-        SDL_free(basePath);
-    }
-    else
-    {
-        // Fallback: current working directory
-        root = fs::current_path();
-    }
-
-    root /= "logs";
-
-    std::string result = root.generic_string();
-    if (!result.empty() && result.back() != '/')
-        result.push_back('/');
-
-    return result;
 }
 
 void Logger::CleanupOldLogs()

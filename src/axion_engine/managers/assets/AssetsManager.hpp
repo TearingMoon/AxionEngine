@@ -10,6 +10,8 @@
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/platform/window/Window.hpp"
 
+#include "axion_utilities/path/PathFinder.hpp"
+
 class AssetsManager : ContextAware
 {
 public:
@@ -27,6 +29,4 @@ public:
 private:
     std::string assetsRoot_; // TODO: Initialize this with the correct assets root path
     std::unordered_map<std::string, SDL_Texture *> textures_;
-
-    inline std::string GetAssetsRoot();
 };
