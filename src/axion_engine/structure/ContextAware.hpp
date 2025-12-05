@@ -1,5 +1,10 @@
 #pragma once
 #include "axion_engine/core/EngineContext.hpp"
+#include "axion_engine/managers/logger/Logger.hpp"
+
+#define INFO(fmt, ...)  ctx_.logger->Info(fmt, ##__VA_ARGS__)
+#define WARN(fmt, ...)  ctx_.logger->Warn(fmt, ##__VA_ARGS__)
+#define ERROR(fmt, ...) ctx_.logger->Error(fmt, ##__VA_ARGS__)
 
 class ContextAware
 {
@@ -17,4 +22,5 @@ protected:
     SceneManager& scene() const noexcept { return *ctx_.scene; };
     PhysicsManager& physics() const noexcept { return *ctx_.physics; };
     AssetsManager& assets() const noexcept { return *ctx_.assets; }
+    Logger& logger() const noexcept { return *ctx_.logger; };
 };

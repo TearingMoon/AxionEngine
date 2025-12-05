@@ -2,12 +2,12 @@
 
 SceneManager::SceneManager(EngineContext &ctx) : ContextAware(ctx)
 {
-    printf("- SceneManager initialized. \n");
+    INFO("SceneManager initialized");
 }
 
 SceneManager::~SceneManager()
 {
-    printf("- SceneManager destroyed. \n");
+    INFO("SceneManager destroyed");
 }
 
 void SceneManager::Update()
@@ -51,11 +51,11 @@ void SceneManager::ChangeScene(std::string sceneName)
 {
     if (!IsSceneRegistered(sceneName))
     {
-        printf("Scene '%s' is not registered. Cannot change scene.\n", sceneName.c_str());
+        WARN("Scene '{}' is not registered. Cannot change scene.", sceneName.c_str());
         return;
     }
 
-    printf("Changing to scene: %s\n", sceneName.c_str());
+    INFO("Changing to scene: {}", sceneName.c_str());
     if (currentScene_)
     {
         currentScene_->Exit();

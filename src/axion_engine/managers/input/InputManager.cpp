@@ -1,15 +1,15 @@
 #include "InputManager.hpp"
 
-InputManager::InputManager()
+InputManager::InputManager(EngineContext &ctx) : ContextAware(ctx)
 {
     currentKeys_.fill(0);
     previousKeys_.fill(0);
-    printf("- InputManager initialized. \n");
+    INFO("InputManager initialized.");
 }
 
 InputManager::~InputManager()
 {
-    printf("- InputManager destroyed. \n");
+    INFO("InputManager destroyed.");
 }
 
 #pragma region Fetch Inputs

@@ -66,27 +66,27 @@ public:
             fixedUpdateFlag = false;
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_A)){
+        if (context.input->IsKeyDown(SDL_SCANCODE_A)){ //TODO: Simplify All calls to Tranforms
             //Rotate the entity by 1 degree on the Z axis
             GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, 1.0f);
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_D)){
+        if (context.input->IsKeyDown(SDL_SCANCODE_D)){ 
             //Rotate the entity by -1 degree on the Z axis
             GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, -1.0f);
         }
 
         if (context.input->IsKeyDown(SDL_SCANCODE_W)){
             //Move the entity up by 0.1 units
-            GetOwner()->GetTransform()->position.y += 1;
+            GetOwner()->GetTransform()->position += (GetOwner()->GetTransform()->GetUpVector() * 1.0f);
         }
 
         if (context.input->IsKeyDown(SDL_SCANCODE_S)){
             //Move the entity down by 0.1 units
-            GetOwner()->GetTransform()->position.y -= 1;
+            GetOwner()->GetTransform()->position -= (GetOwner()->GetTransform()->GetUpVector() * 1.0f);
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_KP_PLUS)){
+        if (context.input->IsKeyDown(SDL_SCANCODE_KP_PLUS)){ 
             spriteRenderer->SetSize(spriteRenderer->GetSize() + glm::vec2(1.0f, 1.0f));
         }
 

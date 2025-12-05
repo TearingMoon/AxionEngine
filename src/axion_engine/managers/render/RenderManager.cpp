@@ -2,12 +2,12 @@
 
 RenderManager::RenderManager(EngineContext &ctx) : ContextAware(ctx)
 {
-    printf("- RenderManager initialized. \n");
+    INFO("RenderManager initialized.");
 }
 
 RenderManager::~RenderManager()
 {
-    printf("- RenderManager destroyed. \n");
+    INFO("RenderManager destroyed.");
 }
 
 void RenderManager::Update()

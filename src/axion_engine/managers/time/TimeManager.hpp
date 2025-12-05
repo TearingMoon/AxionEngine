@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <chrono>
 
-class TimeManager
+#include "axion_engine/structure/ContextAware.hpp"
+
+class TimeManager : public ContextAware
 {
 public:
-    TimeManager();
+    TimeManager(EngineContext &ctx) ;
     ~TimeManager();
 
     void Update();

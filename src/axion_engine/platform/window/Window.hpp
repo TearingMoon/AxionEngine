@@ -5,12 +5,15 @@
 #include <memory>
 
 #include "WindowConfig.hpp"
+#include "axion_engine/structure/ContextAware.hpp"
 
-class Window
+class Window : public ContextAware
 {
 public:
-    Window(const WindowConfig &config);
+    Window(EngineContext &ctx);
     ~Window() = default;
+
+    void Start(const WindowConfig &config);
 
     void RestartWindow(const WindowConfig &config);
 
@@ -36,6 +39,6 @@ private:
     bool Initialize(const WindowConfig &config);
     void Reset() noexcept;
 
-    static SDL_Window *CreateWindow(const WindowConfig &config) noexcept;
-    static SDL_Renderer *CreateRenderer(SDL_Window *window) noexcept;
+    SDL_Window *CreateWindow(const WindowConfig &config) noexcept;
+    SDL_Renderer *CreateRenderer(SDL_Window *window) noexcept;
 };

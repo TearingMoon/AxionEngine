@@ -4,12 +4,12 @@ AssetsManager::AssetsManager(EngineContext &ctx) : ContextAware(ctx)
 {
     // Get the assets root path
     assetsRoot_ = GetAssetsRoot();
-    printf("- AssetsManager initialized.\n");
+    INFO("AssetsManager initialized.");
 }
 
 AssetsManager::~AssetsManager()
 {
-    printf("- AssetsManager destroyed. \n");
+    INFO("AssetsManager destroyed.");
 }
 
 SDL_Texture *AssetsManager::LoadTexture(const std::string &id, const std::string &relativePath)

@@ -1,5 +1,7 @@
 #pragma once
 
+class Logger;
+
 class TimeManager;
 class InputManager;
 class SceneManager;
@@ -10,6 +12,7 @@ class AssetsManager;
 
 struct EngineContext
 {
+    Logger *logger;
     TimeManager *time;
     InputManager *input;
     SceneManager *scene;

@@ -1,29 +1,33 @@
 #include "Window.hpp"
 
-Window::Window(const WindowConfig &config)
+Window::Window(EngineContext &ctx) : ContextAware(ctx)
 {
-    printf("Creating window: %s\n", config.title.c_str());
+}
+
+void Window::Start(const WindowConfig &config)
+{
+    INFO("Creating window: {}", config.title.c_str());
     if (Initialize(config))
     {
-        printf("- Window created successfully.\n");
+        INFO("Window created successfully.");
     }
     else
     {
-        printf("- Failed to create window.\n");
+        ERROR("Failed to create window.");
     }
 }
 
 void Window::RestartWindow(const WindowConfig &config)
 {
-    printf("Restarting window: %s\n", config.title.c_str());
+    INFO("Restarting window: {}", config.title.c_str());
     Reset();
     if (Initialize(config))
     {
-        printf("Window restarted successfully.\n");
+        INFO("Window restarted successfully.");
     }
     else
     {
-        printf("Failed to restart window.\n");
+        ERROR("Failed to restart window.");
     }
 }
 
@@ -32,7 +36,7 @@ SDL_Texture *Window::LoadTexture(SDL_Renderer *renderer, const std::string &path
     SDL_Surface *surface = IMG_Load(path.c_str());
     if (!surface)
     {
-        printf("IMG_Load failed: %s\n", IMG_GetError());
+        ERROR("IMG_Load failed: %s\n", IMG_GetError());
         return nullptr;
     }
 
@@ -88,7 +92,7 @@ SDL_Window *Window::CreateWindow(const WindowConfig &config) noexcept
 
     if (!win)
     {
-        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
         return nullptr;
     }
 
@@ -100,7 +104,7 @@ SDL_Renderer *Window::CreateRenderer(SDL_Window *window) noexcept
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer)
     {
-        printf("Could not create renderer! SDL_Error: %s\n", SDL_GetError());
+        ERROR("Could not create renderer! SDL_Error: {}", SDL_GetError());
         return nullptr;
     }
 
