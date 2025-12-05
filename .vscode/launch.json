@@ -2,20 +2,28 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch (Debug, gdb)",
+      "name": "Launch Game (Windows, MSVC)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${command:cmake.launchTargetPath}",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Launch Game (Linux, gdb)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${command:cmake.launchTargetPath}", // Executable built by CMake
+      "program": "${command:cmake.launchTargetPath}",
       "cwd": "${workspaceFolder}",
       "MIMode": "gdb",
       "miDebuggerPath": "/usr/bin/gdb",
-      "externalConsole": true,                        // Show a separate terminal
-      "preLaunchTask": "Configure+Build",             // Ensure configure+build before running
-      "environment": [
-        { "name": "SDL_VIDEODRIVER", "value": "x11" } // Optional for Linux
-      ],
+      "externalConsole": true,
       "setupCommands": [
-        { "description": "Enable pretty-printing", "text": "-enable-pretty-printing", "ignoreFailures": true }
+        {
+          "description": "Enable pretty-printing",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
       ]
     }
   ]

@@ -5,19 +5,21 @@
 #include <memory>
 
 #include "WindowConfig.hpp"
+#include "axion_engine/structure/ContextAware.hpp"
 
-class Window
+class Window : public ContextAware
 {
 public:
-    Window(const WindowConfig &config);
+    Window(EngineContext &ctx);
     ~Window() = default;
+
+    void Start(const WindowConfig &config);
 
     void RestartWindow(const WindowConfig &config);
 
     SDL_Texture *LoadTexture(SDL_Renderer *renderer, const std::string &path);
 
     SDL_Window *GetSDLWindow() const { return window_.get(); }
-    SDL_Surface *GetSurface() const { return surface_; }
     SDL_Renderer *GetRenderer() const { return renderer_; }
 
 private:
@@ -30,7 +32,6 @@ private:
         }
     };
     std::unique_ptr<SDL_Window, SDL_WindowDeleter> window_{nullptr};
-    SDL_Surface *surface_ = nullptr;
     SDL_Renderer *renderer_ = nullptr;
 
     bool initialized_ = false;
@@ -38,7 +39,6 @@ private:
     bool Initialize(const WindowConfig &config);
     void Reset() noexcept;
 
-    static SDL_Window *CreateWindow(const WindowConfig &config) noexcept;
-    static SDL_Surface *GetWindowSurface(SDL_Window *window) noexcept;
-    static SDL_Renderer *GetWindowRenderer(SDL_Window *window) noexcept;
+    SDL_Window *CreateWindow(const WindowConfig &config) noexcept;
+    SDL_Renderer *CreateRenderer(SDL_Window *window) noexcept;
 };

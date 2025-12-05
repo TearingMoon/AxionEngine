@@ -1,29 +1,33 @@
 #include "Window.hpp"
 
-Window::Window(const WindowConfig &config)
+Window::Window(EngineContext &ctx) : ContextAware(ctx)
 {
-    printf("Creating window: %s\n", config.title.c_str());
+}
+
+void Window::Start(const WindowConfig &config)
+{
+    INFO("Creating window: {}", config.title.c_str());
     if (Initialize(config))
     {
-        printf("- Window created successfully.\n");
+        INFO("Window created successfully.");
     }
     else
     {
-        printf("- Failed to create window.\n");
+        ERROR("Failed to create window.");
     }
 }
 
 void Window::RestartWindow(const WindowConfig &config)
 {
-    printf("Restarting window: %s\n", config.title.c_str());
+    INFO("Restarting window: {}", config.title.c_str());
     Reset();
     if (Initialize(config))
     {
-        printf("Window restarted successfully.\n");
+        INFO("Window restarted successfully.");
     }
     else
     {
-        printf("Failed to restart window.\n");
+        ERROR("Failed to restart window.");
     }
 }
 
@@ -32,7 +36,7 @@ SDL_Texture *Window::LoadTexture(SDL_Renderer *renderer, const std::string &path
     SDL_Surface *surface = IMG_Load(path.c_str());
     if (!surface)
     {
-        printf("IMG_Load failed: %s\n", IMG_GetError());
+        ERROR("IMG_Load failed: %s\n", IMG_GetError());
         return nullptr;
     }
 
@@ -51,14 +55,7 @@ bool Window::Initialize(const WindowConfig &config)
         return false;
     }
 
-    auto newSurface = GetWindowSurface(newWindow);
-    if (!newSurface)
-    {
-        Reset();
-        return false;
-    }
-
-    auto newRenderer = GetWindowRenderer(newWindow);
+    auto newRenderer = CreateRenderer(newWindow);
     if (!newRenderer)
     {
         Reset();
@@ -67,11 +64,9 @@ bool Window::Initialize(const WindowConfig &config)
 
     // Set the new window, surface and renderer
     window_.reset(newWindow);
-    surface_ = newSurface;
     renderer_ = newRenderer;
 
     // Placeholder surface
-    SDL_FillRect(surface_, nullptr, SDL_MapRGB(surface_->format, 0, 0, 0));
     SDL_UpdateWindowSurface(window_.get());
 
     initialized_ = true;
@@ -81,7 +76,6 @@ bool Window::Initialize(const WindowConfig &config)
 void Window::Reset() noexcept
 {
     window_.reset();
-    surface_ = nullptr;
     renderer_ = nullptr;
     initialized_ = false;
 }
@@ -98,27 +92,21 @@ SDL_Window *Window::CreateWindow(const WindowConfig &config) noexcept
 
     if (!win)
     {
-        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
         return nullptr;
     }
 
     return win;
 }
 
-SDL_Surface *Window::GetWindowSurface(SDL_Window *window) noexcept
+SDL_Renderer *Window::CreateRenderer(SDL_Window *window) noexcept
 {
-    SDL_Surface *surface = SDL_GetWindowSurface(window);
-    if (!surface)
-        printf("Could not get window surface! SDL_Error: %s\n", SDL_GetError());
-
-    return surface;
-}
-
-SDL_Renderer *Window::GetWindowRenderer(SDL_Window *window) noexcept
-{
-    SDL_Renderer *renderer = SDL_GetRenderer(window);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer)
-        printf("Could not get window renderer! SDL_Error: %s\n", SDL_GetError());
+    {
+        ERROR("Could not create renderer! SDL_Error: {}", SDL_GetError());
+        return nullptr;
+    }
 
     return renderer;
 }

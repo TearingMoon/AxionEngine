@@ -3,10 +3,12 @@
 #include <SDL.h>
 #include <array>
 
-class InputManager
+#include "axion_engine/structure/ContextAware.hpp"
+
+class InputManager : public ContextAware
 {
 public:
-    InputManager();
+    InputManager(EngineContext &ctx);
     ~InputManager();
     
     void BeginFrame();

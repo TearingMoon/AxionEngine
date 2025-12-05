@@ -1,22 +1,36 @@
 #include "Engine.hpp"
 
 // TODO: Remove window initialization from here
-Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(), window_(WindowConfig)
+Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(context_), window_(context_)
 {
     config_ = config;
+
+    // Initialize Logger
+    logger_ = std::make_unique<Logger>();
+    context_.logger = logger_.get();
+
     // Initialize SDL
     sdlManager_.InitSDL();
+
+    // Create Window
+    window_.Start(WindowConfig);
 
     // Add window to context
     context_.window = &window_;
 
     // Initialize Managers
+<<<<<<< HEAD
     printf("Initializing Engine Managers...\n");
 
     time_ = std::make_unique<TimeManager>();
+=======
+    logger_->Separator("Initializing Engine Managers");
+
+    time_ = std::make_unique<TimeManager>(context_);
+>>>>>>> a80e1648f8d824665d11dfa529d98454ff1cad2d
     context_.time = time_.get();
 
-    input_ = std::make_unique<InputManager>();
+    input_ = std::make_unique<InputManager>(context_);
     context_.input = input_.get();
 
     scene_ = std::make_unique<SceneManager>(context_);
@@ -30,6 +44,11 @@ Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(), 
 
     assets_ = std::make_unique<AssetsManager>(context_);
     context_.assets = assets_.get();
+<<<<<<< HEAD
+=======
+
+    logger_->Separator("Engine Managers Initialized");
+>>>>>>> a80e1648f8d824665d11dfa529d98454ff1cad2d
 }
 
 Engine::~Engine()
@@ -66,7 +85,7 @@ void Engine::EventLoop()
 
         if (event_.type == SDL_QUIT)
         {
-            printf("Quit event received. Stopping engine.\n");
+            logger_->Info("Quit event received. Stopping engine.");
             state_ = ENGINE_STATE_STOPPED;
         }
         // Handle other events as needed

@@ -7,6 +7,8 @@
 #include "axion_engine/platform/sdl_manager/SDLManager.hpp"
 #include "axion_engine/platform/window/Window.hpp"
 
+#include "axion_engine/managers/logger/Logger.hpp"
+
 #include "axion_engine/managers/time/TimeManager.hpp"
 #include "axion_engine/managers/input/InputManager.hpp"
 #include "axion_engine/managers/scene/SceneManager.hpp"
@@ -42,6 +44,9 @@ private:
     Window window_;
 
     ENGINE_STATE state_ = ENGINE_STATE_STOPPED;
+
+    // Logger
+    std::unique_ptr<Logger> logger_;
 
     // Managers
     std::unique_ptr<TimeManager> time_;

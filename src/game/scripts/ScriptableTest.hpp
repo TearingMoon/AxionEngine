@@ -1,15 +1,20 @@
 #pragma once
 
 #include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
+#include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
+#include "axion_engine/managers/input/InputManager.hpp"
 
 class ScriptableTest : public ScriptableComponent
 {
 public:
     ScriptableTest() {}
 
+    SpriteRenderComponent *spriteRenderer = nullptr;
     void OnMounted(EngineContext &context) override
     {
         printf("- ScriptableTest Mounted!\n");
+
+        spriteRenderer = GetOwner()->GetComponent<SpriteRenderComponent>();
     }
 
     void OnEnabled(EngineContext &context) override
@@ -59,6 +64,34 @@ public:
         {
             printf("- ScriptableTest Fixed Updated!\n");
             fixedUpdateFlag = false;
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_A)){ //TODO: Simplify All calls to Tranforms
+            //Rotate the entity by 1 degree on the Z axis
+            GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, 1.0f);
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_D)){ 
+            //Rotate the entity by -1 degree on the Z axis
+            GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, -1.0f);
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_W)){
+            //Move the entity up by 0.1 units
+            GetOwner()->GetTransform()->position += (GetOwner()->GetTransform()->GetUpVector() * 1.0f);
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_S)){
+            //Move the entity down by 0.1 units
+            GetOwner()->GetTransform()->position -= (GetOwner()->GetTransform()->GetUpVector() * 1.0f);
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_KP_PLUS)){ 
+            spriteRenderer->SetSize(spriteRenderer->GetSize() + glm::vec2(1.0f, 1.0f));
+        }
+
+        if (context.input->IsKeyDown(SDL_SCANCODE_KP_MINUS)){
+            spriteRenderer->SetSize(spriteRenderer->GetSize() - glm::vec2(1.0f, 1.0f));
         }
     }
 

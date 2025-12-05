@@ -3,10 +3,12 @@
 #include <SDL.h>
 #include <SDL2/SDL_image.h>
 
-class SDLManager
+#include "axion_engine/structure/ContextAware.hpp"
+
+class SDLManager : public ContextAware
 {
 public:
-    SDLManager();
+    SDLManager(EngineContext &ctx);
     ~SDLManager();
 
     void InitSDL();

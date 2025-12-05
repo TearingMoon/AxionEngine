@@ -1,14 +1,14 @@
 #include "TimeManager.hpp"
 
-TimeManager::TimeManager()
+TimeManager::TimeManager(EngineContext &ctx) : ContextAware(ctx)
 {
     lastUpdateTime_ = Clock::now();
-    printf("- TimeManager initialized. \n");
+    INFO("TimeManager initialized.");
 }
 
 TimeManager::~TimeManager()
 {
-    printf("- TimeManager destroyed. \n");
+    INFO("TimeManager destroyed.");
 }
 
 void TimeManager::Update()
@@ -29,6 +29,5 @@ void TimeManager::Update()
         currentFps_ = frameCount_;
         frameCount_ = 0;
         fpsTimer_ -= 1.0f;
-        // printf("Current FPS: %d\n", currentFps_);
     }
 }

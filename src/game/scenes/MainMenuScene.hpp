@@ -3,6 +3,7 @@
 #include "axion_engine/runtime/classes/scene/Scene.hpp"
 #include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
 #include "axion_engine/managers/time/TimeManager.hpp"
+#include "axion_engine/managers/assets/AssetsManager.hpp"
 #include "axion_engine/runtime/components/collider/SphereColliderComponent.hpp"
 #include "axion_engine/runtime/components/camera/CameraComponent.hpp"
 #include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"

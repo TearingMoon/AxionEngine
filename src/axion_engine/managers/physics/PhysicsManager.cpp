@@ -2,12 +2,12 @@
 
 PhysicsManager::PhysicsManager(EngineContext &context) : ContextAware(context)
 {
-    printf("- PhysicsManager initialized. \n");
+    INFO("PhysicsManager initialized.");
 }
 
 PhysicsManager::~PhysicsManager()
 {
-    printf("- PhysicsManager destroyed. \n");
+    INFO("PhysicsManager destroyed.");
 }
 
 void PhysicsManager::Update(float dt)
