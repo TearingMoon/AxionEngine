@@ -8,6 +8,7 @@
 #include "axion_engine/platform/window/Window.hpp"
 
 #include "axion_engine/managers/logger/Logger.hpp"
+#include "axion_engine/managers/analysis/Analyzer.hpp"
 
 #include "axion_engine/managers/time/TimeManager.hpp"
 #include "axion_engine/managers/input/InputManager.hpp"
@@ -47,6 +48,9 @@ private:
 
     // Logger
     std::unique_ptr<Logger> logger_;
+
+    // Analyzer
+    std::unique_ptr<Analyzer> analyzer_;
 
     // Managers
     std::unique_ptr<TimeManager> time_;

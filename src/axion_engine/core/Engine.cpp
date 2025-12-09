@@ -9,6 +9,10 @@ Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(con
     logger_ = std::make_unique<Logger>();
     context_.logger = logger_.get();
 
+    // Initialize Analyzer
+    analyzer_ = std::make_unique<Analyzer>(context_);
+    context_.analyzer = analyzer_.get();
+
     // Initialize SDL
     sdlManager_.InitSDL();
 
@@ -87,6 +91,8 @@ void Engine::EventLoop()
 void Engine::AppLoop()
 {
     time_->Update();
+
+    analyzer_->Update();
 
     scene_->Update();
 
