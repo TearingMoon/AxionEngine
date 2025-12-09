@@ -12,7 +12,7 @@ class AssetsManager;
 class Window;
 class AssetsManager;
 
-struct EngineContext
+struct EngineContext //TODO: Make certain pointers not available to certain modules
 {
     Logger *logger;
     Analyzer *analyzer;

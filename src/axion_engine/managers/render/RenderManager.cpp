@@ -91,7 +91,7 @@ void RenderManager::SortRenderItems(std::vector<RenderItem> &items)
         return za < zb; });
 }
 
-void RenderManager::DrawItem(CameraComponent &camera, const RenderItem &item)
+void RenderManager::DrawItem(CameraComponent &camera, const RenderItem &item) // TODO; Refactor completely
 {
     SpriteRenderComponent *sprite = static_cast<SpriteRenderComponent *>(item.geometry);
     if (!sprite)
@@ -161,7 +161,8 @@ void RenderManager::DrawItem(CameraComponent &camera, const RenderItem &item)
 glm::vec2 RenderManager::WorldToScreen(const glm::vec3 &worldPos, const glm::vec3 &camPos, int winW, int winH, float zoom)
 {
     float x = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
-    float y = (worldPos.y - camPos.y) * zoom + winH * 0.5f;
+    // Invert Y axis to make the +Y go up
+    float y = winH * 0.5f - (worldPos.y - camPos.y) * zoom; 
 
     return {x, y};
 }

@@ -4,6 +4,7 @@
 
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/core/EngineContext.hpp"
+#include "axion_engine/runtime/interfaces/IUpdateable.hpp"
 #include "axion_engine/runtime/components/Component.hpp"
 #include "axion_engine/runtime/components/transform/TransformComponent.hpp"
 #include "axion_engine/runtime/components/collider/ColliderComponent.hpp"

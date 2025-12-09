@@ -78,12 +78,12 @@ public:
 
         if (context.input->IsKeyDown(SDL_SCANCODE_W)){
             //Move the entity up by 0.1 units
-            GetOwner()->GetTransform()->position += (GetOwner()->GetTransform()->GetUpVector() * 1.0f);
+            GetOwner()->GetTransform()->SetPosition(GetOwner()->GetTransform()->GetPosition() + (GetOwner()->GetTransform()->GetUpVector() * 1.0f));
         }
 
         if (context.input->IsKeyDown(SDL_SCANCODE_S)){
             //Move the entity down by 0.1 units
-            GetOwner()->GetTransform()->position -= (GetOwner()->GetTransform()->GetUpVector() * 1.0f);
+            GetOwner()->GetTransform()->SetPosition(GetOwner()->GetTransform()->GetPosition() - (GetOwner()->GetTransform()->GetUpVector() * 1.0f));
         }
 
         if (context.input->IsKeyDown(SDL_SCANCODE_KP_PLUS)){ 
