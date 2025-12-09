@@ -110,8 +110,8 @@ void RenderManager::DrawItem(CameraComponent &camera, const RenderItem &item) //
     float scaleX = glm::length(basisX);
     float scaleY = glm::length(basisY);
 
-    float angleRad = std::atan2(m[1][0], m[0][0]);
-    float angleDeg = glm::degrees(angleRad);
+    float angleRad = std::atan2(m[0][1], m[0][0]); // θ
+    float angleDeg = -glm::degrees(angleRad);
 
     TransformComponent *camTr = camera.GetOwner()->GetTransform();
     glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
@@ -133,7 +133,8 @@ void RenderManager::DrawItem(CameraComponent &camera, const RenderItem &item) //
         src = {0, 0, texW, texH};
     }
 
-    glm::vec2 sizeWorld = sprite->GetSize();
+    //TODO: Move this to SpriteRenderComponent
+    glm::vec2 sizeWorld = sprite->GetSize() * glm::vec2(sprite->GetOwner()->GetTransform()->GetScale().x, sprite->GetOwner()->GetTransform()->GetScale().y); 
     float dstW = (sizeWorld.x > 0.0f) ? sizeWorld.x : src.w * scaleX;
     float dstH = (sizeWorld.y > 0.0f) ? sizeWorld.y : src.h * scaleY;
 
@@ -162,7 +163,7 @@ glm::vec2 RenderManager::WorldToScreen(const glm::vec3 &worldPos, const glm::vec
 {
     float x = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
     // Invert Y axis to make the +Y go up
-    float y = winH * 0.5f - (worldPos.y - camPos.y) * zoom; 
+    float y = winH * 0.5f - (worldPos.y - camPos.y) * zoom;
 
     return {x, y};
 }
