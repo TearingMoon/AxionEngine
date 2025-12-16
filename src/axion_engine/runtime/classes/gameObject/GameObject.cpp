@@ -86,6 +86,50 @@ void GameObject::Disable()
     }
 }
 
+void GameObject::OnCollisionEnter(GameObject &other)
+{
+    for (auto &component : components_)
+    {
+        if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
+        {
+            collisionListener->OnCollisionEnter(other);
+        }
+    }
+}
+
+void GameObject::OnCollisionExit(GameObject &other)
+{
+    for (auto &component : components_)
+    {
+        if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
+        {
+            collisionListener->OnCollisionExit(other);
+        }
+    }
+}
+
+void GameObject::OnTriggerEnter(GameObject &other)
+{
+    for (auto &component : components_)
+    {
+        if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
+        {
+            collisionListener->OnTriggerEnter(other);
+        }
+    }
+}
+
+void GameObject::OnTriggerExit(GameObject &other)
+{
+    for (auto &component : components_)
+    {
+        if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
+        {
+            collisionListener->OnTriggerExit(other);
+        }
+    }
+}
+
 bool GameObject::HasCollider() const
 { // TODO: Check if this is the most efficient way, maybe store a bool that is updated when adding/removing components?
     for (const auto &comp : components_)

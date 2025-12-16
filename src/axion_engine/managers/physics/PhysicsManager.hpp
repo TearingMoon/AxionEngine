@@ -10,6 +10,9 @@
 #include "axion_engine/managers/scene/SceneManager.hpp"
 #include "axion_engine/runtime/classes/scene/Scene.hpp"
 
+#include "axion_engine/runtime/components/collider/ColliderComponent.hpp"
+#include "axion_engine/runtime/components/collider/SphereColliderComponent.hpp"
+
 #include "axion_utilities/vector_filter/PtrVectorFilter.hpp"
 
 #include "PhysicsData.hpp"
@@ -26,9 +29,26 @@ private:
     float fixedDeltaTime_ = 0.02f;
     float accumulatedTime_ = 0.0f;
 
-    void FixedUpdate(float dt);
+    std::unordered_set<std::pair<ColliderComponent *, ColliderComponent *>, PairHash> currentCollisions_;
+    std::unordered_set<std::pair<ColliderComponent *, ColliderComponent *>, PairHash> previousCollisions_;
 
+    void FixedUpdate(float dt);
     void ProcessCollisions(std::vector<GameObject *> &gameObjectsWithCollider);
 
-    void CheckIfNear();
+    bool CheckCollision(ColliderComponent &colliderA, ColliderComponent &colliderB);
+
+    bool CheckSphereSphereCollision(
+        const SphereColliderComponent &sphereA,
+        const SphereColliderComponent &sphereB,
+        const TransformComponent &transformA,
+        const TransformComponent &transformB);
+
+    void ResolveCollision(
+        GameObject &objA,
+        GameObject &objB,
+        ColliderComponent &colliderA,
+        ColliderComponent &colliderB,
+        bool isNewCollision);
+
+    void DetectCollisionEvents();
 };

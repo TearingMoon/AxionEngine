@@ -14,6 +14,8 @@ public:
     bool IsTrigger() const { return type_ == COLLIDER_TYPE::TRIGGER; }
     void SetColliderType(COLLIDER_TYPE type) { type_ = type; }
 
+    GameObject *GetGameObject() const { return GetOwner(); }
+
 private:
     COLLIDER_TYPE type_ = COLLIDER_TYPE::TRIGGER;
 };

@@ -5,6 +5,7 @@
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/core/EngineContext.hpp"
 #include "axion_engine/runtime/interfaces/IUpdateable.hpp"
+#include "axion_engine/runtime/interfaces/ICollisionListener.hpp"
 #include "axion_engine/runtime/components/Component.hpp"
 #include "axion_engine/runtime/components/transform/TransformComponent.hpp"
 #include "axion_engine/runtime/components/collider/ColliderComponent.hpp"
@@ -26,11 +27,20 @@ public:
     void Enable();
     void Disable();
 
+    void OnCollisionEnter(GameObject &other);
+    void OnCollisionExit(GameObject &other);
+
+    void OnTriggerEnter(GameObject &other);
+    void OnTriggerExit(GameObject &other);
+
     template <typename T, typename... Args>
     T *AddComponent(Args &&...args);
 
     template <typename T>
     T *GetComponent() const;
+
+    template <typename T>
+    std::vector<T *> GetComponents() const;
 
     void MarkAsDestroyed() { isDestroyed_ = true; }
 
@@ -79,4 +89,18 @@ inline T *GameObject::GetComponent() const
         }
     }
     return nullptr;
+}
+
+template <typename T>
+inline std::vector<T *> GameObject::GetComponents() const
+{
+    std::vector<T *> result;
+    for (const auto &comp : components_)
+    {
+        if (auto casted = dynamic_cast<T *>(comp.get()))
+        {
+            result.push_back(casted);
+        }
+    }
+    return result;
 }

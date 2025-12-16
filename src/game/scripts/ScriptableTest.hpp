@@ -105,4 +105,14 @@ public:
     {
         printf("- ScriptableTest Started!\n");
     }
+
+    void OnTriggerEnter(GameObject &other) override
+    {
+        printf("- ScriptableTest OnTriggerEnter with GameObject %p!\n", (void *)&other);
+    }
+
+    void OnTriggerExit(GameObject &other) override
+    {
+        printf("- ScriptableTest OnTriggerExit with GameObject %p!\n", (void *)&other);
+    }
 };

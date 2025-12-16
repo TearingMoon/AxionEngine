@@ -52,6 +52,8 @@ void RenderManager::Update()
         DrawItem(*camera, item);
     }
 
+    DrawColliders(*camera); // TODO: Remove this when colliders drawing is not needed
+
     SDL_RenderPresent(renderer_);
 }
 
@@ -133,8 +135,8 @@ void RenderManager::DrawItem(CameraComponent &camera, const RenderItem &item) //
         src = {0, 0, texW, texH};
     }
 
-    //TODO: Move this to SpriteRenderComponent
-    glm::vec2 sizeWorld = sprite->GetSize() * glm::vec2(sprite->GetOwner()->GetTransform()->GetScale().x, sprite->GetOwner()->GetTransform()->GetScale().y); 
+    // TODO: Move this to SpriteRenderComponent
+    glm::vec2 sizeWorld = sprite->GetSize() * glm::vec2(sprite->GetOwner()->GetTransform()->GetScale().x, sprite->GetOwner()->GetTransform()->GetScale().y);
     float dstW = (sizeWorld.x > 0.0f) ? sizeWorld.x : src.w * scaleX;
     float dstH = (sizeWorld.y > 0.0f) ? sizeWorld.y : src.h * scaleY;
 
@@ -157,6 +159,109 @@ void RenderManager::DrawItem(CameraComponent &camera, const RenderItem &item) //
         angleDeg,
         nullptr, // center
         SDL_FLIP_NONE);
+}
+
+void RenderManager::DrawColliders(CameraComponent &camera)
+{
+    Scene *scene = ctx_.scene->GetCurrentScene();
+    if (!scene)
+        return;
+
+    TransformComponent *camTr = camera.GetOwner()->GetTransform();
+    glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
+
+    int winW = 0, winH = 0;
+    SDL_GetRendererOutputSize(renderer_, &winW, &winH);
+
+    for (GameObject *go : scene->GetGameObjects())
+    {
+        if (!go || !go->IsEnabled() || !go->HasCollider())
+            continue;
+
+        TransformComponent *transform = go->GetTransform();
+        if (!transform)
+            continue;
+
+        auto colliders = go->GetComponents<ColliderComponent>();
+
+        for (ColliderComponent *collider : colliders)
+        {
+            if (!collider)
+                continue;
+
+            if (auto *sphere = dynamic_cast<SphereColliderComponent *>(collider))
+            {
+                DrawSphereCollider(*sphere, *transform, camera, camPos, winW, winH);
+            }
+        }
+    }
+}
+
+void RenderManager::DrawSphereCollider(const SphereColliderComponent &sphere, const TransformComponent &transform, CameraComponent &camera, const glm::vec3 &camPos, int winW, int winH)
+{
+    glm::vec3 worldPos = transform.GetWorldPosition();
+    glm::vec2 screenPos = WorldToScreen(worldPos, camPos, winW, winH, 1.0f);
+
+    glm::vec3 scale = transform.GetScale();
+    float maxScale = glm::max(scale.x, glm::max(scale.y, scale.z));
+    float worldRadius = sphere.GetRadius() * maxScale;
+
+    glm::vec3 radiusWorldPoint = worldPos + glm::vec3(worldRadius, 0.0f, 0.0f);
+    glm::vec2 radiusScreenPoint = WorldToScreen(radiusWorldPoint, camPos, winW, winH, 1.0f);
+    
+    int screenRadius = static_cast<int>(glm::abs(radiusScreenPoint.x - screenPos.x));
+    
+    if (screenRadius < 1)
+        screenRadius = 1;
+
+    if (sphere.IsTrigger())
+    {
+        SDL_SetRenderDrawColor(renderer_, 0, 255, 255, 255); // Cyan para triggers
+    }
+    else
+    {
+        SDL_SetRenderDrawColor(renderer_, 0, 255, 0, 255); // Verde para physics colliders
+    }
+
+    DrawCircle(static_cast<int>(screenPos.x), static_cast<int>(screenPos.y), screenRadius);
+    
+    SDL_SetRenderDrawColor(renderer_, 255, 0, 0, 255);
+    SDL_RenderDrawPoint(renderer_, static_cast<int>(screenPos.x), static_cast<int>(screenPos.y));
+}
+
+void RenderManager::DrawCircle(int centerX, int centerY, int radius)
+{
+    int x = 0;
+    int y = radius;
+    int d = 3 - 2 * radius;
+
+    auto drawCirclePoints = [&](int cx, int cy, int x, int y)
+    {
+        SDL_RenderDrawPoint(renderer_, cx + x, cy + y);
+        SDL_RenderDrawPoint(renderer_, cx - x, cy + y);
+        SDL_RenderDrawPoint(renderer_, cx + x, cy - y);
+        SDL_RenderDrawPoint(renderer_, cx - x, cy - y);
+        SDL_RenderDrawPoint(renderer_, cx + y, cy + x);
+        SDL_RenderDrawPoint(renderer_, cx - y, cy + x);
+        SDL_RenderDrawPoint(renderer_, cx + y, cy - x);
+        SDL_RenderDrawPoint(renderer_, cx - y, cy - x);
+    };
+
+    while (y >= x)
+    {
+        drawCirclePoints(centerX, centerY, x, y);
+        x++;
+
+        if (d > 0)
+        {
+            y--;
+            d = d + 4 * (x - y) + 10;
+        }
+        else
+        {
+            d = d + 4 * x + 6;
+        }
+    }
 }
 
 glm::vec2 RenderManager::WorldToScreen(const glm::vec3 &worldPos, const glm::vec3 &camPos, int winW, int winH, float zoom)
