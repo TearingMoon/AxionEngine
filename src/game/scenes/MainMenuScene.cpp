@@ -33,6 +33,7 @@ void MainMenuScene::OnSceneEnter()
     secondGoCollider->SetColliderType(COLLIDER_TYPE::TRIGGER);
     secondGoCollider->SetSize({2.0f, 1.0f, 1.0f});
     auto secondGoRenderer = SecondGO->AddComponent<SquareRenderComponent>();
+    secondGoRenderer->SetColor({255, 255, 255, 255});
     SecondGO->AddComponent<ScriptableRotationTest>();
 }
 

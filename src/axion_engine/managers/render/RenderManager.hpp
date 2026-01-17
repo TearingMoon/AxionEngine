@@ -7,6 +7,7 @@
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/core/EngineContext.hpp"
 #include "axion_engine/managers/scene/SceneManager.hpp"
+#include "axion_engine/managers/input/InputManager.hpp"
 #include "axion_engine/platform/window/Window.hpp"
 
 #include "axion_engine/runtime/components/renderer/RenderComponent.hpp"
@@ -25,4 +26,6 @@ private:
     void CollectRenderables(Scene &scene, std::vector<IRenderable *> &out);
 
     SDL_Renderer *renderer_;
+
+    bool debugMode_ = false;
 };

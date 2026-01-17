@@ -50,9 +50,22 @@ void RenderManager::Update()
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
     SDL_RenderClear(renderer_);
 
-    // 5) Render
-    for (IRenderable *r : renderables) // TODO: Remove debug renderables in release builds
-        r->Render(rctx);
+    // 5) Handle debug mode key
+    if (ctx_.input->IsKeyJustPressed(SDL_SCANCODE_F3))
+    {
+        debugMode_ = !debugMode_;
+        if (debugMode_)
+            INFO("Debug Render Mode Enabled.");
+        else
+            INFO("Debug Render Mode Disabled.");
+    }
+
+    // 6) Render
+    for (IRenderable *r : renderables)
+        if (!debugMode_ && r->GetLayer() == RenderLayer::Debug)
+            continue;
+        else
+            r->Render(rctx);
     SDL_RenderPresent(renderer_);
 }
 

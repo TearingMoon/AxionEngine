@@ -32,7 +32,7 @@ public:
         glm::vec3 basisY = glm::vec3(worldMatrix[1]);
         float scaleX = glm::length(basisX);
         float scaleY = glm::length(basisY);
-        
+
         // Extract rotation (in radians)
         float rotation = glm::radians(tr->GetRotation().z); // Convert degrees to radians
 
@@ -50,9 +50,9 @@ public:
 
         glm::vec2 corners[4] = {
             {-halfW, -halfH}, // Top-left
-            { halfW, -halfH}, // Top-right
-            { halfW,  halfH}, // Bottom-right
-            {-halfW,  halfH}  // Bottom-left
+            {halfW, -halfH},  // Top-right
+            {halfW, halfH},   // Bottom-right
+            {-halfW, halfH}   // Bottom-left
         };
 
         SDL_Vertex vertices[4];
@@ -61,10 +61,10 @@ public:
             // Rotate corner
             float rotX = corners[i].x * cosR - corners[i].y * sinR;
             float rotY = corners[i].x * sinR + corners[i].y * cosR;
-            
+
             vertices[i].position.x = screenX + rotX;
             vertices[i].position.y = screenY + rotY;
-            vertices[i].color = {255, 0, 0, 255}; // Red color
+            vertices[i].color = _color; // Red color
         }
 
         // Define indices for two triangles
@@ -72,4 +72,12 @@ public:
 
         SDL_RenderGeometry(ctx.renderer, nullptr, vertices, 4, indices, 6);
     }
+
+    void SetColor(const SDL_Color &color)
+    {
+        _color = color;
+    }
+
+private:
+    SDL_Color _color = {255, 0, 0, 255}; // Default color: Red
 };
