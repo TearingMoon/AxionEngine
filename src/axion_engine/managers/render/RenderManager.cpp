@@ -66,20 +66,14 @@ void RenderManager::CollectRenderables(Scene &scene, std::vector<IRenderable *> 
         if (!go || !go->IsEnabled())
             continue;
 
-        // Collect RenderComponents
-        auto renderComps = go->GetComponents<RenderComponent>();
-        for (RenderComponent *c : renderComps)
+        // Collect all components that implement IRenderable
+        const auto &components = go->GetAllComponents();
+        for (const auto &comp : components)
         {
-            if (c)
-                out.push_back(c);
-        }
-
-        // Collect ColliderComponents (they also implement IRenderable)
-        auto colliderComps = go->GetComponents<ColliderComponent>();
-        for (ColliderComponent *c : colliderComps)
-        {
-            if (c)
-                out.push_back(c);
+            if (auto *renderable = dynamic_cast<IRenderable *>(comp.get()))
+            {
+                out.push_back(renderable);
+            }
         }
     }
 }
