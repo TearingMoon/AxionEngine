@@ -18,6 +18,10 @@ public:
 
     GameObject *GetGameObject() const { return GetOwner(); }
 
+    RenderLayer GetLayer() const override { return RenderLayer::Debug; }
+    int GetOrderInLayer() const override { return 0; }
+    int GetSortKey() const override { return 0; }
+
 private:
     COLLIDER_TYPE type_ = COLLIDER_TYPE::TRIGGER;
 };

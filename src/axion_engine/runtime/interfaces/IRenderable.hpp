@@ -13,11 +13,20 @@ struct RenderContext
     // add: camera, viewport, dt, etc.
 };
 
+enum class RenderLayer
+{
+    Background = 0,
+    Default = 100,
+    Foreground = 200,
+    Debug = 250,
+    UI = 300
+};
+
 class IRenderable
 {
 public:
     virtual ~IRenderable() = default;
-    virtual int GetLayer() const = 0;
+    virtual RenderLayer GetLayer() const { return RenderLayer::Default; }
     virtual int GetSortKey() const = 0;
     virtual int GetOrderInLayer() const = 0;
 

@@ -51,9 +51,8 @@ void RenderManager::Update()
     SDL_RenderClear(renderer_);
 
     // 5) Render
-    for (IRenderable *r : renderables)
+    for (IRenderable *r : renderables) // TODO: Remove debug renderables in release builds
         r->Render(rctx);
-
     SDL_RenderPresent(renderer_);
 }
 

@@ -12,8 +12,8 @@ public:
 
     virtual void Render(const RenderContext &ctx) = 0;
 
-    void SetLayer(int l) { layer_ = l; }
-    int GetLayer() const override { return layer_; }
+    void SetLayer(RenderLayer l) { layer_ = l; }
+    RenderLayer GetLayer() const override { return layer_; }
 
     void SetOrderInLayer(int o) { orderInLayer_ = o; }
     int GetOrderInLayer() const override { return orderInLayer_; }
@@ -21,6 +21,6 @@ public:
     int GetSortKey() const override { return 0; }
 
 protected:
-    int layer_ = 0;
+    RenderLayer layer_ = RenderLayer::Default;
     int orderInLayer_ = 0;
 };

@@ -9,9 +9,7 @@ public:
     void SetRadius(float radius) { radius_ = radius; }
     float GetRadius() const { return radius_ * GetOwner()->GetTransform()->GetScale().x; }
 
-    int GetLayer() const override { return 0; }
-    int GetOrderInLayer() const override { return 0; }
-    int GetSortKey() const override { return 0; }
+    
 
     void Render(const RenderContext &ctx) override
     {
