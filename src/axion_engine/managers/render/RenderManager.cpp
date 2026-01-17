@@ -29,7 +29,7 @@ void RenderManager::Update()
 
     // 1) Build render context
     RenderContext rctx;
-    rctx.sdl = renderer_;
+    rctx.renderer = renderer_;
     rctx.camera = camera;
     SDL_GetRendererOutputSize(renderer_, &rctx.windowWidth, &rctx.windowHeight);
 

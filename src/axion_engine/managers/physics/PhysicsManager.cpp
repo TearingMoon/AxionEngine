@@ -89,43 +89,8 @@ void PhysicsManager::ProcessCollisions(std::vector<GameObject *> &gameObjectsWit
 
 bool PhysicsManager::CheckCollision(ColliderComponent &colliderA, ColliderComponent &colliderB)
 {
-    auto *objA = colliderA.GetGameObject();
-    auto *objB = colliderB.GetGameObject();
-
-    if (!objA || !objB)
-        return false;
-
-    auto *transformA = objA->GetTransform();
-    auto *transformB = objB->GetTransform();
-
-    if (!transformA || !transformB)
-        return false;
-
-    // TODO: For now, only SphereColliderComponent vs SphereColliderComponent
-    auto *sphereA = dynamic_cast<SphereColliderComponent *>(&colliderA);
-    auto *sphereB = dynamic_cast<SphereColliderComponent *>(&colliderB);
-
-    if (sphereA && sphereB)
-    {
-        return CheckSphereSphereCollision(*sphereA, *sphereB, *transformA, *transformB);
-    }
-
-    return false;
-}
-
-bool PhysicsManager::CheckSphereSphereCollision(const SphereColliderComponent &sphereA, const SphereColliderComponent &sphereB, const TransformComponent &transformA, const TransformComponent &transformB)
-{
-    glm::vec3 posA = transformA.GetWorldPosition();
-    glm::vec3 posB = transformB.GetWorldPosition();
-
-    // GetRadius() already applies scale, no need to multiply again
-    float radiusA = sphereA.GetRadius();
-    float radiusB = sphereB.GetRadius();
-
-    float distance = glm::distance(posA, posB);
-    float minDistance = radiusA + radiusB;
-
-    return distance <= minDistance;
+    Manifold manifold;
+    return colliderA.Intersects(colliderB, manifold);
 }
 
 void PhysicsManager::ResolveCollision(GameObject &objA, GameObject &objB, ColliderComponent &colliderA, ColliderComponent &colliderB, bool isNewCollision)

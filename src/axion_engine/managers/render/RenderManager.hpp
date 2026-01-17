@@ -12,9 +12,6 @@
 #include "axion_engine/runtime/components/renderer/RenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
 
-#include "axion_engine/runtime/components/collider/ColliderComponent.hpp"
-#include "axion_engine/runtime/components/collider/SphereColliderComponent.hpp"
-
 class RenderManager : public ContextAware
 {
 public:
@@ -25,7 +22,7 @@ public:
 
 private:
     std::vector<IRenderable *> renderables;
-    void CollectRenderables(Scene& scene, std::vector<IRenderable*>& out);
+    void CollectRenderables(Scene &scene, std::vector<IRenderable *> &out);
 
     SDL_Renderer *renderer_;
 };

@@ -11,8 +11,9 @@
 #include "axion_engine/runtime/classes/scene/Scene.hpp"
 
 #include "axion_engine/runtime/components/collider/ColliderComponent.hpp"
-#include "axion_engine/runtime/components/collider/SphereColliderComponent.hpp"
-#include "axion_engine/runtime/components/collider/SquareColliderComponent.hpp"
+#include "axion_engine/runtime/components/collider/AABBColliderComponent.hpp"
+#include "axion_engine/runtime/components/collider/OBBColliderComponent.hpp"
+#include "axion_engine/runtime/components/collider/CircleColliderComponent.hpp"
 
 #include "axion_utilities/vector_filter/PtrVectorFilter.hpp"
 
@@ -37,12 +38,6 @@ private:
     void ProcessCollisions(std::vector<GameObject *> &gameObjectsWithCollider);
 
     bool CheckCollision(ColliderComponent &colliderA, ColliderComponent &colliderB);
-
-    bool CheckSphereSphereCollision(
-        const SphereColliderComponent &sphereA,
-        const SphereColliderComponent &sphereB,
-        const TransformComponent &transformA,
-        const TransformComponent &transformB);
 
     void ResolveCollision(
         GameObject &objA,

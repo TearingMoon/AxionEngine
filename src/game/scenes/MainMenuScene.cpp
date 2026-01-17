@@ -14,7 +14,7 @@ void MainMenuScene::OnSceneEnter()
     auto firstGO = CreateGameObject();
     firstGO->AddComponent<ScriptableTest>();
     firstGO->GetTransform()->SetScale({100.0f, 100.0f, 1.0f});
-    auto firstGoCollider = firstGO->AddComponent<SphereColliderComponent>();
+    auto firstGoCollider = firstGO->AddComponent<CircleColliderComponent>();
     firstGoCollider->SetRadius(1.0f);
     firstGoCollider->SetColliderType(COLLIDER_TYPE::PHYSICS);
     auto firstGoRenderer = firstGO->AddComponent<SpriteRenderComponent>();
@@ -29,9 +29,11 @@ void MainMenuScene::OnSceneEnter()
     auto SecondGO = CreateGameObject();
     SecondGO->GetTransform()->SetPosition({150.0f, 0.0f, 0.0f});
     SecondGO->GetTransform()->SetScale({100.0f, 100.0f, 100.0f});
-    auto secondGoCollider = SecondGO->AddComponent<SphereColliderComponent>();
-    secondGoCollider->SetRadius(1.0f);
+    auto secondGoCollider = SecondGO->AddComponent<OBBColliderComponent>();
     secondGoCollider->SetColliderType(COLLIDER_TYPE::TRIGGER);
+    secondGoCollider->SetSize({2.0f, 1.0f, 1.0f});
+    auto secondGoRenderer = SecondGO->AddComponent<SquareRenderComponent>();
+    SecondGO->AddComponent<ScriptableRotationTest>();
 }
 
 void MainMenuScene::OnSceneUpdate()

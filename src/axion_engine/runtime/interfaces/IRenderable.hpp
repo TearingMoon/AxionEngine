@@ -4,7 +4,7 @@
 
 struct RenderContext
 {
-    SDL_Renderer *sdl = nullptr;
+    SDL_Renderer *renderer = nullptr;
     CameraComponent *camera = nullptr;
 
     int windowWidth = 0;

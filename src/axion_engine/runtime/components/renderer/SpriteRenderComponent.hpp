@@ -27,7 +27,7 @@ public:
 
     void Render(const RenderContext &ctx) override
     {
-        if (!texture_ || !ctx.sdl || !ctx.camera)
+        if (!texture_ || !ctx.renderer || !ctx.camera)
             return;
 
         auto *tr = GetOwner()->GetComponent<TransformComponent>();
@@ -40,7 +40,7 @@ public:
 
         // Get window size
         int winW = 0, winH = 0;
-        SDL_GetRendererOutputSize(ctx.sdl, &winW, &winH);
+        SDL_GetRendererOutputSize(ctx.renderer, &winW, &winH);
 
         // Get world transform
         const glm::mat4 worldMatrix = tr->GetWorldMatrix();
@@ -89,7 +89,7 @@ public:
         SDL_SetTextureAlphaMod(texture_, color_.a);
 
         SDL_RenderCopyExF(
-            ctx.sdl,
+            ctx.renderer,
             texture_,
             &src,
             &dst,

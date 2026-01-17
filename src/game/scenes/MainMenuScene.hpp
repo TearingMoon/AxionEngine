@@ -4,12 +4,15 @@
 #include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
 #include "axion_engine/managers/time/TimeManager.hpp"
 #include "axion_engine/managers/assets/AssetsManager.hpp"
-#include "axion_engine/runtime/components/collider/SphereColliderComponent.hpp"
+#include "axion_engine/runtime/components/collider/CircleColliderComponent.hpp"
+#include "axion_engine/runtime/components/collider/OBBColliderComponent.hpp"
 #include "axion_engine/runtime/components/camera/CameraComponent.hpp"
 #include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
+#include "axion_engine/runtime/components/renderer/SquareRenderComponent.hpp"
 
 #include "game/scripts/ScriptableTest.hpp"
 #include "game/scripts/ScriptableDeleteTest.hpp"
+#include "game/scripts/ScriptableRotationTest.hpp"
 
 class MainMenuScene : public Scene
 {
