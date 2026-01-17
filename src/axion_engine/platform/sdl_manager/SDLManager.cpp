@@ -1,7 +1,8 @@
 #include "SDLManager.hpp"
 
 SDLManager::SDLManager(EngineContext &ctx) : ContextAware(ctx)
-{}
+{
+}
 
 SDLManager::~SDLManager()
 {
@@ -26,6 +27,12 @@ void SDLManager::InitSDL()
     if ((initted & imgFlags) != imgFlags)
     {
         ERROR("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
+        return;
+    }
+
+    if (TTF_Init() == -1)
+    {
+        ERROR("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
         return;
     }
 

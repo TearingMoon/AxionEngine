@@ -35,6 +35,13 @@ void MainMenuScene::OnSceneEnter()
     auto secondGoRenderer = SecondGO->AddComponent<SquareRenderComponent>();
     secondGoRenderer->SetColor({255, 255, 255, 255});
     SecondGO->AddComponent<ScriptableRotationTest>();
+
+    // Text GO
+    auto textGO = CreateGameObject();
+    textGO->GetTransform()->SetPosition({-200.0f, 200.0f, 0.0f});
+    auto textRenderer = textGO->AddComponent<TextRenderComponent>();
+    textRenderer->SetText("Main Menu Scene");
+    textRenderer->SetFontSize(32); // Changed from 300 to a more reasonable size
 }
 
 void MainMenuScene::OnSceneUpdate()

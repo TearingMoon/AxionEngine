@@ -9,6 +9,7 @@
 #include "axion_engine/runtime/components/camera/CameraComponent.hpp"
 #include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/SquareRenderComponent.hpp"
+#include "axion_engine/runtime/components/renderer/TextRenderComponent.hpp"
 
 #include "game/scripts/ScriptableTest.hpp"
 #include "game/scripts/ScriptableDeleteTest.hpp"

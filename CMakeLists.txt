@@ -40,12 +40,14 @@ if (UNIX) # Linux and MacOS
 elseif(WIN32)
     find_package(SDL2 CONFIG REQUIRED)
     find_package(SDL2_image CONFIG REQUIRED)
+    find_package(SDL2_ttf CONFIG REQUIRED)
     find_package(glm CONFIG REQUIRED)
 
     target_link_libraries(Game PRIVATE
         SDL2::SDL2
         SDL2::SDL2main
         SDL2_image::SDL2_image
+        SDL2_ttf::SDL2_ttf
         glm::glm
     )
 endif()
