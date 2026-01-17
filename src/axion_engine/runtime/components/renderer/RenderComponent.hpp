@@ -3,28 +3,22 @@
 #include <vector>
 
 #include "axion_engine/runtime/components/Component.hpp"
+#include "axion_engine/runtime/interfaces/IRenderable.hpp"
 
-struct RenderItem
-{
-    glm::mat4 worldMatrix;
-    void *geometry = nullptr;
-    void *material = nullptr;
-    int layer = 0;
-    int orderInLayer = 0;
-    bool transparent = false;
-};
-
-class RenderComponent : public Component
+class RenderComponent : public Component, public IRenderable
 {
 public:
     virtual ~RenderComponent() = default;
-    virtual void CollectRenderItems(std::vector<RenderItem> &outItems) = 0;
+
+    virtual void Render(const RenderContext &ctx) = 0;
 
     void SetLayer(int l) { layer_ = l; }
-    int GetLayer() const { return layer_; }
+    int GetLayer() const override { return layer_; }
 
     void SetOrderInLayer(int o) { orderInLayer_ = o; }
-    int GetOrderInLayer() const { return orderInLayer_; }
+    int GetOrderInLayer() const override { return orderInLayer_; }
+
+    int GetSortKey() const override { return 0; }
 
 protected:
     int layer_ = 0;

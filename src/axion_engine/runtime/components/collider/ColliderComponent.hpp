@@ -1,5 +1,7 @@
 #pragma once
+
 #include "axion_engine/runtime/components/Component.hpp"
+#include "axion_engine/runtime/interfaces/IRenderable.hpp"
 
 enum COLLIDER_TYPE
 {
@@ -7,7 +9,7 @@ enum COLLIDER_TYPE
     PHYSICS
 };
 
-class ColliderComponent : public Component
+class ColliderComponent : public Component, public IRenderable
 {
 public:
     ColliderComponent() = default;

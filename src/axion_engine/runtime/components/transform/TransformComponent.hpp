@@ -77,7 +77,10 @@ public:
     }
 
     glm::mat4 GetWorldMatrix() const { return GetMatrix(); }
-    glm::vec3 GetWorldPosition() const { return position_; } //TODO: Implement proper world position with parent transforms
+    glm::vec3 GetWorldPosition() const { return position_; }
+    glm::vec3 GetWorldRotation() const { return rotationEuler_; }
+    glm::vec3 GetWorldScale() const { return scale_; }
+    // TODO: Implement proper world position with parent transforms
 
 private:
     glm::vec3 position_{0.0f};

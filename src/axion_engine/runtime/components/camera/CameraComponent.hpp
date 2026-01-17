@@ -1,6 +1,9 @@
 #pragma once
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "axion_engine/runtime/components/Component.hpp"
+
+class TransformComponent;
 
 enum class ProjectionType
 {
@@ -32,17 +35,7 @@ public:
         farPlane_ = farPlane;
     }
 
-    glm::mat4 GetViewMatrix() const
-    {
-        auto *tr = GetOwner()->GetComponent<TransformComponent>();
-        glm::vec3 pos = tr ? tr->GetWorldPosition() : glm::vec3(0.0f);
-
-        glm::vec3 forward(0.0f, 0.0f, -1.0f);
-        glm::vec3 target = pos + forward;
-        glm::vec3 up(0.0f, 1.0f, 0.0f);
-
-        return glm::lookAt(pos, target, up);
-    }
+    glm::mat4 GetViewMatrix() const;
 
     glm::mat4 GetProjectionMatrix() const
     {

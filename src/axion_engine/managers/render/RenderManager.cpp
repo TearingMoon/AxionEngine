@@ -12,262 +12,74 @@ RenderManager::~RenderManager()
 
 void RenderManager::Update()
 {
-
     if (!ctx_.render || !ctx_.scene)
         return;
 
-    // Get renderer
     renderer_ = ctx_.window->GetRenderer();
     if (!renderer_)
         return;
 
-    // Get scene
     Scene *scene = ctx_.scene->GetCurrentScene();
     if (!scene)
         return;
 
-    // Get camera
     CameraComponent *camera = scene->GetCurrentCamera();
     if (!camera)
         return;
 
-    // Get Render Items
-    std::vector<RenderItem> items;
-    CollectRenderItems(items);
-    if (items.empty())
-    {
-        // Clear anyway so you see something
-        SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-        SDL_RenderClear(renderer_);
-        SDL_RenderPresent(renderer_);
-        return;
-    }
+    // 1) Build render context
+    RenderContext rctx;
+    rctx.sdl = renderer_;
+    rctx.camera = camera;
+    SDL_GetRendererOutputSize(renderer_, &rctx.windowWidth, &rctx.windowHeight);
 
-    SortRenderItems(items);
+    // 2) Collect renderables (NOT RenderItems)
+    std::vector<IRenderable *> renderables;
+    CollectRenderables(*scene, renderables);
+
+    // 3) Sort by layer / order
+    std::sort(renderables.begin(), renderables.end(),
+              [](const IRenderable *a, const IRenderable *b)
+              {
+                  if (a->GetLayer() != b->GetLayer())
+                      return a->GetLayer() < b->GetLayer();
+                  return a->GetOrderInLayer() < b->GetOrderInLayer();
+              });
+
+    // 4) Clear
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
     SDL_RenderClear(renderer_);
 
-    for (const auto &item : items)
-    {
-        DrawItem(*camera, item);
-    }
-
-    DrawColliders(*camera); // TODO: Remove this when colliders drawing is not needed
+    // 5) Render
+    for (IRenderable *r : renderables)
+        r->Render(rctx);
 
     SDL_RenderPresent(renderer_);
 }
 
-void RenderManager::CollectRenderItems(std::vector<RenderItem> &outItems)
+void RenderManager::CollectRenderables(Scene &scene, std::vector<IRenderable *> &out)
 {
-    Scene *scene = ctx_.scene->GetCurrentScene();
-    if (!scene)
-        return;
+    out.clear();
 
-    const auto &gameObjects = scene->GetGameObjects();
-    outItems.reserve(gameObjects.size());
-
-    for (GameObject *go : gameObjects)
+    for (GameObject *go : scene.GetGameObjects())
     {
         if (!go || !go->IsEnabled())
             continue;
 
-        if (auto *render = go->GetComponent<RenderComponent>())
+        // Collect RenderComponents
+        auto renderComps = go->GetComponents<RenderComponent>();
+        for (RenderComponent *c : renderComps)
         {
-            render->CollectRenderItems(outItems);
+            if (c)
+                out.push_back(c);
+        }
+
+        // Collect ColliderComponents (they also implement IRenderable)
+        auto colliderComps = go->GetComponents<ColliderComponent>();
+        for (ColliderComponent *c : colliderComps)
+        {
+            if (c)
+                out.push_back(c);
         }
     }
-}
-
-void RenderManager::SortRenderItems(std::vector<RenderItem> &items)
-{
-    std::sort(items.begin(), items.end(), [](const RenderItem &a, const RenderItem &b)
-              {
-        if (a.layer != b.layer)
-            return a.layer < b.layer;
-
-        if (a.orderInLayer != b.orderInLayer)
-            return a.orderInLayer < b.orderInLayer;
-
-        float za = a.worldMatrix[3].z;
-        float zb = b.worldMatrix[3].z;
-        return za < zb; });
-}
-
-void RenderManager::DrawItem(CameraComponent &camera, const RenderItem &item) // TODO; Refactor completely
-{
-    SpriteRenderComponent *sprite = static_cast<SpriteRenderComponent *>(item.geometry);
-    if (!sprite)
-        return;
-
-    SDL_Texture *texture = sprite->GetTexture();
-    if (!texture)
-        return;
-
-    const glm::mat4 &m = item.worldMatrix;
-
-    glm::vec3 worldPos = glm::vec3(m[3]);
-
-    glm::vec3 basisX = glm::vec3(m[0]);
-    glm::vec3 basisY = glm::vec3(m[1]);
-    float scaleX = glm::length(basisX);
-    float scaleY = glm::length(basisY);
-
-    float angleRad = std::atan2(m[0][1], m[0][0]); // θ
-    float angleDeg = -glm::degrees(angleRad);
-
-    TransformComponent *camTr = camera.GetOwner()->GetTransform();
-    glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
-
-    int winW = 0, winH = 0;
-    SDL_GetRendererOutputSize(renderer_, &winW, &winH);
-
-    glm::vec2 screenPos = WorldToScreen(worldPos, camPos, winW, winH, 1.0f);
-
-    SDL_Rect src;
-    if (sprite->HasSourceRect())
-    {
-        src = sprite->GetSourceRect();
-    }
-    else
-    {
-        int texW = 0, texH = 0;
-        SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
-        src = {0, 0, texW, texH};
-    }
-
-    // TODO: Move this to SpriteRenderComponent
-    glm::vec2 sizeWorld = sprite->GetSize() * glm::vec2(sprite->GetOwner()->GetTransform()->GetScale().x, sprite->GetOwner()->GetTransform()->GetScale().y);
-    float dstW = (sizeWorld.x > 0.0f) ? sizeWorld.x : src.w * scaleX;
-    float dstH = (sizeWorld.y > 0.0f) ? sizeWorld.y : src.h * scaleY;
-
-    SDL_FRect dst;
-    dst.w = dstW;
-    dst.h = dstH;
-
-    dst.x = screenPos.x - dst.w * 0.5f;
-    dst.y = screenPos.y - dst.h * 0.5f;
-
-    SDL_Color color = sprite->GetColor();
-    SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
-    SDL_SetTextureAlphaMod(texture, color.a);
-
-    SDL_RenderCopyExF(
-        renderer_,
-        texture,
-        &src,
-        &dst,
-        angleDeg,
-        nullptr, // center
-        SDL_FLIP_NONE);
-}
-
-void RenderManager::DrawColliders(CameraComponent &camera)
-{
-    Scene *scene = ctx_.scene->GetCurrentScene();
-    if (!scene)
-        return;
-
-    TransformComponent *camTr = camera.GetOwner()->GetTransform();
-    glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
-
-    int winW = 0, winH = 0;
-    SDL_GetRendererOutputSize(renderer_, &winW, &winH);
-
-    for (GameObject *go : scene->GetGameObjects())
-    {
-        if (!go || !go->IsEnabled() || !go->HasCollider())
-            continue;
-
-        TransformComponent *transform = go->GetTransform();
-        if (!transform)
-            continue;
-
-        auto colliders = go->GetComponents<ColliderComponent>();
-
-        for (ColliderComponent *collider : colliders)
-        {
-            if (!collider)
-                continue;
-
-            if (auto *sphere = dynamic_cast<SphereColliderComponent *>(collider))
-            {
-                DrawSphereCollider(*sphere, *transform, camera, camPos, winW, winH);
-            }
-        }
-    }
-}
-
-void RenderManager::DrawSphereCollider(const SphereColliderComponent &sphere, const TransformComponent &transform, CameraComponent &camera, const glm::vec3 &camPos, int winW, int winH)
-{
-    glm::vec3 worldPos = transform.GetWorldPosition();
-    glm::vec2 screenPos = WorldToScreen(worldPos, camPos, winW, winH, 1.0f);
-
-    // GetRadius() already applies scale, no need to multiply again
-    float worldRadius = sphere.GetRadius();
-
-    glm::vec3 radiusWorldPoint = worldPos + glm::vec3(worldRadius, 0.0f, 0.0f);
-    glm::vec2 radiusScreenPoint = WorldToScreen(radiusWorldPoint, camPos, winW, winH, 1.0f);
-    
-    int screenRadius = static_cast<int>(glm::abs(radiusScreenPoint.x - screenPos.x));
-    
-    if (screenRadius < 1)
-        screenRadius = 1;
-
-    if (sphere.IsTrigger())
-    {
-        SDL_SetRenderDrawColor(renderer_, 0, 255, 255, 255); // Cyan para triggers
-    }
-    else
-    {
-        SDL_SetRenderDrawColor(renderer_, 0, 255, 0, 255); // Verde para physics colliders
-    }
-
-    DrawCircle(static_cast<int>(screenPos.x), static_cast<int>(screenPos.y), screenRadius);
-    
-    SDL_SetRenderDrawColor(renderer_, 255, 0, 0, 255);
-    SDL_RenderDrawPoint(renderer_, static_cast<int>(screenPos.x), static_cast<int>(screenPos.y));
-}
-
-void RenderManager::DrawCircle(int centerX, int centerY, int radius)
-{
-    int x = 0;
-    int y = radius;
-    int d = 3 - 2 * radius;
-
-    auto drawCirclePoints = [&](int cx, int cy, int x, int y)
-    {
-        SDL_RenderDrawPoint(renderer_, cx + x, cy + y);
-        SDL_RenderDrawPoint(renderer_, cx - x, cy + y);
-        SDL_RenderDrawPoint(renderer_, cx + x, cy - y);
-        SDL_RenderDrawPoint(renderer_, cx - x, cy - y);
-        SDL_RenderDrawPoint(renderer_, cx + y, cy + x);
-        SDL_RenderDrawPoint(renderer_, cx - y, cy + x);
-        SDL_RenderDrawPoint(renderer_, cx + y, cy - x);
-        SDL_RenderDrawPoint(renderer_, cx - y, cy - x);
-    };
-
-    while (y >= x)
-    {
-        drawCirclePoints(centerX, centerY, x, y);
-        x++;
-
-        if (d > 0)
-        {
-            y--;
-            d = d + 4 * (x - y) + 10;
-        }
-        else
-        {
-            d = d + 4 * x + 6;
-        }
-    }
-}
-
-glm::vec2 RenderManager::WorldToScreen(const glm::vec3 &worldPos, const glm::vec3 &camPos, int winW, int winH, float zoom)
-{
-    float x = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
-    // Invert Y axis to make the +Y go up
-    float y = winH * 0.5f - (worldPos.y - camPos.y) * zoom;
-
-    return {x, y};
 }
