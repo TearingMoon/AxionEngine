@@ -118,13 +118,9 @@ bool PhysicsManager::CheckSphereSphereCollision(const SphereColliderComponent &s
     glm::vec3 posA = transformA.GetWorldPosition();
     glm::vec3 posB = transformB.GetWorldPosition();
 
+    // GetRadius() already applies scale, no need to multiply again
     float radiusA = sphereA.GetRadius();
     float radiusB = sphereB.GetRadius();
-
-    glm::vec3 scaleA = transformA.GetScale();
-    glm::vec3 scaleB = transformB.GetScale();
-    radiusA *= glm::max(scaleA.x, glm::max(scaleA.y, scaleA.z));
-    radiusB *= glm::max(scaleB.x, glm::max(scaleB.y, scaleB.z));
 
     float distance = glm::distance(posA, posB);
     float minDistance = radiusA + radiusB;
@@ -134,9 +130,11 @@ bool PhysicsManager::CheckSphereSphereCollision(const SphereColliderComponent &s
 
 void PhysicsManager::ResolveCollision(GameObject &objA, GameObject &objB, ColliderComponent &colliderA, ColliderComponent &colliderB, bool isNewCollision)
 {
+    bool isTrigger = colliderA.IsTrigger() || colliderB.IsTrigger();
+
     if (isNewCollision)
     {
-        if (colliderA.IsTrigger() || colliderB.IsTrigger())
+        if (isTrigger)
         {
             objA.OnTriggerEnter(objB);
             objB.OnTriggerEnter(objA);
@@ -147,12 +145,9 @@ void PhysicsManager::ResolveCollision(GameObject &objA, GameObject &objB, Collid
             objB.OnCollisionEnter(objA);
         }
     }
-    else
-    {
-        return;
-    }
 
-    if (colliderA.IsTrigger() || colliderB.IsTrigger())
+    // Skip physics resolution for triggers
+    if (isTrigger)
         return;
 
     // TODO: Add physics resolution here

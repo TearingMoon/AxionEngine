@@ -13,7 +13,7 @@ void MainMenuScene::OnSceneEnter()
     // First GameObject
     auto firstGO = CreateGameObject();
     firstGO->AddComponent<ScriptableTest>();
-    firstGO->GetTransform()->SetScale({1.0f, 1.0f, 1.0f});
+    firstGO->GetTransform()->SetScale({100.0f, 100.0f, 1.0f});
     auto firstGoCollider = firstGO->AddComponent<SphereColliderComponent>();
     firstGoCollider->SetRadius(1.0f);
     firstGoCollider->SetColliderType(COLLIDER_TYPE::PHYSICS);

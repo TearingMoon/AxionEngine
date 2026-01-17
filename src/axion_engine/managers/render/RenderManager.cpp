@@ -13,7 +13,7 @@ RenderManager::~RenderManager()
 void RenderManager::Update()
 {
 
-    if (!ctx_.render && !ctx_.scene)
+    if (!ctx_.render || !ctx_.scene)
         return;
 
     // Get renderer
@@ -202,9 +202,8 @@ void RenderManager::DrawSphereCollider(const SphereColliderComponent &sphere, co
     glm::vec3 worldPos = transform.GetWorldPosition();
     glm::vec2 screenPos = WorldToScreen(worldPos, camPos, winW, winH, 1.0f);
 
-    glm::vec3 scale = transform.GetScale();
-    float maxScale = glm::max(scale.x, glm::max(scale.y, scale.z));
-    float worldRadius = sphere.GetRadius() * maxScale;
+    // GetRadius() already applies scale, no need to multiply again
+    float worldRadius = sphere.GetRadius();
 
     glm::vec3 radiusWorldPoint = worldPos + glm::vec3(worldRadius, 0.0f, 0.0f);
     glm::vec2 radiusScreenPoint = WorldToScreen(radiusWorldPoint, camPos, winW, winH, 1.0f);
