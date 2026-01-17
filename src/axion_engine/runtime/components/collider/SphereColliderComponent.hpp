@@ -9,8 +9,6 @@ public:
     void SetRadius(float radius) { radius_ = radius; }
     float GetRadius() const { return radius_ * GetOwner()->GetTransform()->GetScale().x; }
 
-    
-
     void Render(const RenderContext &ctx) override
     {
         auto *transform = GetOwner()->GetTransform();

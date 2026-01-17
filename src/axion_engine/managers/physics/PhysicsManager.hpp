@@ -12,6 +12,7 @@
 
 #include "axion_engine/runtime/components/collider/ColliderComponent.hpp"
 #include "axion_engine/runtime/components/collider/SphereColliderComponent.hpp"
+#include "axion_engine/runtime/components/collider/SquareColliderComponent.hpp"
 
 #include "axion_utilities/vector_filter/PtrVectorFilter.hpp"
 
