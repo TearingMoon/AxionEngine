@@ -38,6 +38,12 @@ public:
         dirty_ = true;
     }
 
+    void Translate(float dx, float dy, float dz)
+    {
+        position_ += glm::vec3(dx, dy, dz);
+        dirty_ = true;
+    }
+
     void Rotate(float pitchDeg, float yawDeg, float rollDeg)
     {
         rotationEuler_.x += pitchDeg;

@@ -92,6 +92,7 @@
     "RELWITHDEBINFO",
     "Renderable",
     "Renderables",
+    "Rigidbody",
     "RPATH",
     "Scriptable",
     "TOUPPER",

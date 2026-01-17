@@ -15,6 +15,8 @@
 #include "axion_engine/runtime/components/collider/OBBColliderComponent.hpp"
 #include "axion_engine/runtime/components/collider/CircleColliderComponent.hpp"
 
+#include "axion_engine/runtime/components/rigid_body/RigidBody.hpp"
+
 #include "axion_utilities/vector_filter/PtrVectorFilter.hpp"
 
 #include "PhysicsData.hpp"
@@ -36,15 +38,15 @@ private:
 
     void FixedUpdate(float dt);
     void ProcessCollisions(std::vector<GameObject *> &gameObjectsWithCollider);
-
-    bool CheckCollision(ColliderComponent &colliderA, ColliderComponent &colliderB);
+    void ProcessForces(std::vector<GameObject *> &gameObjectsWithRigidBody);
 
     void ResolveCollision(
         GameObject &objA,
         GameObject &objB,
         ColliderComponent &colliderA,
         ColliderComponent &colliderB,
-        bool isNewCollision);
+        bool isNewCollision,
+        Manifold &manifold);
 
     void DetectCollisionEvents();
 };

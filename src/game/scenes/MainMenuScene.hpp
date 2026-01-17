@@ -11,6 +11,8 @@
 #include "axion_engine/runtime/components/renderer/SquareRenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/TextRenderComponent.hpp"
 
+#include "axion_engine/runtime/components/rigid_body/RigidBody.hpp"
+
 #include "game/scripts/ScriptableTest.hpp"
 #include "game/scripts/ScriptableDeleteTest.hpp"
 #include "game/scripts/ScriptableRotationTest.hpp"

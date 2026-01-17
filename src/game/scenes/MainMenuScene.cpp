@@ -42,6 +42,8 @@ void MainMenuScene::OnSceneEnter()
     auto textRenderer = textGO->AddComponent<TextRenderComponent>();
     textRenderer->SetText("Main Menu Scene");
     textRenderer->SetFontSize(32); // Changed from 300 to a more reasonable size
+    auto textRigidBody = textGO->AddComponent<RigidBody>();
+    textRigidBody->AddForce(50.0f, 0.0f, 0.0f);
 }
 
 void MainMenuScene::OnSceneUpdate()

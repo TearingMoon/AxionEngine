@@ -40,6 +40,8 @@ public:
     EngineContext &GetContext() { return ctx_; }
     CameraComponent *GetCurrentCamera() const { return currentCamera_; }
 
+    glm::vec3 Gravity = glm::vec3(0.0f, 9.81f, 0.0f);
+
 protected:
     virtual void OnSceneEnter() {}
     virtual void OnSceneExit() {}
