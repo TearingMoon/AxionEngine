@@ -1,22 +1,34 @@
 #include "PongScene.hpp"
+#include "axion_engine/managers/scene/SceneManager.hpp"
 #include <string>
+#include <SDL.h>
 
 void PongScene::OnSceneEnter()
 {
     printf("Entered Pong Scene - WASD to move, AI opponent!\n");
 
-    const float screenWidth = 800.0f;
-    const float screenHeight = 600.0f;
-    const float paddleWidth = 15.0f;
-    const float paddleHeight = 80.0f;
-    const float ballSize = 15.0f;
-    const float paddleOffset = 350.0f;
+    // Get actual window dimensions
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(GetContext().window->GetSDLWindow(), &windowWidth, &windowHeight);
+    
+    const float screenWidth = static_cast<float>(windowWidth);
+    const float screenHeight = static_cast<float>(windowHeight);
+    
+    // Scale proportions based on screen size
+    const float paddleWidth = screenWidth * 0.02f;  // 2% of screen width
+    const float paddleHeight = screenHeight * 0.15f; // 15% of screen height
+    const float ballSize = screenWidth * 0.02f;      // 2% of screen width
+    const float paddleOffset = screenWidth * 0.42f;  // 42% from center
 
+    // Store initial window dimensions
+    lastWindowWidth = windowWidth;
+    lastWindowHeight = windowHeight;
+    
     // Camera GameObject
     auto cameraGO = CreateGameObject();
-    auto cameraComponent = cameraGO->AddComponent<CameraComponent>();
-    cameraComponent->SetOrthographic(screenWidth, screenHeight, -1.0f, 1.0f);
-    SetCurrentCamera(cameraComponent);
+    camera = cameraGO->AddComponent<CameraComponent>();
+    camera->SetOrthographic(screenWidth, screenHeight, -1.0f, 1.0f);
+    SetCurrentCamera(camera);
 
     // Player 1 (Left paddle - Human)
     auto player1 = CreateGameObject();
@@ -29,7 +41,7 @@ void PongScene::OnSceneEnter()
     auto p1Script = player1->AddComponent<PlayerPaddle>();
     p1Script->SetBounds(-screenHeight / 2.0f + paddleHeight / 2.0f, 
                         screenHeight / 2.0f - paddleHeight / 2.0f);
-    p1Script->SetSpeed(400.0f);
+    p1Script->SetSpeed(screenHeight * 0.7f); // Speed relative to screen height
 
     // Player 2 (Right paddle - AI)
     auto player2 = CreateGameObject();
@@ -42,7 +54,7 @@ void PongScene::OnSceneEnter()
     auto p2Script = player2->AddComponent<AIPaddle>();
     p2Script->SetBounds(-screenHeight / 2.0f + paddleHeight / 2.0f, 
                         screenHeight / 2.0f - paddleHeight / 2.0f);
-    p2Script->SetSpeed(300.0f);
+    p2Script->SetSpeed(screenHeight * 0.5f); // AI slightly slower
 
     // Ball
     ballObject = CreateGameObject();
@@ -55,6 +67,7 @@ void PongScene::OnSceneEnter()
     auto ballScript = ballObject->AddComponent<Ball>();
     ballScript->SetBounds(-screenWidth / 2.0f, screenWidth / 2.0f, 
                           -screenHeight / 2.0f + ballSize, screenHeight / 2.0f - ballSize);
+    ballScript->SetInitialSpeed(screenWidth * 0.35f); // Speed relative to screen width
     
     // Set AI to follow ball
     p2Script->SetBallTransform(ballObject->GetTransform());
@@ -63,58 +76,96 @@ void PongScene::OnSceneEnter()
     ballScript->SetOnPlayer1Score([this]() { Player1Scored(); });
     ballScript->SetOnPlayer2Score([this]() { Player2Scored(); });
 
-    // Center line (decorative)
-    for (int i = 0; i < 15; i++)
+    // Center line (decorative) - adaptive spacing
+    int lineCount = static_cast<int>(screenHeight / 40.0f);
+    float lineSpacing = screenHeight / lineCount;
+    float lineHeight = lineSpacing * 0.65f;
+    for (int i = 0; i < lineCount; i++)
     {
         auto line = CreateGameObject();
-        line->GetTransform()->SetPosition({0.0f, -screenHeight / 2.0f + i * 45.0f, 0.0f});
-        line->GetTransform()->SetScale({5.0f, 30.0f, 1.0f});
+        line->GetTransform()->SetPosition({0.0f, -screenHeight / 2.0f + i * lineSpacing + lineSpacing / 2.0f, 0.0f});
+        line->GetTransform()->SetScale({screenWidth * 0.008f, lineHeight, 1.0f});
         auto lineRenderer = line->AddComponent<SquareRenderComponent>();
         lineRenderer->SetColor({100, 100, 100, 255});
     }
 
     // Player 1 Score Text
     player1ScoreText = CreateGameObject();
-    player1ScoreText->GetTransform()->SetPosition({-100.0f, 250.0f, 0.0f});
+    player1ScoreText->GetTransform()->SetPosition({-screenWidth * 0.15f, screenHeight * 0.38f, 0.0f});
     auto p1Text = player1ScoreText->AddComponent<TextRenderComponent>();
     p1Text->SetText("0");
-    p1Text->SetFontSize(64);
+    p1Text->SetFontSize(static_cast<int>(screenHeight * 0.12f)); // 12% of screen height
 
     // Player 2 Score Text
     player2ScoreText = CreateGameObject();
-    player2ScoreText->GetTransform()->SetPosition({100.0f, 250.0f, 0.0f});
+    player2ScoreText->GetTransform()->SetPosition({screenWidth * 0.1f, screenHeight * 0.38f, 0.0f});
     auto p2Text = player2ScoreText->AddComponent<TextRenderComponent>();
     p2Text->SetText("0");
-    p2Text->SetFontSize(64);
+    p2Text->SetFontSize(static_cast<int>(screenHeight * 0.12f));
 
     // Title Text
     auto titleText = CreateGameObject();
-    titleText->GetTransform()->SetPosition({-150.0f, 270.0f, 0.0f});
+    titleText->GetTransform()->SetPosition({-screenWidth * 0.18f, screenHeight * 0.43f, 0.0f});
     auto title = titleText->AddComponent<TextRenderComponent>();
     title->SetText("AXION PONG");
-    title->SetFontSize(24);
+    title->SetFontSize(static_cast<int>(screenHeight * 0.045f)); // 4.5% of screen height
 
     // Instructions
     auto instructionsText = CreateGameObject();
-    instructionsText->GetTransform()->SetPosition({-200.0f, -270.0f, 0.0f});
+    instructionsText->GetTransform()->SetPosition({-screenWidth * 0.30f, -screenHeight * 0.44f, 0.0f});
     auto instructions = instructionsText->AddComponent<TextRenderComponent>();
     instructions->SetText("W/S to move - First to 5 wins!");
-    instructions->SetFontSize(20);
+    instructions->SetFontSize(static_cast<int>(screenHeight * 0.035f)); // 3.5% of screen height
 }
 
 void PongScene::OnSceneUpdate()
 {
-    // Game logic is handled in the scripts
-    // Could add win condition check here
-    if (player1Score >= 5)
+    // Check for window resize and update camera
+    CheckWindowResize();
+    
+    // Check win condition
+    if (!gameOver && (player1Score >= 5 || player2Score >= 5))
     {
-        printf("Player 1 Wins!\n");
-        // Could reset or change scene
+        gameOver = true;
+        gameOverTimer = 0.0f;
+        
+        // Create winner text
+        int windowWidth, windowHeight;
+        SDL_GetWindowSize(GetContext().window->GetSDLWindow(), &windowWidth, &windowHeight);
+        
+        winnerText = CreateGameObject();
+        winnerText->GetTransform()->SetPosition({-static_cast<float>(windowWidth) * 0.20f, 0.0f, 0.0f});
+        auto winText = winnerText->AddComponent<TextRenderComponent>();
+        
+        if (player1Score >= 5)
+        {
+            printf("Player 1 Wins!\n");
+            winText->SetText("PLAYER WINS!");
+        }
+        else
+        {
+            printf("AI Wins!\n");
+            winText->SetText("AI WINS!");
+        }
+        winText->SetFontSize(static_cast<int>(windowHeight * 0.1f));
+        
+        // Pause the ball
+        if (ballObject)
+        {
+            auto ball = ballObject->GetComponent<Ball>();
+            if (ball) ball->SetInitialSpeed(0.0f);
+        }
     }
-    else if (player2Score >= 5)
+    
+    // Handle restart after delay
+    if (gameOver)
     {
-        printf("AI Wins!\n");
-        // Could reset or change scene
+        gameOverTimer += GetContext().time->GetDeltaTime();
+        if (gameOverTimer >= restartDelay)
+        {
+            printf("Restarting game...\n");
+            GetContext().scene->RequestChange("PongScene");
+        }
     }
 }
 
@@ -135,6 +186,28 @@ void PongScene::Player2Scored()
     player2Score++;
     UpdateScore();
     printf("AI scores! Score: %d - %d\n", player1Score, player2Score);
+}
+
+void PongScene::CheckWindowResize()
+{
+    int currentWidth, currentHeight;
+    SDL_GetWindowSize(GetContext().window->GetSDLWindow(), &currentWidth, &currentHeight);
+    
+    // If window size changed, update camera
+    if (currentWidth != lastWindowWidth || currentHeight != lastWindowHeight)
+    {
+        lastWindowWidth = currentWidth;
+        lastWindowHeight = currentHeight;
+        
+        if (camera)
+        {
+            camera->SetOrthographic(
+                static_cast<float>(currentWidth),
+                static_cast<float>(currentHeight),
+                -1.0f, 1.0f
+            );
+        }
+    }
 }
 
 void PongScene::UpdateScore()

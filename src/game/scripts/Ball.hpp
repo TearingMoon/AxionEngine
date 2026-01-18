@@ -65,7 +65,6 @@ public:
         velocity *= 1.05f;
         
         // Clamp max speed
-        float maxSpeed = 600.0f;
         if (std::abs(velocity.x) > maxSpeed) velocity.x = (velocity.x > 0) ? maxSpeed : -maxSpeed;
         if (std::abs(velocity.y) > maxSpeed) velocity.y = (velocity.y > 0) ? maxSpeed : -maxSpeed;
     }
@@ -89,6 +88,15 @@ public:
         maxX = maxX_;
         minY = minY_;
         maxY = maxY_;
+        
+        // Calculate max speed relative to screen size
+        float screenWidth = maxX - minX;
+        maxSpeed = screenWidth * 0.75f; // Max speed = 75% of screen width per second
+    }
+
+    void SetInitialSpeed(float speed) 
+    { 
+        initialSpeed = speed;
     }
 
     void SetOnPlayer1Score(std::function<void()> callback) { onPlayer1Score = callback; }
@@ -98,6 +106,7 @@ private:
     TransformComponent* transform = nullptr;
     glm::vec2 velocity = {200.0f, 0.0f};
     float initialSpeed = 250.0f;
+    float maxSpeed = 600.0f;
     float minX = -400.0f;
     float maxX = 400.0f;
     float minY = -300.0f;
