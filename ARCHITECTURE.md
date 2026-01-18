@@ -1,102 +1,67 @@
-# Arquitectura Modular del Motor
+# Modular Engine Architecture
 
-## Descripción
+## Description
 
-El proyecto ha sido reestructurado para soportar múltiples juegos usando el mismo motor como librerías compartidas.
+The project has been restructured to support multiple games using the same engine as shared libraries.
 
-## Estructura del Proyecto
+## Components
 
-```
-GameEngine/
-├── src/
-│   ├── axion_engine/       # Motor de juego (Librería estática)
-│   │   ├── core/
-│   │   ├── managers/
-│   │   ├── platform/
-│   │   └── runtime/
-│   │
-│   ├── axion_utilities/    # Utilidades compartidas (Librería de solo headers)
-│   │   ├── path/
-│   │   └── vector_filter/
-│   │
-│   ├── game/               # Juego 1 (Ejecutable)
-│   │   ├── Main.cpp
-│   │   ├── assets/
-│   │   ├── scenes/
-│   │   └── scripts/
-│   │
-│   └── game_2/             # Juego 2 (Ejecutable)
-│       ├── Main.cpp
-│       ├── assets/
-│       └── scenes/
-│
-└── build/
-    └── windows-debug/
-        └── bin/
-            ├── Game.exe        # Ejecutable del juego 1
-            ├── Game2.exe       # Ejecutable del juego 2
-            ├── assets/         # Assets del juego 1
-            └── assets_game2/   # Assets del juego 2
-```
-
-## Componentes
-
-### AxionEngine (Librería Estática)
-- Contiene todo el código del motor de juego
-- Se compila una vez y puede ser linkeada por múltiples juegos
-- Incluye:
-  - Sistema de escenas y GameObjects
+### AxionEngine (Static Library)
+- Contains all game engine code
+- Compiled once and can be linked by multiple games
+- Includes:
+  - Scene system and GameObjects
   - Managers (Render, Physics, Input, etc.)
-  - Componentes (Colliders, Cameras, Renderers, etc.)
-  - Integración con SDL2
+  - Components (Colliders, Cameras, Renderers, etc.)
+  - SDL2 integration
 
-### AxionUtilities (Librería de Headers)
-- Utilidades compartidas que no requieren compilación separada
-- Incluye helpers para manejo de rutas y filtrado de vectores
+### AxionUtilities (Header-only Library)
+- Shared utilities that don't require separate compilation
+- Includes helpers for path handling and vector filtering
 
-### Game y Game2 (Ejecutables)
-- Cada juego es un ejecutable independiente
-- Ambos linkean contra AxionEngine y AxionUtilities
-- Cada juego puede tener sus propios:
+### Game and Game2 (Executables)
+- Each game is an independent executable
+- Both link against AxionEngine and AxionUtilities
+- Each game can have its own:
   - Assets
-  - Escenas
-  - Scripts personalizados
+  - Scenes
+  - Custom scripts
 
-## Compilación
+## Building
 
 ### Windows (vcpkg)
 
 ```bash
-# Configurar
+# Configure
 cmake --preset windows-vcpkg-debug
 
-# Compilar
+# Build
 cmake --build build/windows-debug --config Debug
 
-# Los ejecutables estarán en:
-# build/windows-debug/bin/Game.exe
-# build/windows-debug/bin/Game2.exe
+# Executables will be in:
+# build/windows-debug/bin/Game/Game.exe
+# build/windows-debug/bin/Game2/Game2.exe
 ```
 
 ### Linux
 
 ```bash
-# Configurar
+# Configure
 cmake --preset linux-debug
 
-# Compilar
+# Build
 cmake --build build/linux-debug
 
-# Los ejecutables estarán en:
-# build/linux-debug/bin/Game
-# build/linux-debug/bin/Game2
+# Executables will be in:
+# build/linux-debug/bin/Game/Game
+# build/linux-debug/bin/Game2/Game2
 ```
 
-## Crear un Nuevo Juego
+## Creating a New Game
 
-Para crear un tercer juego (game_3), sigue estos pasos:
+To create a third game (game_3), follow these steps:
 
-1. **Crear la estructura de carpetas:**
+1. **Create the folder structure:**
    ```
    src/game_3/
    ├── Main.cpp
@@ -104,7 +69,7 @@ Para crear un tercer juego (game_3), sigue estos pasos:
    └── scenes/
    ```
 
-2. **Crear Main.cpp:**
+2. **Create Main.cpp:**
    ```cpp
    #include <SDL.h>
    #undef main
@@ -135,8 +100,8 @@ Para crear un tercer juego (game_3), sigue estos pasos:
    }
    ```
 
-3. **Agregar al CMakeLists.txt:**
-   Después de la sección de Game2, agrega:
+3. **Add to CMakeLists.txt:**
+   After the Game2 section, add:
    ```cmake
    # ======================================
    # Game 3 Executable
@@ -164,13 +129,13 @@ Para crear un tercer juego (game_3), sigue estos pasos:
        endif()
 
        set_target_properties(Game3 PROPERTIES
-           RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-           RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin
-           RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin
+           RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Game3
+           RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin/Game3
+           RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Game3
        )
 
        set(GAME3_ASSETS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/game_3/assets)
-       set(GAME3_ASSETS_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/assets_game3)
+       set(GAME3_ASSETS_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/Game3/assets)
        add_custom_target(copy_game3_assets ALL
            COMMAND ${CMAKE_COMMAND} -E copy_directory
                    ${GAME3_ASSETS_SOURCE_DIR}
@@ -181,22 +146,22 @@ Para crear un tercer juego (game_3), sigue estos pasos:
    endif()
    ```
 
-4. **Reconfigurar y compilar:**
+4. **Reconfigure and build:**
    ```bash
    cmake --preset windows-vcpkg-debug
    cmake --build build/windows-debug --config Debug
    ```
 
-## Ventajas de Esta Arquitectura
+## Advantages of This Architecture
 
-1. **Reutilización de código:** El motor se compila una vez y se usa en múltiples juegos
-2. **Desarrollo paralelo:** Diferentes equipos pueden trabajar en diferentes juegos simultáneamente
-3. **Compilación más rápida:** Cambios en un juego no requieren recompilar otros
-4. **Separación clara:** Cada juego tiene sus propios assets y código específico
-5. **Fácil extensión:** Agregar nuevos juegos es straightforward siguiendo la plantilla
+1. **Code reusability:** The engine is compiled once and used in multiple games
+2. **Parallel development:** Different teams can work on different games simultaneously
+3. **Faster compilation:** Changes in one game don't require recompiling others
+4. **Clear separation:** Each game has its own assets and specific code
+5. **Easy extension:** Adding new games is straightforward following the template
 
-## Notas Importantes
+## Important Notes
 
-- **Windows**: Es necesario incluir `#undef main` después de `#include <SDL.h>` en Main.cpp
-- **Assets**: Cada juego tiene su propia carpeta de assets en el directorio de salida
-- **Dependencias**: Todos los juegos comparten las mismas versiones de SDL2 y otras dependencias
+- **Windows**: It's necessary to include `#undef main` after `#include <SDL.h>` in Main.cpp
+- **Assets**: Each game has its own assets folder in the output directory
+- **Dependencies**: All games share the same versions of SDL2 and other dependencies
