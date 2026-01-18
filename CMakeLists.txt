@@ -156,6 +156,51 @@ if(GAME2_SOURCES)
 endif()
 
 # ======================================
+# Game Debug Executable
+# ======================================
+file(GLOB_RECURSE GAME_DEBUG_SOURCES CONFIGURE_DEPENDS 
+    "${CMAKE_SOURCE_DIR}/src/game_debug/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/game_debug/**/*.cpp"
+)
+if(GAME_DEBUG_SOURCES)
+    add_executable(GameDebug ${GAME_DEBUG_SOURCES})
+
+    target_include_directories(GameDebug PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+    )
+
+    target_link_libraries(GameDebug PRIVATE
+        AxionEngine
+        AxionUtilities
+    )
+
+    # Windows requires explicit SDL2main linkage
+    if(WIN32)
+        target_link_libraries(GameDebug PRIVATE
+            SDL2::SDL2main
+        )
+    endif()
+
+    set_target_properties(GameDebug PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/GameDebug
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin/GameDebug
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/GameDebug
+    )
+
+    # Copy assets for Game Debug
+    set(GAME_DEBUG_ASSETS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/game_debug/assets)
+    set(GAME_DEBUG_ASSETS_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/GameDebug/assets)
+    add_custom_target(copy_gamedebug_assets ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${GAME_DEBUG_ASSETS_SOURCE_DIR}
+                ${GAME_DEBUG_ASSETS_OUTPUT_DIR}
+        COMMENT "Copying GameDebug assets to output directory"
+    )
+    add_dependencies(GameDebug copy_gamedebug_assets)
+endif()
+
+
+# ======================================
 # Game Launcher Executable
 # ======================================
 file(GLOB_RECURSE LAUNCHER_SOURCES CONFIGURE_DEPENDS 

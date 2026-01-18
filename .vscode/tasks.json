@@ -39,6 +39,14 @@
       "dependsOn": ["Configure (Windows)"]
     },
     {
+      "label": "Build Game Debug",
+      "type": "shell",
+      "command": "cmake --build build/windows-debug --config Debug --target GameDebug",
+      "problemMatcher": ["$msCompile"],
+      "group": "build",
+      "dependsOn": ["Configure (Windows)"]
+    },
+    {
       "label": "Build Launcher",
       "type": "shell",
       "command": "cmake --build build/windows-debug --config Debug --target GameLauncher",

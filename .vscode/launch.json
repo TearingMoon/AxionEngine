@@ -38,6 +38,18 @@
       "preLaunchTask": "Build Game 2"
     },
     {
+      "name": "Launch Game Debug (Windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/windows-debug/bin/GameDebug/GameDebug.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/windows-debug/bin/GameDebug",
+      "environment": [],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build Game Debug"
+    },
+    {
       "name": "Launch Game 1 (Linux)",
       "type": "cppdbg",
       "request": "launch",
