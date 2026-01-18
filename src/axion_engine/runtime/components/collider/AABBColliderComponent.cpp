@@ -124,5 +124,52 @@ bool AABBColliderComponent::IntersectsWithOBB(const OBBColliderComponent &other,
 
 void AABBColliderComponent::Render(const RenderContext &ctx)
 {
-    // TODO: Implement AABB rendering
+    auto *tr = GetOwner()->GetTransform();
+    if (!tr || !ctx.camera || !ctx.renderer)
+        return;
+
+    // World center
+    const glm::vec3 center3 = tr->GetWorldPosition();
+    const glm::vec2 center(center3.x, center3.y);
+
+    const glm::vec3 size3 = GetSize();
+    const glm::vec2 half(size3.x * 0.5f, size3.y * 0.5f);
+
+    // Compute 4 corners in world space
+    const glm::vec2 w0(center.x - half.x, center.y - half.y);
+    const glm::vec2 w1(center.x + half.x, center.y - half.y);
+    const glm::vec2 w2(center.x + half.x, center.y + half.y);
+    const glm::vec2 w3(center.x - half.x, center.y + half.y);
+
+    // Camera to screen transform
+    const glm::vec3 camWorldPos3 = ctx.camera->GetOwner()->GetTransform()->GetWorldPosition();
+    const glm::vec2 camWorldPos(camWorldPos3.x, camWorldPos3.y);
+
+    auto WorldToScreen2D = [&](const glm::vec2 &p) -> glm::vec2
+    {
+        const float x = (p.x - camWorldPos.x) * 1.0f + ctx.windowWidth * 0.5f;
+        const float y = (p.y - camWorldPos.y) * 1.0f + ctx.windowHeight * 0.5f;
+        return {x, y};
+    };
+
+    const glm::vec2 s0 = WorldToScreen2D(w0);
+    const glm::vec2 s1 = WorldToScreen2D(w1);
+    const glm::vec2 s2 = WorldToScreen2D(w2);
+    const glm::vec2 s3 = WorldToScreen2D(w3);
+
+    // Set color based on collider type
+    if (IsTrigger())
+        SDL_SetRenderDrawColor(ctx.renderer, 0, 255, 255, 255); // cyan
+    else
+        SDL_SetRenderDrawColor(ctx.renderer, 0, 255, 0, 255); // green
+
+    SDL_RenderDrawLine(ctx.renderer, (int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y);
+    SDL_RenderDrawLine(ctx.renderer, (int)s1.x, (int)s1.y, (int)s2.x, (int)s2.y);
+    SDL_RenderDrawLine(ctx.renderer, (int)s2.x, (int)s2.y, (int)s3.x, (int)s3.y);
+    SDL_RenderDrawLine(ctx.renderer, (int)s3.x, (int)s3.y, (int)s0.x, (int)s0.y);
+
+    // Draw center point
+    SDL_SetRenderDrawColor(ctx.renderer, 255, 0, 0, 255);
+    const glm::vec2 sc = WorldToScreen2D(center);
+    SDL_RenderDrawPoint(ctx.renderer, (int)sc.x, (int)sc.y);
 }

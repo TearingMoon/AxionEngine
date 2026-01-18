@@ -62,10 +62,11 @@ void RenderManager::Update()
 
     // 6) Render
     for (IRenderable *r : renderables)
+    {
         if (!debugMode_ && r->GetLayer() == RenderLayer::Debug)
             continue;
-        else
-            r->Render(rctx);
+        r->Render(rctx);
+    }
     SDL_RenderPresent(renderer_);
 }
 

@@ -139,20 +139,16 @@ void OBBColliderComponent::Render(const RenderContext &ctx)
     if (!tr || !ctx.camera || !ctx.renderer)
         return;
 
-    // World center (2D)
     const glm::vec3 center3 = tr->GetWorldPosition();
     const glm::vec2 center(center3.x, center3.y);
 
-    // Half extents (already scaled)
     const glm::vec3 size3 = GetSize();
     const glm::vec2 half(size3.x * 0.5f, size3.y * 0.5f);
 
-    // OBB axes from owner's rotation (Z degrees)
     glm::vec2 ax, ay;
     GetAxes2D(ax, ay);
 
     // Compute 4 corners in world space
-    // Corner order: (-x,-y), (+x,-y), (+x,+y), (-x,+y)
     const glm::vec2 w0 = center + ax * (-half.x) + ay * (-half.y);
     const glm::vec2 w1 = center + ax * (half.x) + ay * (-half.y);
     const glm::vec2 w2 = center + ax * (half.x) + ay * (half.y);
