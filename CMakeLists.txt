@@ -154,3 +154,25 @@ if(GAME2_SOURCES)
     )
     add_dependencies(Game2 copy_game2_assets)
 endif()
+
+# ======================================
+# Game Launcher Executable
+# ======================================
+file(GLOB_RECURSE LAUNCHER_SOURCES CONFIGURE_DEPENDS 
+    "${CMAKE_SOURCE_DIR}/src/game_launcher/*.cpp"
+)
+if(LAUNCHER_SOURCES)
+    add_executable(GameLauncher ${LAUNCHER_SOURCES})
+
+    target_include_directories(GameLauncher PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+    )
+
+    # Launcher doesn't need engine libraries, just standard library
+    
+    set_target_properties(GameLauncher PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin
+    )
+endif()

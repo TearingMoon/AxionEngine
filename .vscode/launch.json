@@ -2,6 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch Game Launcher (Windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/windows-debug/bin/GameLauncher.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/windows-debug/bin",
+      "environment": [],
+      "console": "externalTerminal",
+      "preLaunchTask": "Build Launcher"
+    },
+    {
       "name": "Launch Game 1 (Windows)",
       "type": "cppvsdbg",
       "request": "launch",
