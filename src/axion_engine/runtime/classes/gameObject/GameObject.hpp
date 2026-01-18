@@ -60,7 +60,7 @@ private:
 
     EngineContext &ctx_();
 
-    bool isEnabled_ = false;
+    bool isEnabled_ = true;
     bool isDestroyed_ = false;
     bool isFirsUpdate_ = true;
 

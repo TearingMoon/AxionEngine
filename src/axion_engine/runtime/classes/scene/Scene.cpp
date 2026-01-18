@@ -42,7 +42,10 @@ void Scene::EmitEnabledEvent()
 {
     for (auto &object : objects_)
     {
-        object->Enable();
+        if (object->IsEnabled())
+        {
+            object->Enable();
+        }
     }
 }
 

@@ -21,18 +21,15 @@ public:
 
         glm::vec3 pos = transform->GetPosition();
 
-        // W key - move up
         if (context.input->IsKeyDown(SDL_SCANCODE_W))
         {
             pos.y -= speed * context.time->GetDeltaTime();
         }
-        // S key - move down
         if (context.input->IsKeyDown(SDL_SCANCODE_S))
         {
             pos.y += speed * context.time->GetDeltaTime();
         }
 
-        // Clamp position to screen bounds
         if (pos.y > maxY)
             pos.y = maxY;
         if (pos.y < minY)

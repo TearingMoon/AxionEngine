@@ -24,20 +24,15 @@ private:
     void UpdateScore();
     void Player1Scored();
     void Player2Scored();
-    void CheckWindowResize();
     void ResetGame();
 
     GameObject* player1ScoreText = nullptr;
     GameObject* player2ScoreText = nullptr;
     GameObject* ballObject = nullptr;
     GameObject* winnerText = nullptr;
-    CameraComponent* camera = nullptr;
     
     int player1Score = 0;
     int player2Score = 0;
-    
-    int lastWindowWidth = 0;
-    int lastWindowHeight = 0;
     
     bool gameOver = false;
     float gameOverTimer = 0.0f;

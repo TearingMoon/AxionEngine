@@ -23,14 +23,12 @@ public:
         pos.x += velocity.x * context.time->GetDeltaTime();
         pos.y += velocity.y * context.time->GetDeltaTime();
 
-        // Check top/bottom bounds
         if (pos.y > maxY || pos.y < minY)
         {
             velocity.y = -velocity.y;
             pos.y = glm::clamp(pos.y, minY, maxY);
         }
 
-        // Check left/right bounds (scoring)
         if (pos.x > maxX)
         {
             if (onPlayer1Score) onPlayer1Score();
@@ -49,10 +47,8 @@ public:
 
     void OnCollisionEnter(GameObject &other) override
     {
-        // Reverse X velocity on paddle collision
         velocity.x = -velocity.x;
         
-        // Add some variation based on hit position
         if (transform && other.GetTransform())
         {
             float ballY = transform->GetPosition().y;
@@ -61,10 +57,8 @@ public:
             velocity.y += diff * 2.0f;
         }
 
-        // Increase speed slightly
         velocity *= 1.05f;
         
-        // Clamp max speed
         if (std::abs(velocity.x) > maxSpeed) velocity.x = (velocity.x > 0) ? maxSpeed : -maxSpeed;
         if (std::abs(velocity.y) > maxSpeed) velocity.y = (velocity.y > 0) ? maxSpeed : -maxSpeed;
     }
@@ -75,7 +69,6 @@ public:
         
         transform->SetPosition({0.0f, 0.0f, 0.0f});
         
-        // Random direction
         float dirX = (rand() % 2 == 0) ? 1.0f : -1.0f;
         float dirY = ((rand() % 100) / 100.0f - 0.5f) * 2.0f;
         
@@ -89,14 +82,18 @@ public:
         minY = minY_;
         maxY = maxY_;
         
-        // Calculate max speed relative to screen size
         float screenWidth = maxX - minX;
-        maxSpeed = screenWidth * 0.75f; // Max speed = 75% of screen width per second
+        maxSpeed = screenWidth * 0.75f;
     }
 
     void SetInitialSpeed(float speed) 
     { 
         initialSpeed = speed;
+    }
+
+    void StopBall()
+    {
+        velocity = glm::vec2(0.0f, 0.0f);
     }
 
     void SetOnPlayer1Score(std::function<void()> callback) { onPlayer1Score = callback; }

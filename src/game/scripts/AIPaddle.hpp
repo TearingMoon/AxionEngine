@@ -19,7 +19,6 @@ public:
         glm::vec3 paddlePos = transform->GetPosition();
         glm::vec3 ballPos = ballTransform->GetPosition();
 
-        // Simple AI: follow ball's Y position
         float targetY = ballPos.y;
         float diff = targetY - paddlePos.y;
 
@@ -29,7 +28,6 @@ public:
             paddlePos.y += moveDir * speed * context.time->GetDeltaTime();
         }
 
-        // Clamp position to screen bounds
         if (paddlePos.y > maxY) paddlePos.y = maxY;
         if (paddlePos.y < minY) paddlePos.y = minY;
 
