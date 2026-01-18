@@ -125,15 +125,23 @@ void PhysicsManager::ResolveCollision(GameObject &objA, GameObject &objB, Collid
 
     if (isNewCollision)
     {
+        // Check if objects are destroyed before calling callbacks
+        if (objA.IsDestroyed() || objB.IsDestroyed())
+            return;
+            
         if (isTrigger)
         {
             objA.OnTriggerEnter(objB);
-            objB.OnTriggerEnter(objA);
+            // Check again after first callback as it might destroy objects
+            if (!objA.IsDestroyed() && !objB.IsDestroyed())
+                objB.OnTriggerEnter(objA);
         }
         else
         {
             objA.OnCollisionEnter(objB);
-            objB.OnCollisionEnter(objA);
+            // Check again after first callback as it might destroy objects
+            if (!objA.IsDestroyed() && !objB.IsDestroyed())
+                objB.OnCollisionEnter(objA);
         }
     }
 
@@ -232,18 +240,20 @@ void PhysicsManager::DetectCollisionEvents()
             auto *objA = colliderA->GetGameObject();
             auto *objB = colliderB->GetGameObject();
 
-            if (objA && objB)
+            if (objA && objB && !objA->IsDestroyed() && !objB->IsDestroyed())
             {
                 if (colliderA->IsTrigger() || colliderB->IsTrigger())
                 {
                     objA->OnTriggerExit(*objB);
-                    objB->OnTriggerExit(*objA);
+                    if (!objA->IsDestroyed() && !objB->IsDestroyed())
+                        objB->OnTriggerExit(*objA);
                     continue;
                 }
                 else
                 {
                     objA->OnCollisionExit(*objB);
-                    objB->OnCollisionExit(*objA);
+                    if (!objA->IsDestroyed() && !objB->IsDestroyed())
+                        objB->OnCollisionExit(*objA);
                 }
             }
         }

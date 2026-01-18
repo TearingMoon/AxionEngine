@@ -31,7 +31,7 @@ public:
 
         float zoom = 1.0f;
         float screenX = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
-        float screenY = (worldPos.y - camPos.y) * zoom + winH * 0.5f;
+        float screenY = winH * 0.5f - (worldPos.y - camPos.y) * zoom; // Invert Y axis for SDL
 
         float screenRadius = radius_ * scale * zoom;
 

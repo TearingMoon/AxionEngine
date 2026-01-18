@@ -4,7 +4,7 @@
 
 #include "axion_engine/core/Engine.hpp"
 
-#include "game_2/scenes/Game2Scene.hpp"
+#include "game_2/scenes/TwinStickScene.hpp"
 
 int main(int argc, char *args[])
 {
@@ -20,8 +20,8 @@ int main(int argc, char *args[])
     Engine engine(engineConfig, windowConfig);
 
     // Define and register scenes here
-    engine.GetSceneManager()->RegisterScene<Game2Scene>("Game2Scene");
-    engine.GetSceneManager()->RequestChange("Game2Scene");
+    engine.GetSceneManager()->RegisterScene<TwinStickScene>("TwinStickScene");
+    engine.GetSceneManager()->RequestChange("TwinStickScene");
 
     engine.Run();
 

@@ -118,9 +118,7 @@ public:
         const float sx = worldScale.x;
         const float sy = worldScale.y;
 
-        // World -> screen (camera centered). If your Y-axis is up in world,
-        // you likely want to invert Y for screen. Your previous code didn't invert;
-        // I'll keep it consistent with your snippet (no inversion).
+        // World -> screen (camera centered)
         const float zoom = 1.0f;
         const float screenX = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
         const float screenY = (worldPos.y - camPos.y) * zoom + winH * 0.5f;

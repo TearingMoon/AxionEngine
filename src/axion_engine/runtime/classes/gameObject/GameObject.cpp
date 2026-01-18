@@ -57,6 +57,9 @@ void GameObject::Mounted()
 
 void GameObject::Destroy()
 {
+    if (isDestroyed_)
+        return; // Already destroyed, avoid double destruction
+        
     isDestroyed_ = true;
     for (auto &component : components_)
     {
@@ -88,6 +91,9 @@ void GameObject::Disable()
 
 void GameObject::OnCollisionEnter(GameObject &other)
 {
+    if (isDestroyed_ || other.IsDestroyed())
+        return;
+        
     for (auto &component : components_)
     {
         if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
@@ -99,6 +105,9 @@ void GameObject::OnCollisionEnter(GameObject &other)
 
 void GameObject::OnCollisionExit(GameObject &other)
 {
+    if (isDestroyed_ || other.IsDestroyed())
+        return;
+        
     for (auto &component : components_)
     {
         if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
@@ -110,6 +119,9 @@ void GameObject::OnCollisionExit(GameObject &other)
 
 void GameObject::OnTriggerEnter(GameObject &other)
 {
+    if (isDestroyed_ || other.IsDestroyed())
+        return;
+        
     for (auto &component : components_)
     {
         if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
@@ -121,6 +133,9 @@ void GameObject::OnTriggerEnter(GameObject &other)
 
 void GameObject::OnTriggerExit(GameObject &other)
 {
+    if (isDestroyed_ || other.IsDestroyed())
+        return;
+        
     for (auto &component : components_)
     {
         if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))

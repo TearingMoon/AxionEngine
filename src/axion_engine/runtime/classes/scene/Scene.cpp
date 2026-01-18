@@ -7,7 +7,11 @@ void Scene::Tick()
     // Update all game objects
     for (auto &object : objects_)
     {
-        object->Tick();
+        // Skip destroyed objects
+        if (object && !object->IsDestroyed())
+        {
+            object->Tick();
+        }
     }
 }
 
@@ -34,7 +38,10 @@ void Scene::EmitMountedEvent()
 {
     for (auto &object : objects_)
     {
-        object->Mounted();
+        if (object && !object->IsDestroyed())
+        {
+            object->Mounted();
+        }
     }
 }
 
@@ -42,7 +49,7 @@ void Scene::EmitEnabledEvent()
 {
     for (auto &object : objects_)
     {
-        if (object->IsEnabled())
+        if (object && !object->IsDestroyed() && object->IsEnabled())
         {
             object->Enable();
         }
@@ -61,7 +68,10 @@ void Scene::EmitDisabledEvent()
 {
     for (auto &object : objects_)
     {
-        object->Disable();
+        if (object && !object->IsDestroyed())
+        {
+            object->Disable();
+        }
     }
 }
 
@@ -69,7 +79,11 @@ void Scene::EmitFixedUpdateEvent()
 {
     for (auto &object : objects_)
     {
-        object->FixedUpdate();
+        // Skip destroyed objects
+        if (object && !object->IsDestroyed())
+        {
+            object->FixedUpdate();
+        }
     }
 }
 
@@ -77,7 +91,13 @@ void Scene::ProcessDestroyQueue()
 {
     for (auto *obj : destroyQueue_)
     {
-        obj->Destroy();
+        // Only call Destroy if not already destroyed
+        if (obj && !obj->IsDestroyed())
+        {
+            obj->Destroy();
+        }
+        
+        // Remove from objects list
         auto it = std::remove_if(objects_.begin(), objects_.end(),
                                  [obj](const std::unique_ptr<GameObject> &ownedObj)
                                  { return ownedObj.get() == obj; });
