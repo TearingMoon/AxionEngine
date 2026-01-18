@@ -6,20 +6,43 @@
 
 float CircleColliderComponent::GetRadius() const
 {
-    const glm::vec3 s = GetOwner()->GetTransform()->GetScale();
+    auto *owner = GetOwner();
+    if (!owner) return radius_;
+    
+    auto *transform = owner->GetTransform();
+    if (!transform) return radius_;
+    
+    const glm::vec3 s = transform->GetScale();
     const float uniform = std::max(s.x, s.y);
     return radius_ * uniform;
 }
 
 bool CircleColliderComponent::Intersects(const ColliderComponent &other, Manifold &out) const
 {
+    // Check if this collider's owner is valid
+    auto *myOwner = GetOwner();
+    if (!myOwner || myOwner->IsDestroyed())
+        return false;
+    
     return other.IntersectsWithCircle(*this, out);
 }
 
 bool CircleColliderComponent::IntersectsWithCircle(const CircleColliderComponent &other, Manifold &out) const
 {
-    const glm::vec3 a3 = GetOwner()->GetTransform()->GetWorldPosition();
-    const glm::vec3 b3 = other.GetOwner()->GetTransform()->GetWorldPosition();
+    auto *ownerA = GetOwner();
+    auto *ownerB = other.GetOwner();
+    
+    if (!ownerA || !ownerB || ownerA->IsDestroyed() || ownerB->IsDestroyed())
+        return false;
+    
+    auto *transformA = ownerA->GetTransform();
+    auto *transformB = ownerB->GetTransform();
+    
+    if (!transformA || !transformB)
+        return false;
+    
+    const glm::vec3 a3 = transformA->GetWorldPosition();
+    const glm::vec3 b3 = transformB->GetWorldPosition();
 
     const glm::vec2 a(a3.x, a3.y);
     const glm::vec2 b(b3.x, b3.y);
@@ -60,12 +83,21 @@ bool CircleColliderComponent::IntersectsWithOBB(const OBBColliderComponent &othe
 
 void CircleColliderComponent::Render(const RenderContext &ctx)
 {
-    auto *transform = GetOwner()->GetTransform();
+    auto *owner = GetOwner();
+    if (!owner || owner->IsDestroyed()) return;
+    
+    auto *transform = owner->GetTransform();
     if (!transform || !ctx.camera || !ctx.renderer)
         return;
 
+    auto *camOwner = ctx.camera->GetOwner();
+    if (!camOwner || camOwner->IsDestroyed()) return;
+    
+    auto *camTransform = camOwner->GetTransform();
+    if (!camTransform) return;
+
     const glm::vec3 worldPos = transform->GetWorldPosition();
-    const glm::vec3 camWorldPos = ctx.camera->GetOwner()->GetTransform()->GetWorldPosition();
+    const glm::vec3 camWorldPos = camTransform->GetWorldPosition();
 
     auto WorldToScreen2D = [&](const glm::vec3 &p) -> glm::vec2
     {

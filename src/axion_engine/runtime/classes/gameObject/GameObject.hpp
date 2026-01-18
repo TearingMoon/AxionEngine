@@ -23,6 +23,7 @@ public:
 
     void Mounted();
     void Destroy();
+    void OnDestroy(); // Called by Scene when actually destroying the object
 
     void Enable();
     void Disable();
@@ -47,15 +48,25 @@ public:
 
     bool IsEnabled() { return isEnabled_; }
     bool IsDestroyed() { return isDestroyed_; }
+    
+    // Unique ID for this GameObject
+    size_t GetId() const { return id_; }
 
     bool HasCollider() const;
 
-    TransformComponent *GetTransform() const { return transform_; }
+    TransformComponent *GetTransform() const 
+    { 
+        if (isDestroyed_) return nullptr;
+        return transform_; 
+    }
 
 private:
     Scene &parentScene_;
     GameObject *parent_ = nullptr;
     TransformComponent *transform_;
+    
+    size_t id_; // Unique identifier
+    static size_t nextId_; // Static counter for IDs
 
     EngineContext &ctx_();
 

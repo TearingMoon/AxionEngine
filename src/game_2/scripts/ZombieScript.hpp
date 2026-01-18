@@ -3,10 +3,10 @@
 #include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
 #include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
 #include "axion_engine/runtime/classes/scene/Scene.hpp"
+#include "BulletScript.hpp"
 #include <glm/glm.hpp>
 
 // Forward declarations
-class BulletScript;
 class PlayerScript;
 
 class ZombieScript : public ScriptableComponent
@@ -21,17 +21,26 @@ public:
 
     void Update(EngineContext &context) override
     {
+        auto *owner = GetOwner();
+        if (!owner || owner->IsDestroyed()) return;
+        
+        auto *tr = owner->GetTransform();
+        if (!tr) return;
+        
         // Find player each frame instead of storing pointer
         GameObject *player = FindPlayer(context);
         if (!player)
             return;
 
         float deltaTime = context.time->GetDeltaTime();
-        auto tr = GetOwner()->GetTransform();
         
         // Get direction to player
         glm::vec3 zombiePos = tr->GetPosition();
-        glm::vec3 playerPos = player->GetTransform()->GetPosition();
+        
+        auto *playerTr = player->GetTransform();
+        if (!playerTr) return;
+        
+        glm::vec3 playerPos = playerTr->GetPosition();
         glm::vec2 direction(playerPos.x - zombiePos.x, playerPos.y - zombiePos.y);
 
         // Move towards player
@@ -53,18 +62,27 @@ public:
         if (other.IsDestroyed())
             return;
             
-        // Check if hit by bullet - simple collision detection
-        // Assume any trigger collision damages the zombie
-        TakeDamage(50.0f);
-        other.Destroy();
+        // Check if the other object is a bullet by checking for BulletScript
+        auto bulletScript = other.GetComponent<BulletScript>();
+        if (bulletScript)
+        {
+            // Hit by bullet - take damage and destroy the bullet
+            TakeDamage(50.0f);
+            other.Destroy();
+        }
+        // If it's the player colliding with zombie, we could add damage to player here
+        // For now, we don't damage the player to avoid destroying it
     }
 
     void TakeDamage(float damage)
     {
+        auto *owner = GetOwner();
+        if (!owner || owner->IsDestroyed()) return;
+        
         health -= damage;
         if (health <= 0.0f)
         {
-            GetOwner()->Destroy();
+            owner->Destroy();
         }
     }
 

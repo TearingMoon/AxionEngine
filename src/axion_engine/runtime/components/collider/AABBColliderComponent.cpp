@@ -6,12 +6,22 @@
 
 glm::vec3 AABBColliderComponent::GetSize() const
 {
-    return size_ * GetOwner()->GetTransform()->GetScale();
+    auto *owner = GetOwner();
+    if (!owner) return size_;
+    auto *transform = owner->GetTransform();
+    if (!transform) return size_;
+    return size_ * transform->GetScale();
 }
 
 void AABBColliderComponent::GetMinMax2D(glm::vec2 &outMin, glm::vec2 &outMax) const
 {
-    const glm::vec3 p3 = GetOwner()->GetTransform()->GetWorldPosition();
+    auto *owner = GetOwner();
+    if (!owner) { outMin = outMax = glm::vec2(0); return; }
+    
+    auto *transform = owner->GetTransform();
+    if (!transform) { outMin = outMax = glm::vec2(0); return; }
+    
+    const glm::vec3 p3 = transform->GetWorldPosition();
     const glm::vec3 s3 = GetSize();
 
     const glm::vec2 center(p3.x, p3.y);
@@ -23,15 +33,22 @@ void AABBColliderComponent::GetMinMax2D(glm::vec2 &outMin, glm::vec2 &outMax) co
 
 bool AABBColliderComponent::Intersects(const ColliderComponent &other, Manifold &out) const
 {
+    auto *myOwner = GetOwner();
+    if (!myOwner || myOwner->IsDestroyed()) return false;
     return other.IntersectsWithAABB(*this, out);
 }
 
 bool AABBColliderComponent::IntersectsWithCircle(const CircleColliderComponent &circle, Manifold &out) const
 {
+    auto *circleOwner = circle.GetOwner();
+    if (!circleOwner || circleOwner->IsDestroyed()) return false;
+    auto *circleTransform = circleOwner->GetTransform();
+    if (!circleTransform) return false;
+    
     glm::vec2 aMin, aMax;
     GetMinMax2D(aMin, aMax);
 
-    const glm::vec3 cP3 = circle.GetOwner()->GetTransform()->GetWorldPosition();
+    const glm::vec3 cP3 = circleTransform->GetWorldPosition();
     const glm::vec2 c(cP3.x, cP3.y);
     const float r = circle.GetRadius();
 

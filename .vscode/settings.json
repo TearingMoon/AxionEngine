@@ -98,5 +98,9 @@
     "TOUPPER",
     "UCFG",
     "Updateable"
-  ]
+  ],
+  "chat.tools.terminal.autoApprove": {
+    ".\\build\\windows-debug\\bin\\Game2\\Game2.exe": true,
+    "Tee-Object": true
+  }
 }

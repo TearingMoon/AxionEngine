@@ -27,9 +27,12 @@ void SceneManager::RequestChange(std::string sceneName)
 
 void SceneManager::ProcessRequests()
 {
-    // Process current scene Destroy queue
+    // Process current scene queues
     if (currentScene_)
     {
+        // First, add newly spawned objects to main list
+        currentScene_->ProcessSpawnQueue();
+        // Then, destroy objects that were marked for destruction
         currentScene_->ProcessDestroyQueue();
     }
 

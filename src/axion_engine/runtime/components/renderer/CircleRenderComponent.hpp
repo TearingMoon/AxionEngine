@@ -11,11 +11,22 @@ public:
         if (!ctx.renderer)
             return;
 
-        auto *tr = GetOwner()->GetComponent<TransformComponent>();
+        auto *owner = GetOwner();
+        if (!owner || owner->IsDestroyed())
+            return;
+
+        auto *tr = owner->GetComponent<TransformComponent>();
         if (!tr)
             return;
 
-        auto *camTr = ctx.camera->GetOwner()->GetTransform();
+        if (!ctx.camera)
+            return;
+            
+        auto *camOwner = ctx.camera->GetOwner();
+        if (!camOwner || camOwner->IsDestroyed())
+            return;
+            
+        auto *camTr = camOwner->GetTransform();
         glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
 
         // Get window size
@@ -55,7 +66,11 @@ public:
     void SetRadius(float r) { radius_ = r; }
     float GetRadius() const
     {
-        const glm::vec3 s = GetOwner()->GetTransform()->GetScale();
+        auto *owner = GetOwner();
+        if (!owner) return radius_;
+        auto *tr = owner->GetTransform();
+        if (!tr) return radius_;
+        const glm::vec3 s = tr->GetScale();
         const float uniform = std::max(s.x, s.y);
         return radius_ * uniform;
     }

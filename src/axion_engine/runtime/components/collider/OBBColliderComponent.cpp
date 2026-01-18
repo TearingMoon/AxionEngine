@@ -6,24 +6,37 @@
 
 glm::vec3 OBBColliderComponent::GetSize() const
 {
-    return size_ * GetOwner()->GetTransform()->GetScale();
+    auto *owner = GetOwner();
+    if (!owner) return size_;
+    auto *transform = owner->GetTransform();
+    if (!transform) return size_;
+    return size_ * transform->GetScale();
 }
 
 glm::vec2 OBBColliderComponent::GetHalfExtents2D() const
 {
-    const glm::vec3 s = size_ * GetOwner()->GetTransform()->GetScale();
+    auto *owner = GetOwner();
+    if (!owner) return {size_.x * 0.5f, size_.y * 0.5f};
+    auto *transform = owner->GetTransform();
+    if (!transform) return {size_.x * 0.5f, size_.y * 0.5f};
+    const glm::vec3 s = size_ * transform->GetScale();
     return {s.x * 0.5f, s.y * 0.5f};
 }
 
 glm::vec2 OBBColliderComponent::GetCenter2D() const
 {
-    const glm::vec3 p = GetOwner()->GetTransform()->GetWorldPosition();
+    auto *owner = GetOwner();
+    if (!owner) return {0.0f, 0.0f};
+    auto *transform = owner->GetTransform();
+    if (!transform) return {0.0f, 0.0f};
+    const glm::vec3 p = transform->GetWorldPosition();
     return {p.x, p.y};
 }
 
 void OBBColliderComponent::GetAxes2D(glm::vec2 &axisX, glm::vec2 &axisY) const
 {
-    auto *tr = GetOwner()->GetTransform();
+    auto *owner = GetOwner();
+    auto *tr = owner ? owner->GetTransform() : nullptr;
     const float deg = tr ? tr->GetWorldRotation().z : 0.0f;
 
     const float rad = DegToRad(deg);
@@ -39,17 +52,24 @@ void OBBColliderComponent::GetAxes2D(glm::vec2 &axisX, glm::vec2 &axisY) const
 
 bool OBBColliderComponent::Intersects(const ColliderComponent &other, Manifold &out) const
 {
+    auto *myOwner = GetOwner();
+    if (!myOwner || myOwner->IsDestroyed()) return false;
     return other.IntersectsWithOBB(*this, out);
 }
 
 bool OBBColliderComponent::IntersectsWithCircle(const CircleColliderComponent &circle, Manifold &out) const
 {
+    auto *circleOwner = circle.GetOwner();
+    if (!circleOwner || circleOwner->IsDestroyed()) return false;
+    auto *circleTransform = circleOwner->GetTransform();
+    if (!circleTransform) return false;
+    
     const glm::vec2 cA = GetCenter2D();
     const glm::vec2 hA = GetHalfExtents2D();
     glm::vec2 axA, ayA;
     GetAxes2D(axA, ayA);
 
-    const glm::vec3 cC3 = circle.GetOwner()->GetTransform()->GetWorldPosition();
+    const glm::vec3 cC3 = circleTransform->GetWorldPosition();
     const glm::vec2 cC(cC3.x, cC3.y);
     const float r = circle.GetRadius();
 

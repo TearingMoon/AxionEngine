@@ -15,6 +15,12 @@ public:
 
     void Update(EngineContext &context) override
     {
+        auto *owner = GetOwner();
+        if (!owner || owner->IsDestroyed()) return;
+        
+        auto *tr = owner->GetTransform();
+        if (!tr) return;
+        
         // Put the reticle at the mouse position
         auto input = context.input;
         auto window = context.window;
@@ -38,10 +44,14 @@ public:
                 auto camera = currentScene->GetCurrentCamera();
                 if (camera)
                 {
-                    auto cameraTr = camera->GetOwner()->GetTransform();
-                    if (cameraTr)
+                    auto *camOwner = camera->GetOwner();
+                    if (camOwner && !camOwner->IsDestroyed())
                     {
-                        cameraPos = cameraTr->GetPosition();
+                        auto *cameraTr = camOwner->GetTransform();
+                        if (cameraTr)
+                        {
+                            cameraPos = cameraTr->GetPosition();
+                        }
                     }
                 }
             }
@@ -51,7 +61,6 @@ public:
         float worldY = (winH / 2.0f - mouseY) + cameraPos.y;
 
         // Update the reticle position
-        auto tr = GetOwner()->GetTransform();
         tr->SetPosition({worldX, worldY, 0.0f});
     }
 };

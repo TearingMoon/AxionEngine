@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <unordered_set>
 
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/core/EngineContext.hpp"
@@ -75,8 +76,10 @@ private:
     void EmitFixedUpdateEvent();
 
     void ProcessDestroyQueue();
+    void ProcessSpawnQueue();
 
     std::vector<std::unique_ptr<GameObject>> objects_;
+    std::vector<std::unique_ptr<GameObject>> spawnQueue_; // Objects created during frame
     std::vector<GameObject *> destroyQueue_;
 
     CameraComponent *currentCamera_ = nullptr;

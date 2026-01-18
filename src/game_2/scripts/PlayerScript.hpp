@@ -27,9 +27,14 @@ public:
 
     void Update(EngineContext &context) override
     {
+        auto *owner = GetOwner();
+        if (!owner || owner->IsDestroyed()) return;
+        
+        auto *tr = owner->GetTransform();
+        if (!tr) return;
+        
         auto input = context.input;
         auto window = context.window;
-        auto tr = GetOwner()->GetTransform();
         float deltaTime = context.time->GetDeltaTime();
 
         // Sprint with Shift

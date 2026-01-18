@@ -34,11 +34,14 @@ private:
     float accumulatedTime_ = 0.0f;
 
     std::unordered_set<std::pair<ColliderComponent *, ColliderComponent *>, PairHash> currentCollisions_;
-    std::unordered_set<std::pair<ColliderComponent *, ColliderComponent *>, PairHash> previousCollisions_;
+    // Use GameObject IDs instead of pointers to avoid dangling pointers between frames
+    std::unordered_set<std::pair<size_t, size_t>, PairHashSize> previousCollisionIds_;
 
     void FixedUpdate(float dt);
     void ProcessCollisions(std::vector<GameObject *> &gameObjectsWithCollider);
     void ProcessForces(std::vector<GameObject *> &gameObjectsWithRigidBody);
+    void DetectCollisionEvents(const std::unordered_map<size_t, GameObject *> &idToObject, 
+                               const std::unordered_set<std::pair<size_t, size_t>, PairHashSize> &currentCollisionIds);
 
     void ResolveCollision(
         GameObject &objA,
@@ -47,6 +50,4 @@ private:
         ColliderComponent &colliderB,
         bool isNewCollision,
         Manifold &manifold);
-
-    void DetectCollisionEvents();
 };
