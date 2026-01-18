@@ -43,7 +43,6 @@ public:
     std::vector<T *> GetComponents() const;
 
     const std::vector<std::unique_ptr<Component>> &GetAllComponents() const { return components_; }
-
     void MarkAsDestroyed() { isDestroyed_ = true; }
 
     bool IsEnabled() { return isEnabled_; }

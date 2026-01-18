@@ -31,21 +31,22 @@ public:
 
         float zoom = 1.0f;
         float screenX = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
-        float screenY = winH * 0.5f - (worldPos.y - camPos.y) * zoom; // Invert Y axis for SDL
+        float screenY = winH * 0.5f - (worldPos.y - camPos.y) * zoom; // Match CircleCollider Y inversion
 
         float screenRadius = radius_ * scale * zoom;
 
         SDL_SetRenderDrawColor(ctx.renderer, color_.r, color_.g, color_.b, color_.a);
 
+        // Draw circle centered at (screenX, screenY)
         for (int w = 0; w < screenRadius * 2; w++)
         {
             for (int h = 0; h < screenRadius * 2; h++)
             {
-                int dx = screenRadius - w; // horizontal offset
-                int dy = screenRadius - h; // vertical offset
+                int dx = w - screenRadius; // offset from center
+                int dy = h - screenRadius; // offset from center
                 if ((dx * dx + dy * dy) <= (screenRadius * screenRadius))
                 {
-                    SDL_RenderDrawPoint(ctx.renderer, static_cast<int>(screenX + dx - screenRadius), static_cast<int>(screenY + dy - screenRadius));
+                    SDL_RenderDrawPoint(ctx.renderer, static_cast<int>(screenX + dx), static_cast<int>(screenY + dy));
                 }
             }
         }

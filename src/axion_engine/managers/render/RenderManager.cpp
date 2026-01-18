@@ -76,7 +76,8 @@ void RenderManager::CollectRenderables(Scene &scene, std::vector<IRenderable *> 
 
     for (GameObject *go : scene.GetGameObjects())
     {
-        if (!go || !go->IsEnabled())
+        // Skip destroyed, disabled or null game objects
+        if (!go || !go->IsEnabled() || go->IsDestroyed())
             continue;
 
         // Collect all components that implement IRenderable
