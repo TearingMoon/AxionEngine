@@ -4,29 +4,24 @@
 
 #include "axion_engine/core/Engine.hpp"
 
-#include "game/scenes/MainMenuScene.hpp"
-
-// #include "engine/core/AxionEngine.hpp"
+#include "game_2/scenes/Game2Scene.hpp"
 
 int main(int argc, char *args[])
 {
-
     EngineConfig engineConfig;
     engineConfig.updateDelay = 16; // 16 Approx ~60 FPS
 
     WindowConfig windowConfig = {
-        "Axion Engine Window",
+        "Game 2 - Axion Engine",
         {SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED},
-        {800, 600},
+        {1024, 768},
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE};
 
     Engine engine(engineConfig, windowConfig);
 
-    // TODO: Make the window instantiation here
-
     // Define and register scenes here
-    engine.GetSceneManager()->RegisterScene<MainMenuScene>("MainMenu");
-    engine.GetSceneManager()->RequestChange("MainMenu");
+    engine.GetSceneManager()->RegisterScene<Game2Scene>("Game2Scene");
+    engine.GetSceneManager()->RequestChange("Game2Scene");
 
     engine.Run();
 

@@ -2,21 +2,47 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Configure",
+      "label": "Configure (Windows)",
       "type": "shell",
-      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-      "problemMatcher": []
+      "command": "cmake --preset windows-vcpkg-debug",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
     },
     {
-      "label": "Build",
+      "label": "Build All",
       "type": "shell",
-      "command": "cmake --build build -j",
-      "problemMatcher": []
+      "command": "cmake --build build/windows-debug --config Debug",
+      "problemMatcher": ["$msCompile"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure (Windows)"]
     },
     {
-      "label": "Configure+Build",
-      "dependsOn": ["Configure", "Build"],
-      "dependsOrder": "sequence"
+      "label": "Build Game 1",
+      "type": "shell",
+      "command": "cmake --build build/windows-debug --config Debug --target Game",
+      "problemMatcher": ["$msCompile"],
+      "group": "build",
+      "dependsOn": ["Configure (Windows)"]
+    },
+    {
+      "label": "Build Game 2",
+      "type": "shell",
+      "command": "cmake --build build/windows-debug --config Debug --target Game2",
+      "problemMatcher": ["$msCompile"],
+      "group": "build",
+      "dependsOn": ["Configure (Windows)"]
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "command": "cmake --build build/windows-debug --config Debug --target clean",
+      "problemMatcher": []
     }
   ]
 }
