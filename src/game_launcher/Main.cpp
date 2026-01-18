@@ -22,22 +22,18 @@ struct GameInfo {
 std::vector<GameInfo> FindGames() {
     std::vector<GameInfo> games;
     
-    // Get the directory where the launcher is located (bin/)
     fs::path launcherPath = fs::current_path();
     
-    // Iterate through subdirectories
     try {
         for (const auto& entry : fs::directory_iterator(launcherPath)) {
             if (entry.is_directory()) {
                 std::string dirName = entry.path().filename().string();
                 
-                // Skip common directories that aren't games
                 if (dirName == "logs" || dirName == "assets" || 
                     dirName == "assets_game2" || dirName.empty()) {
                     continue;
                 }
                 
-                // Look for executable in the directory
                 fs::path gameDir = entry.path();
                 
 #ifdef _WIN32
@@ -72,11 +68,9 @@ void LaunchGame(const GameInfo& game) {
     si.cb = sizeof(si);
     ZeroMemory(&pi, sizeof(pi));
     
-    // Convert path to string
     std::string exePathStr = game.exePath.string();
     std::string workingDir = game.directory.string();
     
-    // CreateProcess requires non-const string
     std::vector<char> cmdLine(exePathStr.begin(), exePathStr.end());
     cmdLine.push_back('\0');
     
@@ -95,16 +89,13 @@ void LaunchGame(const GameInfo& game) {
         std::cout << "\nLaunching " << game.name << "...\n";
         std::cout << "Waiting for game to close...\n\n";
         
-        // Wait for the game process to finish
         WaitForSingleObject(pi.hProcess, INFINITE);
         
         std::cout << "\n" << game.name << " has been closed.\n";
         
-        // Close process and thread handles
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
         
-        // Bring console window to foreground
         HWND consoleWindow = GetConsoleWindow();
         if (consoleWindow != NULL) {
             SetForegroundWindow(consoleWindow);
@@ -118,19 +109,15 @@ void LaunchGame(const GameInfo& game) {
     pid_t pid = fork();
     
     if (pid == 0) {
-        // Child process
         chdir(game.directory.c_str());
         execl(game.exePath.c_str(), game.exePath.c_str(), nullptr);
         
-        // If execl returns, it failed
         std::cerr << "Failed to execute game" << std::endl;
         exit(1);
     } else if (pid > 0) {
-        // Parent process
         std::cout << "\nLaunching " << game.name << "...\n";
         std::cout << "Waiting for game to close (PID: " << pid << ")...\n\n";
         
-        // Wait for the child process to finish
         int status;
         waitpid(pid, &status, 0);
         
@@ -178,14 +165,13 @@ int main() {
         
         int choice;
         if (!(std::cin >> choice)) {
-            // Clear error state and ignore invalid input
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             std::cout << "\nInvalid input. Please enter a number.\n";
             continue;
         }
         
-        std::cin.ignore(10000, '\n'); // Clear newline
+        std::cin.ignore(10000, '\n');
         
         if (choice == 0) {
             std::cout << "\nExiting launcher...\n";
@@ -194,7 +180,6 @@ int main() {
         
         if (choice > 0 && choice <= static_cast<int>(games.size())) {
             LaunchGame(games[choice - 1]);
-            // Game has closed, menu will automatically redisplay
         } else {
             std::cout << "\nInvalid selection. Please try again.\n";
         }
