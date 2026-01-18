@@ -10,6 +10,7 @@
 #include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/SquareRenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/TextRenderComponent.hpp"
+#include "axion_engine/runtime/components/renderer/CircleRenderer.hpp"
 
 #include "axion_engine/runtime/components/rigid_body/RigidBody.hpp"
 

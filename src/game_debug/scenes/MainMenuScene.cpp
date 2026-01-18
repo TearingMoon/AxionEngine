@@ -44,6 +44,14 @@ void MainMenuScene::OnSceneEnter()
     textRenderer->SetFontSize(32); // Changed from 300 to a more reasonable size
     auto textRigidBody = textGO->AddComponent<RigidBody>();
     textRigidBody->AddForce(50.0f, 0.0f, 0.0f);
+
+    // Circle Renderer Test GO
+    auto circleGO = CreateGameObject();
+    circleGO->GetTransform()->SetPosition({0.0f, -150.0f, 0.0f});
+    circleGO->GetTransform()->SetScale({75.0f, 75.0f, 1.0f});
+    auto circleRenderer = circleGO->AddComponent<CircleRenderComponent>();
+    circleRenderer->SetRadius(1.0f);
+    circleRenderer->SetColor({100, 255, 100, 255}); // Green color
 }
 
 void MainMenuScene::OnSceneUpdate()
