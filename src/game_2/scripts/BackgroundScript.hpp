@@ -18,7 +18,7 @@ public:
         if (!tr) return;
         
         // Get current camera from scene
-        auto *scene = context.scene->GetCurrentScene();
+        auto *scene = context.sceneProvider->GetCurrentScene();
         if (!scene) return;
         
         auto *camera = scene->GetCurrentCamera();

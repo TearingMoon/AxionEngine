@@ -30,7 +30,7 @@ public:
         if (!owner || owner->IsDestroyed()) return;
         
         // Follow camera position for UI
-        auto *scene = context.scene->GetCurrentScene();
+        auto *scene = context.sceneProvider->GetCurrentScene();
         if (!scene) return;
         
         auto *camera = scene->GetCurrentCamera();

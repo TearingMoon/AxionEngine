@@ -7,6 +7,7 @@
 
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/core/EngineContext.hpp"
+#include "axion_engine/core/interfaces/ISceneProvider.hpp"
 #include "axion_engine/managers/time/TimeManager.hpp"
 #include "axion_engine/runtime/classes/scene/Scene.hpp"
 
@@ -36,7 +37,7 @@ enum class SceneManagerState
  * sceneManager->RequestChange("Main");
  * @endcode
  */
-class SceneManager : public ContextAware
+class SceneManager : public ContextAware, public ISceneProvider
 {
 public:
     SceneManager(EngineContext& ctx);
@@ -49,7 +50,7 @@ public:
      * @brief Requests a scene change (processed at frame end).
      * @param sceneName Name of the registered scene to switch to
      */
-    void RequestChange(std::string sceneName);
+    void RequestChange(std::string sceneName) override;
 
     /** @brief Processes pending scene change requests and object queues. */
     void ProcessRequests();
@@ -72,7 +73,7 @@ public:
     bool IsSceneRegistered(std::string sceneName) const;
 
     /** @brief Returns the currently active scene, or nullptr if none. */
-    Scene* GetCurrentScene() const { return currentScene_; }
+    Scene* GetCurrentScene() const override { return currentScene_; }
 
 private:
     void ChangeScene(std::string sceneName);

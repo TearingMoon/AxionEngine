@@ -27,12 +27,15 @@ Engine::Engine(EngineConfig config, WindowConfig windowConfig)
 
     time_ = std::make_unique<TimeManager>(context_);
     context_.time = time_.get();
+    context_.timeProvider = time_.get();  // ISP interface
 
     input_ = std::make_unique<InputManager>(context_);
     context_.input = input_.get();
+    context_.inputProvider = input_.get();  // ISP interface
 
     scene_ = std::make_unique<SceneManager>(context_);
     context_.scene = scene_.get();
+    context_.sceneProvider = scene_.get();  // ISP interface
 
     physics_ = std::make_unique<PhysicsManager>(context_);
     context_.physics = physics_.get();
@@ -42,6 +45,7 @@ Engine::Engine(EngineConfig config, WindowConfig windowConfig)
 
     assets_ = std::make_unique<AssetsManager>(context_);
     context_.assets = assets_.get();
+    context_.assetProvider = assets_.get();  // ISP interface
 
     logger_->Separator("Engine Managers Initialized");
 }

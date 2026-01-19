@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace Axion
 {
 
@@ -20,7 +22,7 @@ public:
      * @brief Requests a scene change (processed at frame end).
      * @param sceneName Name of the registered scene to switch to
      */
-    virtual void RequestChange(const std::string& sceneName) = 0;
+    virtual void RequestChange(std::string sceneName) = 0;
     
     /**
      * @brief Returns the currently active scene.

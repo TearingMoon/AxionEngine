@@ -27,7 +27,7 @@ void PhysicsManager::Update(float dt)
 void PhysicsManager::FixedUpdate(float dt)
 {
     // Get all game objects with colliders from the current scene
-    Scene *currentScene = ctx_.scene->GetCurrentScene();
+    Scene *currentScene = ctx_.sceneProvider->GetCurrentScene();
     if (!currentScene)
         return;
 
@@ -167,7 +167,7 @@ void PhysicsManager::ProcessCollisions(std::vector<GameObject *> &gameObjectsWit
 
 void PhysicsManager::ProcessForces(std::vector<GameObject *> &gameObjectsWithRigidBody)
 {
-    Scene *currentScene = ctx_.scene->GetCurrentScene();
+    Scene *currentScene = ctx_.sceneProvider->GetCurrentScene();
     if (!currentScene)
         return;
 

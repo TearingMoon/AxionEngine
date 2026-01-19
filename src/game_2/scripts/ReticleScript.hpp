@@ -38,7 +38,7 @@ public:
         glm::vec3 cameraPos(0.0f);
         if (context.scene)
         {
-            auto currentScene = context.scene->GetCurrentScene();
+            auto currentScene = context.sceneProvider->GetCurrentScene();
             if (currentScene)
             {
                 auto camera = currentScene->GetCurrentCamera();

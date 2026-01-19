@@ -31,7 +31,7 @@ public:
         auto *targetTr = target->GetTransform();
         if (!targetTr) return;
 
-        float deltaTime = context.time->GetDeltaTime();
+        float deltaTime = context.timeProvider->GetDeltaTime();
         
         glm::vec3 targetPos = targetTr->GetPosition();
         glm::vec3 currentPos = tr->GetPosition();

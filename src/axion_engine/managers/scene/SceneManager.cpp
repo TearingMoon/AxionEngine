@@ -17,7 +17,7 @@ void SceneManager::Update()
 {
     if (currentScene_)
     {
-        float dt = ctx_.time->GetDeltaTime();
+        float dt = ctx_.timeProvider->GetDeltaTime();
         currentScene_->Tick();
     }
 }

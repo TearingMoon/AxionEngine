@@ -19,9 +19,10 @@ public:
     {
         if (!transform) return;
 
+        float dt = context.timeProvider->GetDeltaTime();
         glm::vec3 pos = transform->GetPosition();
-        pos.x += velocity.x * context.time->GetDeltaTime();
-        pos.y += velocity.y * context.time->GetDeltaTime();
+        pos.x += velocity.x * dt;
+        pos.y += velocity.y * dt;
 
         if (pos.y > maxY || pos.y < minY)
         {

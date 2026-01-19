@@ -22,7 +22,7 @@ void RenderManager::Update()
     if (!renderer_)
         return;
 
-    Scene* scene = ctx_.scene->GetCurrentScene();
+    Scene* scene = ctx_.sceneProvider->GetCurrentScene();
     if (!scene)
         return;
 
@@ -49,7 +49,7 @@ void RenderManager::Update()
     SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
     SDL_RenderClear(renderer_);
 
-    if (ctx_.input->IsKeyJustPressed(SDL_SCANCODE_F3))
+    if (ctx_.inputProvider->IsKeyJustPressed(SDL_SCANCODE_F3))
     {
         debugMode_ = !debugMode_;
         if (debugMode_)

@@ -19,11 +19,12 @@ public:
             return;
 
         glm::vec3 pos = transform->GetPosition();
+        float dt = context.timeProvider->GetDeltaTime();
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_W))
-            pos.y -= speed * context.time->GetDeltaTime();
-        if (context.input->IsKeyDown(SDL_SCANCODE_S))
-            pos.y += speed * context.time->GetDeltaTime();
+        if (context.inputProvider->IsKeyDown(SDL_SCANCODE_W))
+            pos.y -= speed * dt;
+        if (context.inputProvider->IsKeyDown(SDL_SCANCODE_S))
+            pos.y += speed * dt;
 
         if (pos.y > maxY)
             pos.y = maxY;

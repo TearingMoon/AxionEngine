@@ -128,7 +128,7 @@ void TwinStickScene::CreateUI()
 void TwinStickScene::OnSceneUpdate()
 {
     // Check for restart
-    if (isGameOver && ctx_.input->IsKeyJustPressed(SDL_SCANCODE_R))
+    if (isGameOver && ctx_.inputProvider->IsKeyJustPressed(SDL_SCANCODE_R))
     {
         RestartGame();
         return;
@@ -139,7 +139,7 @@ void TwinStickScene::OnSceneUpdate()
     // Spawn zombies for current round
     if (zombiesSpawnedThisRound < zombiesPerRound)
     {
-        zombieSpawnTimer += ctx_.time->GetDeltaTime();
+        zombieSpawnTimer += ctx_.timeProvider->GetDeltaTime();
         if (zombieSpawnTimer >= zombieSpawnInterval)
         {
             SpawnZombie();
@@ -235,7 +235,7 @@ void TwinStickScene::OnPlayerDeath()
 void TwinStickScene::RestartGame()
 {
     // Reload the scene
-    ctx_.scene->RequestChange("TwinStickScene");
+    ctx_.sceneProvider->RequestChange("TwinStickScene");
 }
 
 } // namespace Axion

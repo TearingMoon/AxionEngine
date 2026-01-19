@@ -67,36 +67,36 @@ public:
             fixedUpdateFlag = false;
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_A))
+        if (context.inputProvider->IsKeyDown(SDL_SCANCODE_A))
         { // TODO: Simplify All calls to Tranforms
             // Rotate the entity by 1 degree on the Z axis
             GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, 1.0f);
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_D))
+        if (context.inputProvider->IsKeyDown(SDL_SCANCODE_D))
         {
             // Rotate the entity by -1 degree on the Z axis
             GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, -1.0f);
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_W))
+        if (context.inputProvider->IsKeyDown(SDL_SCANCODE_W))
         {
             // Move the entity up by 0.1 units
             GetOwner()->GetTransform()->SetPosition(GetOwner()->GetTransform()->GetPosition() + (GetOwner()->GetTransform()->GetUpVector() * 1.0f));
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_S))
+        if (context.inputProvider->IsKeyDown(SDL_SCANCODE_S))
         {
             // Move the entity down by 0.1 units
             GetOwner()->GetTransform()->SetPosition(GetOwner()->GetTransform()->GetPosition() - (GetOwner()->GetTransform()->GetUpVector() * 1.0f));
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_KP_PLUS))
+        if (context.inputProvider->IsKeyDown(SDL_SCANCODE_KP_PLUS))
         {
             GetOwner()->GetTransform()->SetScale(GetOwner()->GetTransform()->GetScale() + glm::vec3(1, 1, 0));
         }
 
-        if (context.input->IsKeyDown(SDL_SCANCODE_KP_MINUS))
+        if (context.inputProvider->IsKeyDown(SDL_SCANCODE_KP_MINUS))
         {
             GetOwner()->GetTransform()->SetScale(GetOwner()->GetTransform()->GetScale() - glm::vec3(1, 1, 0));
         }

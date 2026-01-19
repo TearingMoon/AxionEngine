@@ -26,7 +26,7 @@ public:
         if (std::abs(diff) > 10.0f)
         {
             float moveDir = (diff > 0) ? 1.0f : -1.0f;
-            paddlePos.y += moveDir * speed * context.time->GetDeltaTime();
+            paddlePos.y += moveDir * speed * context.timeProvider->GetDeltaTime();
         }
 
         if (paddlePos.y > maxY) paddlePos.y = maxY;

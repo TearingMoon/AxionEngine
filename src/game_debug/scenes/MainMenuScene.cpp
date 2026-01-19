@@ -62,7 +62,7 @@ void MainMenuScene::OnSceneUpdate()
     if (deleteFlag)
         return;
 
-    timer += ctx_.time->GetDeltaTime();
+    timer += ctx_.timeProvider->GetDeltaTime();
     if (timer >= 2.0f)
     {
         deleteFlag = true;

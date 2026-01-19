@@ -34,7 +34,7 @@ public:
         auto *owner = GetOwner();
         if (!owner || owner->IsDestroyed()) return;
         
-        float deltaTime = context.time->GetDeltaTime();
+        float deltaTime = context.timeProvider->GetDeltaTime();
 
         // Check lifetime
         currentLifetime += deltaTime;

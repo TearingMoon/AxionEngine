@@ -39,7 +39,7 @@ public:
         if (!player)
             return;
 
-        float deltaTime = context.time->GetDeltaTime();
+        float deltaTime = context.timeProvider->GetDeltaTime();
         
         // Get direction to player
         glm::vec3 zombiePos = tr->GetPosition();
@@ -109,7 +109,7 @@ private:
         if (!context.scene)
             return nullptr;
             
-        auto currentScene = context.scene->GetCurrentScene();
+        auto currentScene = context.sceneProvider->GetCurrentScene();
         if (!currentScene)
             return nullptr;
         

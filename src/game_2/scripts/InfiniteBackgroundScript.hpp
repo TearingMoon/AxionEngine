@@ -19,7 +19,7 @@ public:
         auto *owner = GetOwner();
         if (!owner || owner->IsDestroyed()) return;
         
-        auto *scene = context.scene->GetCurrentScene();
+        auto *scene = context.sceneProvider->GetCurrentScene();
         if (!scene) return;
         
         auto *camera = scene->GetCurrentCamera();
