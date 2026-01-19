@@ -34,13 +34,14 @@ public:
 
     bool IsSceneRegistered(std::string sceneName) const;
 
-    Scene *GetCurrentScene() const { return currentScene_.get(); }
+    Scene *GetCurrentScene() const { return currentScene_; }
 
 private:
     void ChangeScene(std::string sceneName);
 
     std::unordered_map<std::string, std::unique_ptr<Scene>> scenes_;
-    std::unique_ptr<Scene> currentScene_;
+    Scene *currentScene_ = nullptr;
+    std::string currentSceneName_;
 
     std::queue<std::string> sceneChangeRequests_;
 };

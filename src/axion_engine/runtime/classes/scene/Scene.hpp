@@ -77,6 +77,28 @@ private:
 
     void ProcessDestroyQueue();
     void ProcessSpawnQueue();
+    
+    void ClearAllObjects()
+    {
+        // Clear spawn queue
+        spawnQueue_.clear();
+        
+        // Clear destroy queue
+        destroyQueue_.clear();
+        
+        // Destroy all objects
+        for (auto &obj : objects_)
+        {
+            if (obj)
+            {
+                obj->OnDestroy();
+            }
+        }
+        objects_.clear();
+        
+        // Reset camera
+        currentCamera_ = nullptr;
+    }
 
     std::vector<std::unique_ptr<GameObject>> objects_;
     std::vector<std::unique_ptr<GameObject>> spawnQueue_; // Objects created during frame

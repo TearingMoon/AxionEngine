@@ -1,6 +1,7 @@
 #pragma once
 
 #include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
+#include "axion_engine/runtime/components/rigid_body/RigidBody.hpp"
 #include <glm/glm.hpp>
 
 class BulletScript : public ScriptableComponent
@@ -14,6 +15,16 @@ public:
     void Start(EngineContext &context) override
     {
         currentLifetime = 0.0f;
+        
+        // Set initial velocity via RigidBody
+        auto *owner = GetOwner();
+        if (!owner) return;
+        
+        auto *rb = owner->GetComponent<RigidBody>();
+        if (rb)
+        {
+            rb->SetVelocity(glm::vec3(direction.x * speed, direction.y * speed, 0.0f));
+        }
     }
 
     void Update(EngineContext &context) override
@@ -21,16 +32,7 @@ public:
         auto *owner = GetOwner();
         if (!owner || owner->IsDestroyed()) return;
         
-        auto *tr = owner->GetTransform();
-        if (!tr) return;
-        
         float deltaTime = context.time->GetDeltaTime();
-        
-        // Move the bullet
-        glm::vec3 currentPos = tr->GetPosition();
-        currentPos.x += direction.x * speed * deltaTime;
-        currentPos.y += direction.y * speed * deltaTime;
-        tr->SetPosition(currentPos);
 
         // Check lifetime
         currentLifetime += deltaTime;

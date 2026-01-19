@@ -59,12 +59,23 @@ void SceneManager::ChangeScene(std::string sceneName)
     }
 
     INFO("Changing to scene: {}", sceneName.c_str());
+    
+    // Exit current scene if exists
     if (currentScene_)
     {
         currentScene_->Exit();
     }
 
-    currentScene_ = std::move(scenes_[sceneName]);
+    // If reloading the same scene, we need to reset it
+    if (currentSceneName_ == sceneName && currentScene_)
+    {
+        // Clear all objects and reset the scene
+        currentScene_->ClearAllObjects();
+    }
+
+    // Set current scene pointer (scene stays in the map)
+    currentScene_ = scenes_[sceneName].get();
+    currentSceneName_ = sceneName;
 
     currentScene_->Enter();
 }

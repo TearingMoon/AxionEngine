@@ -81,6 +81,9 @@ SDL_Window *Window::CreateWindow(const WindowConfig &config) noexcept
         return nullptr;
     }
 
+    // Hide mouse cursor when over the window
+    SDL_ShowCursor(SDL_DISABLE);
+
     return win;
 }
 

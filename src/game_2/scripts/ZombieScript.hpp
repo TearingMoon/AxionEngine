@@ -5,6 +5,7 @@
 #include "axion_engine/runtime/classes/scene/Scene.hpp"
 #include "BulletScript.hpp"
 #include <glm/glm.hpp>
+#include <functional>
 
 // Forward declarations
 class PlayerScript;
@@ -14,6 +15,11 @@ class ZombieScript : public ScriptableComponent
 public:
     float moveSpeed = 80.0f;
     float health = 100.0f;
+    int damageToPlayer = 20;
+    int scoreValue = 100; // Points given when killed
+    
+    // Callback when zombie dies (for score)
+    std::function<void(int points)> onDeath = nullptr;
 
     void Start(EngineContext &context) override
     {
@@ -69,9 +75,15 @@ public:
             // Hit by bullet - take damage and destroy the bullet
             TakeDamage(50.0f);
             other.Destroy();
+            return;
         }
-        // If it's the player colliding with zombie, we could add damage to player here
-        // For now, we don't damage the player to avoid destroying it
+        
+        // Check if it's the player - damage them
+        auto playerScript = other.GetComponent<PlayerScript>();
+        if (playerScript)
+        {
+            playerScript->TakeDamage(damageToPlayer);
+        }
     }
 
     void TakeDamage(float damage)
@@ -82,6 +94,10 @@ public:
         health -= damage;
         if (health <= 0.0f)
         {
+            // Notify score before dying
+            if (onDeath)
+                onDeath(scoreValue);
+            
             owner->Destroy();
         }
     }
