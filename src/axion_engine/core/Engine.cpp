@@ -85,8 +85,9 @@ void Engine::EventLoop()
 
 void Engine::AppLoop()
 {
+    analyzer_->BeginFrame();
+    
     time_->Update();
-    analyzer_->Update();
     
     // 1. Process pending spawn/destroy from previous frame
     scene_->ProcessRequests();
@@ -99,6 +100,8 @@ void Engine::AppLoop()
     
     // 4. Render
     render_->Update();
+    
+    analyzer_->EndFrame();
 }
 
 } // namespace Axion
