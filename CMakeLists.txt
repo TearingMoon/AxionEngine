@@ -75,149 +75,72 @@ elseif(WIN32)
 endif()
 
 # ======================================
-# Pong Executable
+# Function to add a game executable
 # ======================================
-file(GLOB_RECURSE PONG_SOURCES CONFIGURE_DEPENDS 
-    "${CMAKE_SOURCE_DIR}/src/pong/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/pong/**/*.cpp"
-)
-add_executable(Pong ${PONG_SOURCES})
-
-target_include_directories(Pong PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-)
-
-target_link_libraries(Pong PRIVATE
-    AxionEngine
-    AxionUtilities
-)
-
-# Windows requires explicit SDL2main linkage
-if(WIN32)
-    target_link_libraries(Pong PRIVATE
-        SDL2::SDL2main
+# Usage: axion_add_game(TARGET_NAME SOURCE_DIR)
+#   TARGET_NAME: Name of the executable (e.g., "Pong")
+#   SOURCE_DIR:  Source directory name under src/ (e.g., "pong")
+function(axion_add_game TARGET_NAME SOURCE_DIR)
+    file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS 
+        "${CMAKE_SOURCE_DIR}/src/${SOURCE_DIR}/*.cpp"
+        "${CMAKE_SOURCE_DIR}/src/${SOURCE_DIR}/**/*.cpp"
     )
-endif()
+    
+    if(NOT GAME_SOURCES)
+        message(STATUS "No sources found for ${TARGET_NAME} in src/${SOURCE_DIR}, skipping...")
+        return()
+    endif()
+    
+    add_executable(${TARGET_NAME} ${GAME_SOURCES})
 
-set_target_properties(Pong PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/Pong
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin/Pong
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Pong
-)
-
-# Copy assets and game.json for Pong
-set(PONG_ASSETS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/pong/assets)
-set(PONG_ASSETS_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/Pong/assets)
-set(PONG_INFO_SOURCE ${CMAKE_SOURCE_DIR}/src/pong/game.json)
-set(PONG_INFO_OUTPUT ${CMAKE_BINARY_DIR}/bin/Pong/game.json)
-add_custom_target(copy_pong_assets ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${PONG_ASSETS_SOURCE_DIR}
-            ${PONG_ASSETS_OUTPUT_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${PONG_INFO_SOURCE}
-            ${PONG_INFO_OUTPUT}
-    COMMENT "Copying Pong assets and game.json to output directory"
-)
-add_dependencies(Pong copy_pong_assets)
-
-# ======================================
-# TwinStickShooter Executable
-# ======================================
-file(GLOB_RECURSE TWINSTICK_SOURCES CONFIGURE_DEPENDS 
-    "${CMAKE_SOURCE_DIR}/src/twin_stick_shooter/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/twin_stick_shooter/**/*.cpp"
-)
-if(TWINSTICK_SOURCES)
-    add_executable(TwinStickShooter ${TWINSTICK_SOURCES})
-
-    target_include_directories(TwinStickShooter PRIVATE
+    target_include_directories(${TARGET_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/src
     )
 
-    target_link_libraries(TwinStickShooter PRIVATE
+    target_link_libraries(${TARGET_NAME} PRIVATE
         AxionEngine
         AxionUtilities
     )
 
     # Windows requires explicit SDL2main linkage
     if(WIN32)
-        target_link_libraries(TwinStickShooter PRIVATE
+        target_link_libraries(${TARGET_NAME} PRIVATE
             SDL2::SDL2main
         )
     endif()
 
-    set_target_properties(TwinStickShooter PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/TwinStickShooter
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin/TwinStickShooter
-        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/TwinStickShooter
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${TARGET_NAME}
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin/${TARGET_NAME}
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/${TARGET_NAME}
     )
 
-    # Copy assets and game.json for TwinStickShooter
-    set(TWINSTICK_ASSETS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/twin_stick_shooter/assets)
-    set(TWINSTICK_ASSETS_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/TwinStickShooter/assets)
-    set(TWINSTICK_INFO_SOURCE ${CMAKE_SOURCE_DIR}/src/twin_stick_shooter/game.json)
-    set(TWINSTICK_INFO_OUTPUT ${CMAKE_BINARY_DIR}/bin/TwinStickShooter/game.json)
-    add_custom_target(copy_twinstick_assets ALL
+    # Copy assets and game.json
+    set(ASSETS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/${SOURCE_DIR}/assets)
+    set(ASSETS_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/${TARGET_NAME}/assets)
+    set(INFO_SOURCE ${CMAKE_SOURCE_DIR}/src/${SOURCE_DIR}/game.json)
+    set(INFO_OUTPUT ${CMAKE_BINARY_DIR}/bin/${TARGET_NAME}/game.json)
+    
+    add_custom_target(copy_${TARGET_NAME}_assets ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-                ${TWINSTICK_ASSETS_SOURCE_DIR}
-                ${TWINSTICK_ASSETS_OUTPUT_DIR}
+                ${ASSETS_SOURCE_DIR}
+                ${ASSETS_OUTPUT_DIR}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${TWINSTICK_INFO_SOURCE}
-                ${TWINSTICK_INFO_OUTPUT}
-        COMMENT "Copying TwinStickShooter assets and game.json to output directory"
+                ${INFO_SOURCE}
+                ${INFO_OUTPUT}
+        COMMENT "Copying ${TARGET_NAME} assets and game.json to output directory"
     )
-    add_dependencies(TwinStickShooter copy_twinstick_assets)
-endif()
+    add_dependencies(${TARGET_NAME} copy_${TARGET_NAME}_assets)
+    
+    message(STATUS "Added game: ${TARGET_NAME} (src/${SOURCE_DIR})")
+endfunction()
 
 # ======================================
-# Game Debug Executable
+# Games
 # ======================================
-file(GLOB_RECURSE GAME_DEBUG_SOURCES CONFIGURE_DEPENDS 
-    "${CMAKE_SOURCE_DIR}/src/game_debug/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/game_debug/**/*.cpp"
-)
-if(GAME_DEBUG_SOURCES)
-    add_executable(GameDebug ${GAME_DEBUG_SOURCES})
-
-    target_include_directories(GameDebug PRIVATE
-        ${CMAKE_SOURCE_DIR}/src
-    )
-
-    target_link_libraries(GameDebug PRIVATE
-        AxionEngine
-        AxionUtilities
-    )
-
-    # Windows requires explicit SDL2main linkage
-    if(WIN32)
-        target_link_libraries(GameDebug PRIVATE
-            SDL2::SDL2main
-        )
-    endif()
-
-    set_target_properties(GameDebug PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/GameDebug
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_BINARY_DIR}/bin/GameDebug
-        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/GameDebug
-    )
-
-    # Copy assets and game.json for GameDebug
-    set(GAME_DEBUG_ASSETS_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/game_debug/assets)
-    set(GAME_DEBUG_ASSETS_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/GameDebug/assets)
-    set(GAME_DEBUG_INFO_SOURCE ${CMAKE_SOURCE_DIR}/src/game_debug/game.json)
-    set(GAME_DEBUG_INFO_OUTPUT ${CMAKE_BINARY_DIR}/bin/GameDebug/game.json)
-    add_custom_target(copy_gamedebug_assets ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-                ${GAME_DEBUG_ASSETS_SOURCE_DIR}
-                ${GAME_DEBUG_ASSETS_OUTPUT_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${GAME_DEBUG_INFO_SOURCE}
-                ${GAME_DEBUG_INFO_OUTPUT}
-        COMMENT "Copying GameDebug assets and game.json to output directory"
-    )
-    add_dependencies(GameDebug copy_gamedebug_assets)
-endif()
+axion_add_game(Pong pong)
+axion_add_game(TwinStickShooter twin_stick_shooter)
+axion_add_game(GameDebug game_debug)
 
 
 # ======================================
