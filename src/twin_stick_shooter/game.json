@@ -1,0 +1,15 @@
+{
+    "name": "Twin Stick Shooter",
+    "description": "Survive endless waves of zombies in this intense twin-stick shooter. Move with WASD, aim with mouse, and shoot to survive. How long can you last?",
+    "version": "1.0.0",
+    "author": "Axion Engine Team",
+    "tags": ["action", "shooter", "zombies", "survival", "arcade"],
+    "controls": {
+        "Move": "WASD",
+        "Aim": "Mouse",
+        "Shoot": "Left Mouse Button",
+        "Restart": "R (when game over)"
+    },
+    "minPlayers": 1,
+    "maxPlayers": 1
+}

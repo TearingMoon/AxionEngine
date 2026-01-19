@@ -1,0 +1,13 @@
+{
+    "name": "Pong",
+    "description": "Classic Pong arcade game. Control your paddle to bounce the ball past your opponent. First to reach the score limit wins!",
+    "version": "1.0.0",
+    "author": "Axion Engine Team",
+    "tags": ["arcade", "multiplayer", "classic", "sports"],
+    "controls": {
+        "Player 1": "W/S - Move paddle up/down",
+        "Player 2": "AI controlled"
+    },
+    "minPlayers": 1,
+    "maxPlayers": 2
+}

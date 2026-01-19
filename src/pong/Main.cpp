@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "axion_engine/Axion.hpp"
-#include "game/scenes/PongScene.hpp"
+#include "pong/scenes/PongScene.hpp"
 
 using namespace Axion;
 

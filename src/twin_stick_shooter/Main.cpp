@@ -4,7 +4,7 @@
 
 #include "axion_engine/Axion.hpp"
 
-#include "game_2/scenes/TwinStickScene.hpp"
+#include "twin_stick_shooter/scenes/TwinStickScene.hpp"
 
 using namespace Axion;
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "axion_engine/Axion.hpp"
-#include "game/scripts/PlayerPaddle.hpp"
-#include "game/scripts/AIPaddle.hpp"
-#include "game/scripts/Ball.hpp"
+#include "pong/scripts/PlayerPaddle.hpp"
+#include "pong/scripts/AIPaddle.hpp"
+#include "pong/scripts/Ball.hpp"
 
 namespace Axion
 {

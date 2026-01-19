@@ -27,9 +27,9 @@
 			]
 		},
 		{
-			"label": "Build Game 1",
+			"label": "Build Pong",
 			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug --target Game",
+			"command": "cmake --build build/windows-debug --config Debug --target Pong",
 			"problemMatcher": [
 				"$msCompile"
 			],
@@ -39,9 +39,9 @@
 			]
 		},
 		{
-			"label": "Build Game 2",
+			"label": "Build TwinStickShooter",
 			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug --target Game2",
+			"command": "cmake --build build/windows-debug --config Debug --target TwinStickShooter",
 			"problemMatcher": [
 				"$msCompile"
 			],

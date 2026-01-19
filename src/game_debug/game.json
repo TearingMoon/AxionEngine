@@ -1,0 +1,14 @@
+{
+    "name": "Debug Sandbox",
+    "description": "Engine testing and debugging sandbox. Used for testing new features and components.",
+    "version": "1.0.0",
+    "author": "Axion Engine Team",
+    "tags": ["debug", "testing", "development"],
+    "controls": {
+        "Move": "WASD",
+        "Rotate": "A/D",
+        "Scale": "Numpad +/-"
+    },
+    "minPlayers": 1,
+    "maxPlayers": 1
+}

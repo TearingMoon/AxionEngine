@@ -2,12 +2,12 @@
 
 #include "axion_engine/Axion.hpp"
 
-#include "game_2/scripts/ReticleScript.hpp"
-#include "game_2/scripts/PlayerScript.hpp"
-#include "game_2/scripts/ZombieScript.hpp"
-#include "game_2/scripts/BulletScript.hpp"
-#include "game_2/scripts/CameraFollowScript.hpp"
-#include "game_2/scripts/GameUIScript.hpp"
+#include "twin_stick_shooter/scripts/ReticleScript.hpp"
+#include "twin_stick_shooter/scripts/PlayerScript.hpp"
+#include "twin_stick_shooter/scripts/ZombieScript.hpp"
+#include "twin_stick_shooter/scripts/BulletScript.hpp"
+#include "twin_stick_shooter/scripts/CameraFollowScript.hpp"
+#include "twin_stick_shooter/scripts/GameUIScript.hpp"
 
 namespace Axion
 {
