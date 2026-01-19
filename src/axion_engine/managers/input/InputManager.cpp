@@ -1,6 +1,9 @@
 #include "InputManager.hpp"
 
-InputManager::InputManager(EngineContext &ctx) : ContextAware(ctx)
+namespace Axion
+{
+
+InputManager::InputManager(EngineContext& ctx) : ContextAware(ctx)
 {
     currentKeys_.fill(0);
     previousKeys_.fill(0);
@@ -12,15 +15,13 @@ InputManager::~InputManager()
     INFO("InputManager destroyed.");
 }
 
-#pragma region Fetch Inputs
-
 void InputManager::BeginFrame()
 {
     previousKeys_ = currentKeys_;
     previousMouseButtons_ = currentMouseButtons_;
 }
 
-void InputManager::ProcessEvent(const SDL_Event &e)
+void InputManager::ProcessEvent(const SDL_Event& e)
 {
     switch (e.type)
     {
@@ -49,7 +50,7 @@ void InputManager::ProcessEvent(const SDL_Event &e)
 
 void InputManager::EndFrame()
 {
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
+    const Uint8* state = SDL_GetKeyboardState(NULL);
     for (int i = 0; i < SDL_NUM_SCANCODES; i++)
         currentKeys_[i] = state[i];
 
@@ -57,8 +58,6 @@ void InputManager::EndFrame()
     currentMouseButtons_ = SDL_GetMouseState(&x, &y);
     mousePosition_ = {x, y};
 }
-
-#pragma endregion
 
 bool InputManager::IsKeyDown(SDL_Scancode key) const
 {
@@ -93,3 +92,5 @@ bool InputManager::IsMouseButtonJustReleased(Uint8 button) const
     bool before = (previousMouseButtons_ & SDL_BUTTON(button)) != 0;
     return !now && before;
 }
+
+} // namespace Axion

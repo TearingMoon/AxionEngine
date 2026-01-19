@@ -1,11 +1,12 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
-#include "axion_engine/runtime/classes/scene/Scene.hpp"
+#include "axion_engine/Axion.hpp"
 #include "BulletScript.hpp"
 #include <glm/glm.hpp>
 #include <functional>
+
+namespace Axion
+{
 
 // Forward declarations
 class PlayerScript;
@@ -129,3 +130,5 @@ private:
         return nullptr;
     }
 };
+
+} // namespace Axion

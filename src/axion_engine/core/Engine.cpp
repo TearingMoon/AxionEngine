@@ -1,28 +1,25 @@
 #include "Engine.hpp"
 
-// TODO: Remove window initialization from here
-Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(context_), window_(context_)
+namespace Axion
+{
+
+Engine::Engine(EngineConfig config, WindowConfig windowConfig) 
+    : sdlManager_(context_)
+    , window_(context_)
 {
     config_ = config;
 
-    // Initialize Logger
-    logger_ = std::make_unique<Logger>();
+    logger_ = std::make_unique<Logger>(config_.maxLogFiles);
     context_.logger = logger_.get();
 
-    // Initialize Analyzer
     analyzer_ = std::make_unique<Analyzer>(context_);
     context_.analyzer = analyzer_.get();
 
-    // Initialize SDL
     sdlManager_.InitSDL();
 
-    // Create Window
-    window_.Start(WindowConfig);
-
-    // Add window to context
+    window_.Start(windowConfig);
     context_.window = &window_;
 
-    // Initialize Managers
     logger_->Separator("Initializing Engine Managers");
 
     time_ = std::make_unique<TimeManager>(context_);
@@ -48,24 +45,17 @@ Engine::Engine(EngineConfig config, WindowConfig WindowConfig) : sdlManager_(con
 
 Engine::~Engine()
 {
-    // Ensure SDL is properly shut down
-    sdlManager_.QuitSDL(); // Although SDLManager destructor also does this, being explicit here
+    sdlManager_.QuitSDL();
 }
 
 void Engine::Run()
 {
-    state_ = ENGINE_STATE_RUNNING;
+    state_ = EngineState::Running;
 
-    // Main engine loop
-    while (state_ == ENGINE_STATE_RUNNING)
+    while (state_ == EngineState::Running)
     {
-        // Event handling
         EventLoop();
-
-        // Engine Update Logic
         AppLoop();
-
-        // For now, just delay to simulate work being done
         SDL_Delay(config_.updateDelay);
     }
 }
@@ -75,15 +65,13 @@ void Engine::EventLoop()
     input_->BeginFrame();
     while (SDL_PollEvent(&event_))
     {
-        // Process event for InputManager
         input_->ProcessEvent(event_);
 
         if (event_.type == SDL_QUIT)
         {
             logger_->Info("Quit event received. Stopping engine.");
-            state_ = ENGINE_STATE_STOPPED;
+            state_ = EngineState::Stopped;
         }
-        // Handle other events as needed
     }
     input_->EndFrame();
 }
@@ -91,16 +79,11 @@ void Engine::EventLoop()
 void Engine::AppLoop()
 {
     time_->Update();
-
     analyzer_->Update();
-
     scene_->Update();
-
-    // Physics update
     physics_->Update(time_->GetDeltaTime());
-
-    // Graphics update
     render_->Update();
-
     scene_->ProcessRequests();
 }
+
+} // namespace Axion

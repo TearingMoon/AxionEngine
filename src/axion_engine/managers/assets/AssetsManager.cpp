@@ -1,8 +1,10 @@
 #include "AssetsManager.hpp"
 
-AssetsManager::AssetsManager(EngineContext &ctx) : ContextAware(ctx)
+namespace Axion
 {
-    // Get the assets root path
+
+AssetsManager::AssetsManager(EngineContext& ctx) : ContextAware(ctx)
+{
     assetsRoot_ = GetPath("assets/");
     INFO("AssetsManager initialized.");
 }
@@ -12,14 +14,14 @@ AssetsManager::~AssetsManager()
     INFO("AssetsManager destroyed.");
 }
 
-SDL_Texture *AssetsManager::LoadTexture(const std::string &id, const std::string &relativePath)
+SDL_Texture* AssetsManager::LoadTexture(const std::string& id, const std::string& relativePath)
 {
     auto it = textures_.find(id);
     if (it != textures_.end())
         return it->second;
 
     const std::string fullPath = assetsRoot_ + relativePath;
-    SDL_Surface *surface = IMG_Load(fullPath.c_str());
+    SDL_Surface* surface = IMG_Load(fullPath.c_str());
 
     if (!surface)
     {
@@ -27,7 +29,7 @@ SDL_Texture *AssetsManager::LoadTexture(const std::string &id, const std::string
         return nullptr;
     }
 
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(ctx_.window->GetRenderer(), surface);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx_.window->GetRenderer(), surface);
     SDL_FreeSurface(surface);
 
     if (!texture)
@@ -40,7 +42,7 @@ SDL_Texture *AssetsManager::LoadTexture(const std::string &id, const std::string
     return texture;
 }
 
-SDL_Texture *AssetsManager::GetTexture(const std::string &id) const
+SDL_Texture* AssetsManager::GetTexture(const std::string& id) const
 {
     auto it = textures_.find(id);
     if (it == textures_.end())
@@ -48,7 +50,7 @@ SDL_Texture *AssetsManager::GetTexture(const std::string &id) const
     return it->second;
 }
 
-void AssetsManager::UnloadTexture(const std::string &id)
+void AssetsManager::UnloadTexture(const std::string& id)
 {
     auto it = textures_.find(id);
     if (it == textures_.end())
@@ -60,9 +62,11 @@ void AssetsManager::UnloadTexture(const std::string &id)
 
 void AssetsManager::UnloadAllTextures()
 {
-    for (auto &[id, tex] : textures_)
+    for (auto& [id, tex] : textures_)
     {
         SDL_DestroyTexture(tex);
     }
     textures_.clear();
 }
+
+} // namespace Axion

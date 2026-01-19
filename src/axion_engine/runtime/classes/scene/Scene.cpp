@@ -1,5 +1,8 @@
 #include "Scene.hpp"
 
+namespace Axion
+{
+
 void Scene::Tick()
 {
     OnSceneUpdate();
@@ -139,8 +142,7 @@ void Scene::ProcessDestroyQueue()
 
 void Scene::ProcessSpawnQueue()
 {
-    // Move all newly spawned objects to the main objects list
-    for (auto &obj : spawnQueue_)
+    for (auto& obj : spawnQueue_)
     {
         if (obj)
         {
@@ -150,3 +152,5 @@ void Scene::ProcessSpawnQueue()
     }
     spawnQueue_.clear();
 }
+
+} // namespace Axion

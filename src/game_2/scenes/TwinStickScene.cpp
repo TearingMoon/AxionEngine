@@ -1,6 +1,9 @@
 #include "TwinStickScene.hpp"
 #include "../scripts/InfiniteBackgroundScript.hpp"
 
+namespace Axion
+{
+
 void TwinStickScene::OnSceneEnter()
 {
     // Reset game state
@@ -53,7 +56,7 @@ void TwinStickScene::OnSceneEnter()
     
     auto playerCollider = player->AddComponent<CircleColliderComponent>();
     playerCollider->SetRadius(0.4f);
-    playerCollider->SetColliderType(COLLIDER_TYPE::TRIGGER);
+    playerCollider->SetColliderType(ColliderType::Trigger);
 
     // Camera GameObject (created after player so it can follow)
     auto cameraGO = CreateGameObject();
@@ -194,7 +197,7 @@ void TwinStickScene::SpawnZombie()
     // Add collider
     auto zombieCollider = zombie->AddComponent<CircleColliderComponent>();
     zombieCollider->SetRadius(0.5f);
-    zombieCollider->SetColliderType(COLLIDER_TYPE::TRIGGER);
+    zombieCollider->SetColliderType(ColliderType::Trigger);
 
     // Add AI script with death callback
     auto zombieScript = zombie->AddComponent<ZombieScript>();
@@ -234,3 +237,5 @@ void TwinStickScene::RestartGame()
     // Reload the scene
     ctx_.scene->RequestChange("TwinStickScene");
 }
+
+} // namespace Axion

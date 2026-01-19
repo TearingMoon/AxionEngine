@@ -2,9 +2,11 @@
 #undef main
 #include <stdio.h>
 
-#include "axion_engine/core/Engine.hpp"
+#include "axion_engine/Axion.hpp"
 
 #include "game_2/scenes/TwinStickScene.hpp"
+
+using namespace Axion;
 
 int main(int argc, char *args[])
 {

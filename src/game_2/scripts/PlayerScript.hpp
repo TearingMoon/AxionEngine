@@ -1,18 +1,13 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/components/rigid_body/RigidBody.hpp"
-#include "axion_engine/platform/window/Window.hpp"
-#include "axion_engine/managers/input/InputManager.hpp"
-#include "axion_engine/managers/time/TimeManager.hpp"
-#include "axion_engine/managers/scene/SceneManager.hpp"
-#include "axion_engine/runtime/classes/scene/Scene.hpp"
-#include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
-#include "axion_engine/runtime/components/collider/CircleColliderComponent.hpp"
+#include "axion_engine/Axion.hpp"
 #include "BulletScript.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <functional>
+
+namespace Axion
+{
 
 class PlayerScript : public ScriptableComponent
 {
@@ -184,7 +179,7 @@ private:
         // Add collider
         auto bulletCollider = bullet->AddComponent<CircleColliderComponent>();
         bulletCollider->SetRadius(1.0f);
-        bulletCollider->SetColliderType(COLLIDER_TYPE::TRIGGER);
+        bulletCollider->SetColliderType(ColliderType::Trigger);
 
         // Add RigidBody for physics-based movement
         auto bulletRb = bullet->AddComponent<RigidBody>();
@@ -196,3 +191,5 @@ private:
         bulletScript->direction = direction;
     }
 };
+
+} // namespace Axion

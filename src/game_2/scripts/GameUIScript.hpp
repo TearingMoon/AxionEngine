@@ -1,8 +1,10 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/components/renderer/TextRenderComponent.hpp"
+#include "axion_engine/Axion.hpp"
 #include <string>
+
+namespace Axion
+{
 
 class GameUIScript : public ScriptableComponent
 {
@@ -115,3 +117,5 @@ private:
         }
     }
 };
+
+} // namespace Axion

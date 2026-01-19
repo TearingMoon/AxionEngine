@@ -1,64 +1,91 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Configure (Windows)",
-      "type": "shell",
-      "command": "cmake --preset windows-vcpkg-debug",
-      "problemMatcher": [],
-      "group": {
-        "kind": "build",
-        "isDefault": false
-      }
-    },
-    {
-      "label": "Build All",
-      "type": "shell",
-      "command": "cmake --build build/windows-debug --config Debug",
-      "problemMatcher": ["$msCompile"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "dependsOn": ["Configure (Windows)"]
-    },
-    {
-      "label": "Build Game 1",
-      "type": "shell",
-      "command": "cmake --build build/windows-debug --config Debug --target Game",
-      "problemMatcher": ["$msCompile"],
-      "group": "build",
-      "dependsOn": ["Configure (Windows)"]
-    },
-    {
-      "label": "Build Game 2",
-      "type": "shell",
-      "command": "cmake --build build/windows-debug --config Debug --target Game2",
-      "problemMatcher": ["$msCompile"],
-      "group": "build",
-      "dependsOn": ["Configure (Windows)"]
-    },
-    {
-      "label": "Build Game Debug",
-      "type": "shell",
-      "command": "cmake --build build/windows-debug --config Debug --target GameDebug",
-      "problemMatcher": ["$msCompile"],
-      "group": "build",
-      "dependsOn": ["Configure (Windows)"]
-    },
-    {
-      "label": "Build Launcher",
-      "type": "shell",
-      "command": "cmake --build build/windows-debug --config Debug --target GameLauncher",
-      "problemMatcher": ["$msCompile"],
-      "group": "build",
-      "dependsOn": ["Configure (Windows)"]
-    },
-    {
-      "label": "Clean",
-      "type": "shell",
-      "command": "cmake --build build/windows-debug --config Debug --target clean",
-      "problemMatcher": []
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Configure (Windows)",
+			"type": "shell",
+			"command": "cmake --preset windows-vcpkg-debug",
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			}
+		},
+		{
+			"label": "Build All",
+			"type": "shell",
+			"command": "cmake --build build/windows-debug --config Debug",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"dependsOn": [
+				"Configure (Windows)"
+			]
+		},
+		{
+			"label": "Build Game 1",
+			"type": "shell",
+			"command": "cmake --build build/windows-debug --config Debug --target Game",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build",
+			"dependsOn": [
+				"Configure (Windows)"
+			]
+		},
+		{
+			"label": "Build Game 2",
+			"type": "shell",
+			"command": "cmake --build build/windows-debug --config Debug --target Game2",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build",
+			"dependsOn": [
+				"Configure (Windows)"
+			]
+		},
+		{
+			"label": "Build Game Debug",
+			"type": "shell",
+			"command": "cmake --build build/windows-debug --config Debug --target GameDebug",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build",
+			"dependsOn": [
+				"Configure (Windows)"
+			]
+		},
+		{
+			"label": "Build Launcher",
+			"type": "shell",
+			"command": "cmake --build build/windows-debug --config Debug --target GameLauncher",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build",
+			"dependsOn": [
+				"Configure (Windows)"
+			]
+		},
+		{
+			"label": "Clean",
+			"type": "shell",
+			"command": "cmake --build build/windows-debug --config Debug --target clean",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build All Debug",
+			"type": "shell",
+			"command": "cmake --build build/windows-debug --config Debug",
+			"isBackground": false,
+			"group": "build"
+		}
+	]
 }

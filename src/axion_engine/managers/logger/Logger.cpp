@@ -1,5 +1,8 @@
 #include "Logger.hpp"
 
+namespace Axion
+{
+
 Logger::Logger(std::size_t maxLogs) : maxLogs_(maxLogs)
 {
 
@@ -113,3 +116,5 @@ void Logger::CleanupOldLogs()
         }
     }
 }
+
+} // namespace Axion

@@ -1,21 +1,21 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/components/transform/TransformComponent.hpp"
-#include "axion_engine/runtime/components/collider/AABBColliderComponent.hpp"
-#include "axion_engine/managers/time/TimeManager.hpp"
+#include "axion_engine/Axion.hpp"
 #include <functional>
+
+namespace Axion
+{
 
 class Ball : public ScriptableComponent
 {
 public:
-    void OnMounted(EngineContext &context) override
+    void OnMounted(EngineContext& context) override
     {
         transform = GetOwner()->GetTransform();
         ResetBall();
     }
 
-    void Update(EngineContext &context) override
+    void Update(EngineContext& context) override
     {
         if (!transform) return;
 
@@ -45,10 +45,10 @@ public:
         transform->SetPosition(pos);
     }
 
-    void OnCollisionEnter(GameObject &other) override
+    void OnCollisionEnter(GameObject& other) override
     {
         velocity.x = -velocity.x;
-        
+
         if (transform && other.GetTransform())
         {
             float ballY = transform->GetPosition().y;
@@ -58,7 +58,7 @@ public:
         }
 
         velocity *= 1.05f;
-        
+
         if (std::abs(velocity.x) > maxSpeed) velocity.x = (velocity.x > 0) ? maxSpeed : -maxSpeed;
         if (std::abs(velocity.y) > maxSpeed) velocity.y = (velocity.y > 0) ? maxSpeed : -maxSpeed;
     }
@@ -66,12 +66,12 @@ public:
     void ResetBall()
     {
         if (!transform) return;
-        
+
         transform->SetPosition({0.0f, 0.0f, 0.0f});
-        
+
         float dirX = (rand() % 2 == 0) ? 1.0f : -1.0f;
         float dirY = ((rand() % 100) / 100.0f - 0.5f) * 2.0f;
-        
+
         velocity = glm::vec2(dirX * initialSpeed, dirY * initialSpeed * 0.5f);
     }
 
@@ -81,13 +81,13 @@ public:
         maxX = maxX_;
         minY = minY_;
         maxY = maxY_;
-        
+
         float screenWidth = maxX - minX;
         maxSpeed = screenWidth * 0.75f;
     }
 
-    void SetInitialSpeed(float speed) 
-    { 
+    void SetInitialSpeed(float speed)
+    {
         initialSpeed = speed;
     }
 
@@ -108,7 +108,9 @@ private:
     float maxX = 400.0f;
     float minY = -300.0f;
     float maxY = 300.0f;
-    
+
     std::function<void()> onPlayer1Score;
     std::function<void()> onPlayer2Score;
 };
+
+} // namespace Axion

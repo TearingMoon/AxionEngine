@@ -1,8 +1,9 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/components/renderer/SpriteRenderComponent.hpp"
-#include "axion_engine/managers/input/InputManager.hpp"
+#include "axion_engine/Axion.hpp"
+
+namespace Axion
+{
 
 class ScriptableTest : public ScriptableComponent
 {
@@ -116,3 +117,5 @@ public:
         printf("- ScriptableTest OnTriggerExit with GameObject %p!\n", (void *)&other);
     }
 };
+
+} // namespace Axion

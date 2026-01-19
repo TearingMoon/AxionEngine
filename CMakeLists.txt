@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# MSVC: Use /FS for parallel PDB writes
+if(MSVC)
+    add_compile_options(/FS)
+endif()
+
 # Find external dependencies
 find_package(glm CONFIG REQUIRED)
 

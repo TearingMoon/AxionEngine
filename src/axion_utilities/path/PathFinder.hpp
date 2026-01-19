@@ -3,11 +3,18 @@
 #include <filesystem>
 #include <SDL.h>
 
+namespace Axion
+{
+
+/**
+ * @brief Get the directory containing the executable.
+ * @return Absolute path ending with '/'.
+ */
 inline std::string GetExecutablePath()
 {
     namespace fs = std::filesystem;
 
-    char *basePath = SDL_GetBasePath();
+    char* basePath = SDL_GetBasePath();
 
     fs::path root;
 
@@ -18,7 +25,6 @@ inline std::string GetExecutablePath()
     }
     else
     {
-        // Fallback: current working directory
         root = fs::current_path();
     }
 
@@ -29,6 +35,11 @@ inline std::string GetExecutablePath()
     return result;
 }
 
+/**
+ * @brief Resolve a relative path from the executable directory.
+ * @param relativePath Path relative to executable.
+ * @return Absolute path ending with '/'.
+ */
 inline std::string GetPath(std::string relativePath)
 {
     namespace fs = std::filesystem;
@@ -42,3 +53,5 @@ inline std::string GetPath(std::string relativePath)
 
     return result;
 }
+
+} // namespace Axion

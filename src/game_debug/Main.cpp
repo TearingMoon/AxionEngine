@@ -2,9 +2,11 @@
 #undef main
 #include <stdio.h>
 
-#include "axion_engine/core/Engine.hpp"
+#include "axion_engine/Axion.hpp"
 
 #include "game_debug/scenes/MainMenuScene.hpp"
+
+using namespace Axion;
 
 // #include "engine/core/AxionEngine.hpp"
 

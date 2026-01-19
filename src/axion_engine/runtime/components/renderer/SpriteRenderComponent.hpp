@@ -6,47 +6,75 @@
 #include "RenderComponent.hpp"
 #include "axion_engine/runtime/components/transform/TransformComponent.hpp"
 
+namespace Axion
+{
+
+/**
+ * @brief Sprite rendering component for textured 2D objects.
+ *
+ * Renders an SDL texture with support for source rectangles,
+ * color modulation, custom sizing, and rotation.
+ */
 class SpriteRenderComponent : public RenderComponent
 {
 public:
-    void SetTexture(SDL_Texture *tex) { texture_ = tex; }
-    SDL_Texture *GetTexture() const { return texture_; }
+    /**
+     * @brief Set the texture to render.
+     * @param tex SDL texture pointer (ownership not transferred).
+     */
+    void SetTexture(SDL_Texture* tex) { texture_ = tex; }
 
-    void SetSourceRect(const SDL_Rect &r)
+    /**
+     * @brief Get the current texture.
+     * @return The SDL texture pointer.
+     */
+    SDL_Texture* GetTexture() const { return texture_; }
+
+    /**
+     * @brief Set a source rectangle for texture sampling.
+     * @param r The source rectangle in texture coordinates.
+     */
+    void SetSourceRect(const SDL_Rect& r)
     {
         srcRect_ = r;
         hasSrcRect_ = true;
     }
 
-    void SetColor(const SDL_Color &col) { color_ = col; }
-    void SetSize(const glm::vec2 &size) { size_ = size; }
+    /**
+     * @brief Set the color modulation.
+     * @param col RGBA color to apply.
+     */
+    void SetColor(const SDL_Color& col) { color_ = col; }
+
+    /**
+     * @brief Set the display size in world units.
+     * @param size Width and height.
+     */
+    void SetSize(const glm::vec2& size) { size_ = size; }
+
     glm::vec2 GetSize() const { return size_; }
     SDL_Color GetColor() const { return color_; }
     bool HasSourceRect() const { return hasSrcRect_; }
     SDL_Rect GetSourceRect() const { return srcRect_; }
 
-    void Render(const RenderContext &ctx) override
+    void Render(const RenderContext& ctx) override
     {
         if (!texture_ || !ctx.renderer || !ctx.camera)
             return;
 
-        auto *tr = GetOwner()->GetComponent<TransformComponent>();
+        auto* tr = GetOwner()->GetComponent<TransformComponent>();
         if (!tr)
             return;
 
-        // Get camera transform
-        auto *camTr = ctx.camera->GetOwner()->GetTransform();
+        auto* camTr = ctx.camera->GetOwner()->GetTransform();
         glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
 
-        // Get window size
         int winW = 0, winH = 0;
         SDL_GetRendererOutputSize(ctx.renderer, &winW, &winH);
 
-        // Get world transform
         const glm::mat4 worldMatrix = tr->GetWorldMatrix();
         const glm::vec3 worldPos = glm::vec3(worldMatrix[3]);
 
-        // Extract scale and rotation from matrix
         glm::vec3 basisX = glm::vec3(worldMatrix[0]);
         glm::vec3 basisY = glm::vec3(worldMatrix[1]);
         float scaleX = glm::length(basisX);
@@ -55,12 +83,10 @@ public:
         float angleRad = std::atan2(worldMatrix[0][1], worldMatrix[0][0]);
         float angleDeg = -glm::degrees(angleRad);
 
-        // World to screen conversion
         float zoom = 1.0f;
         float screenX = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
         float screenY = winH * 0.5f - (worldPos.y - camPos.y) * zoom;
 
-        // Setup source rect
         SDL_Rect src;
         if (hasSrcRect_)
         {
@@ -73,12 +99,10 @@ public:
             src = {0, 0, texW, texH};
         }
 
-        // Calculate destination size
         glm::vec2 sizeWorld = size_ * glm::vec2(scaleX, scaleY);
         float dstW = (size_.x > 0.0f) ? sizeWorld.x : src.w * scaleX;
         float dstH = (size_.y > 0.0f) ? sizeWorld.y : src.h * scaleY;
 
-        // Setup destination rect (centered on position)
         SDL_FRect dst;
         dst.w = dstW;
         dst.h = dstH;
@@ -99,9 +123,11 @@ public:
     }
 
 private:
-    SDL_Texture *texture_ = nullptr;
+    SDL_Texture* texture_ = nullptr;
     SDL_Rect srcRect_{0, 0, 0, 0};
     bool hasSrcRect_ = false;
     SDL_Color color_{255, 255, 255, 255};
     glm::vec2 size_{1.0f, 1.0f};
 };
+
+} // namespace Axion

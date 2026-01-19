@@ -2,14 +2,15 @@
 #undef main
 #include <stdio.h>
 
-#include "axion_engine/core/Engine.hpp"
-
+#include "axion_engine/Axion.hpp"
 #include "game/scenes/PongScene.hpp"
 
-int main(int argc, char *args[])
+using namespace Axion;
+
+int main(int argc, char* args[])
 {
     EngineConfig engineConfig;
-    engineConfig.updateDelay = 16; // 16 Approx ~60 FPS
+    engineConfig.updateDelay = 16;
 
     WindowConfig windowConfig = {
         "Axion Pong - Engine Demo",
@@ -19,7 +20,6 @@ int main(int argc, char *args[])
 
     Engine engine(engineConfig, windowConfig);
 
-    // Register Pong scene
     engine.GetSceneManager()->RegisterScene<PongScene>("Pong");
     engine.GetSceneManager()->RequestChange("Pong");
 

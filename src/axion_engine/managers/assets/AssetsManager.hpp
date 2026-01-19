@@ -12,21 +12,49 @@
 
 #include "axion_utilities/path/PathFinder.hpp"
 
+namespace Axion
+{
+
+/**
+ * @brief Manages loading and caching of game assets.
+ * 
+ * AssetsManager provides texture loading from files and maintains a cache
+ * of loaded textures to avoid redundant disk access. Textures are identified
+ * by user-defined string IDs.
+ */
 class AssetsManager : ContextAware
 {
 public:
-    AssetsManager(EngineContext &ctx);
+    AssetsManager(EngineContext& ctx);
     ~AssetsManager();
 
-    SDL_Texture *LoadTexture(const std::string &id, const std::string &relativePath);
+    /**
+     * @brief Loads a texture from file and caches it.
+     * @param id Unique identifier for the texture
+     * @param relativePath Path relative to the assets folder
+     * @return Pointer to the loaded texture, or nullptr on failure
+     */
+    SDL_Texture* LoadTexture(const std::string& id, const std::string& relativePath);
 
-    SDL_Texture *GetTexture(const std::string &id) const;
+    /**
+     * @brief Retrieves a previously loaded texture.
+     * @param id Texture identifier
+     * @return Pointer to the texture, or nullptr if not found
+     */
+    SDL_Texture* GetTexture(const std::string& id) const;
 
-    void UnloadTexture(const std::string &id);
+    /**
+     * @brief Unloads a specific texture and frees its memory.
+     * @param id Texture identifier to unload
+     */
+    void UnloadTexture(const std::string& id);
 
+    /** @brief Unloads all cached textures. */
     void UnloadAllTextures();
 
 private:
-    std::string assetsRoot_; // TODO: Initialize this with the correct assets root path
-    std::unordered_map<std::string, SDL_Texture *> textures_;
+    std::string assetsRoot_;
+    std::unordered_map<std::string, SDL_Texture*> textures_;
 };
+
+} // namespace Axion

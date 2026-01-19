@@ -1,6 +1,9 @@
 #include "Window.hpp"
 
-Window::Window(EngineContext &ctx) : ContextAware(ctx)
+namespace Axion
+{
+
+Window::Window(EngineContext& ctx) : ContextAware(ctx)
 {
 }
 
@@ -98,3 +101,5 @@ SDL_Renderer *Window::CreateRenderer(SDL_Window *window) noexcept
 
     return renderer;
 }
+
+} // namespace Axion

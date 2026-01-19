@@ -1,6 +1,9 @@
 #include "SDLManager.hpp"
 
-SDLManager::SDLManager(EngineContext &ctx) : ContextAware(ctx)
+namespace Axion
+{
+
+SDLManager::SDLManager(EngineContext& ctx) : ContextAware(ctx)
 {
 }
 
@@ -49,3 +52,5 @@ void SDLManager::QuitSDL()
         initialized_ = false;
     }
 }
+
+} // namespace Axion

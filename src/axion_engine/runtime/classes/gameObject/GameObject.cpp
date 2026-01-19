@@ -1,12 +1,13 @@
 #include "GameObject.hpp"
 #include "axion_engine/runtime/classes/scene/Scene.hpp"
 
-// Initialize static ID counter
+namespace Axion
+{
+
 size_t GameObject::nextId_ = 0;
 
-GameObject::GameObject(Scene &parentScene) : parentScene_(parentScene), id_(nextId_++)
+GameObject::GameObject(Scene& parentScene) : parentScene_(parentScene), id_(nextId_++)
 {
-    // Add base components here
     transform_ = AddComponent<TransformComponent>();
 }
 
@@ -15,30 +16,30 @@ void GameObject::Tick()
     if (!isEnabled_ || isDestroyed_)
         return;
 
-    if (isFirsUpdate_)
+    if (isFirstUpdate_)
     {
-        for (auto &component : components_)
+        for (auto& component : components_)
         {
-            if (isDestroyed_) // Check if destroyed during Start()
+            if (isDestroyed_)
                 return;
             if (!component)
                 continue;
-            if (auto updatable = dynamic_cast<IUpdateable *>(component.get()))
+            if (auto updatable = dynamic_cast<IUpdateable*>(component.get()))
             {
                 updatable->Start(ctx_());
             }
         }
-        isFirsUpdate_ = false;
+        isFirstUpdate_ = false;
     }
     else
     {
-        for (auto &component : components_)
+        for (auto& component : components_)
         {
-            if (isDestroyed_) // Check if destroyed during Update()
+            if (isDestroyed_)
                 return;
             if (!component)
                 continue;
-            if (auto updatable = dynamic_cast<IUpdateable *>(component.get()))
+            if (auto updatable = dynamic_cast<IUpdateable*>(component.get()))
             {
                 updatable->Update(ctx_());
             }
@@ -199,7 +200,9 @@ bool GameObject::HasCollider() const
     return false;
 }
 
-EngineContext &GameObject::ctx_()
+EngineContext& GameObject::ctx_()
 {
     return parentScene_.GetContext();
 }
+
+} // namespace Axion

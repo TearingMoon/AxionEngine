@@ -1,6 +1,9 @@
 #include "PhysicsManager.hpp"
 
-PhysicsManager::PhysicsManager(EngineContext &context) : ContextAware(context)
+namespace Axion
+{
+
+PhysicsManager::PhysicsManager(EngineContext& context) : ContextAware(context)
 {
     INFO("PhysicsManager initialized.");
 }
@@ -394,3 +397,5 @@ void PhysicsManager::DetectCollisionEvents(const std::unordered_map<size_t, Game
         }
     }
 }
+
+} // namespace Axion

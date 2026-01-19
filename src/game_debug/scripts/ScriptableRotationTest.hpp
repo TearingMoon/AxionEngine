@@ -1,6 +1,9 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
+#include "axion_engine/Axion.hpp"
+
+namespace Axion
+{
 
 class ScriptableRotationTest : public ScriptableComponent
 {
@@ -17,3 +20,5 @@ public:
         this->GetOwner()->GetTransform()->Rotate(0.0f, 0.0f, 1.0f);
     }
 };
+
+} // namespace Axion

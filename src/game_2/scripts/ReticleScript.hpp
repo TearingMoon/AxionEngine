@@ -1,9 +1,9 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/platform/window/Window.hpp"
-#include "axion_engine/managers/input/InputManager.hpp"
-#include "axion_engine/managers/scene/SceneManager.hpp"
+#include "axion_engine/Axion.hpp"
+
+namespace Axion
+{
 
 class ReticleScript : public ScriptableComponent
 {
@@ -64,3 +64,5 @@ public:
         tr->SetPosition({worldX, worldY, 0.0f});
     }
 };
+
+} // namespace Axion

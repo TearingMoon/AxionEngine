@@ -1,6 +1,9 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
+#include "axion_engine/Axion.hpp"
+
+namespace Axion
+{
 
 class ScriptableDeleteTest : public ScriptableComponent
 {
@@ -17,3 +20,5 @@ public:
         printf("- ScriptableDeleteTest Destroyed!\n");
     }
 };
+
+} // namespace Axion

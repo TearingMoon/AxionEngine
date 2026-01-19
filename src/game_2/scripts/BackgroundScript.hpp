@@ -1,10 +1,10 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
-#include "axion_engine/runtime/components/camera/CameraComponent.hpp"
-#include "axion_engine/managers/scene/SceneManager.hpp"
+#include "axion_engine/Axion.hpp"
 #include <glm/glm.hpp>
+
+namespace Axion
+{
 
 class BackgroundScript : public ScriptableComponent
 {
@@ -36,3 +36,5 @@ public:
         tr->SetPosition({camPos.x, camPos.y, currentPos.z});
     }
 };
+
+} // namespace Axion

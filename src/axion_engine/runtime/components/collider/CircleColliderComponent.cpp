@@ -4,43 +4,50 @@
 #include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
 #include "axion_engine/runtime/components/transform/TransformComponent.hpp"
 
+namespace Axion
+{
+
+CircleColliderComponent::CircleColliderComponent()
+{
+    shape_ = ColliderShape::Circle;
+}
+
 float CircleColliderComponent::GetRadius() const
 {
-    auto *owner = GetOwner();
+    auto* owner = GetOwner();
     if (!owner) return radius_;
-    
-    auto *transform = owner->GetTransform();
+
+    auto* transform = owner->GetTransform();
     if (!transform) return radius_;
-    
+
     const glm::vec3 s = transform->GetScale();
     const float uniform = std::max(s.x, s.y);
     return radius_ * uniform;
 }
 
-bool CircleColliderComponent::Intersects(const ColliderComponent &other, Manifold &out) const
+bool CircleColliderComponent::Intersects(const ColliderComponent& other, Manifold& out) const
 {
-    // Check if this collider's owner is valid
-    auto *myOwner = GetOwner();
+    auto* myOwner = GetOwner();
     if (!myOwner || myOwner->IsDestroyed())
         return false;
-    
+
     return other.IntersectsWithCircle(*this, out);
 }
 
-bool CircleColliderComponent::IntersectsWithCircle(const CircleColliderComponent &other, Manifold &out) const
+bool CircleColliderComponent::IntersectsWithCircle(const CircleColliderComponent& other, Manifold& out) const
 {
-    auto *ownerA = GetOwner();
-    auto *ownerB = other.GetOwner();
-    
+    auto* ownerA = GetOwner();
+    auto* ownerB = other.GetOwner();
+
     if (!ownerA || !ownerB || ownerA->IsDestroyed() || ownerB->IsDestroyed())
         return false;
-    
-    auto *transformA = ownerA->GetTransform();
-    auto *transformB = ownerB->GetTransform();
-    
+
+    auto* transformA = ownerA->GetTransform();
+    auto* transformB = ownerB->GetTransform();
+
     if (!transformA || !transformB)
         return false;
-    
+
     const glm::vec3 a3 = transformA->GetWorldPosition();
     const glm::vec3 b3 = transformB->GetWorldPosition();
 
@@ -71,35 +78,35 @@ bool CircleColliderComponent::IntersectsWithCircle(const CircleColliderComponent
     return true;
 }
 
-bool CircleColliderComponent::IntersectsWithAABB(const AABBColliderComponent &other, Manifold &out) const
+bool CircleColliderComponent::IntersectsWithAABB(const AABBColliderComponent& other, Manifold& out) const
 {
     return other.IntersectsWithCircle(*this, out);
 }
 
-bool CircleColliderComponent::IntersectsWithOBB(const OBBColliderComponent &other, Manifold &out) const
+bool CircleColliderComponent::IntersectsWithOBB(const OBBColliderComponent& other, Manifold& out) const
 {
     return other.IntersectsWithCircle(*this, out);
 }
 
-void CircleColliderComponent::Render(const RenderContext &ctx)
+void CircleColliderComponent::Render(const RenderContext& ctx)
 {
-    auto *owner = GetOwner();
+    auto* owner = GetOwner();
     if (!owner || owner->IsDestroyed()) return;
-    
-    auto *transform = owner->GetTransform();
+
+    auto* transform = owner->GetTransform();
     if (!transform || !ctx.camera || !ctx.renderer)
         return;
 
-    auto *camOwner = ctx.camera->GetOwner();
+    auto* camOwner = ctx.camera->GetOwner();
     if (!camOwner || camOwner->IsDestroyed()) return;
-    
-    auto *camTransform = camOwner->GetTransform();
+
+    auto* camTransform = camOwner->GetTransform();
     if (!camTransform) return;
 
     const glm::vec3 worldPos = transform->GetWorldPosition();
     const glm::vec3 camWorldPos = camTransform->GetWorldPosition();
 
-    auto WorldToScreen2D = [&](const glm::vec3 &p) -> glm::vec2
+    auto WorldToScreen2D = [&](const glm::vec3& p) -> glm::vec2
     {
         const float x = (p.x - camWorldPos.x) * 1.0f + ctx.windowWidth * 0.5f;
         const float y = ctx.windowHeight * 0.5f - (p.y - camWorldPos.y) * 1.0f;
@@ -128,7 +135,7 @@ void CircleColliderComponent::Render(const RenderContext &ctx)
     SDL_RenderDrawPoint(ctx.renderer, (int)screenPos.x, (int)screenPos.y);
 }
 
-void CircleColliderComponent::DrawCircle(const RenderContext &ctx, int centerX, int centerY, int radius)
+void CircleColliderComponent::DrawCircle(const RenderContext& ctx, int centerX, int centerY, int radius)
 {
     int x = 0;
     int y = radius;
@@ -162,3 +169,5 @@ void CircleColliderComponent::DrawCircle(const RenderContext &ctx, int centerX, 
         }
     }
 }
+
+} // namespace Axion

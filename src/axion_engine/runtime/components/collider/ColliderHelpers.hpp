@@ -2,11 +2,17 @@
 #include <glm/glm.hpp>
 #include <algorithm>
 
+namespace Axion
+{
+
+/**
+ * @brief Collision manifold containing intersection data.
+ */
 struct Manifold
 {
-    bool hit = false;
-    glm::vec2 normal{0, 0};
-    float penetration = 0;
+    bool hit = false;           ///< Whether a collision occurred
+    glm::vec2 normal{0, 0};     ///< Collision normal (pointing from A to B)
+    float penetration = 0;      ///< Penetration depth
 };
 
 inline float Clamp(float v, float lo, float hi)
@@ -21,18 +27,17 @@ inline glm::vec2 ClosestPointOnAABB(glm::vec2 p, glm::vec2 minB, glm::vec2 maxB)
         Clamp(p.y, minB.y, maxB.y)};
 }
 
-inline float Dot(const glm::vec2 &a, const glm::vec2 &b) { return a.x * b.x + a.y * b.y; }
+inline float Dot(const glm::vec2& a, const glm::vec2& b) { return a.x * b.x + a.y * b.y; }
 
 inline float Abs(float v) { return std::fabs(v); }
 
-inline void ProjectOBB(const glm::vec2 &center,
-                       const glm::vec2 &axisX,
-                       const glm::vec2 &axisY,
-                       const glm::vec2 &half,
-                       const glm::vec2 &axis, // axis to project on (normalized preferred)
-                       float &outMin, float &outMax)
+inline void ProjectOBB(const glm::vec2& center,
+                       const glm::vec2& axisX,
+                       const glm::vec2& axisY,
+                       const glm::vec2& half,
+                       const glm::vec2& axis,
+                       float& outMin, float& outMax)
 {
-    // Radius of projection = sum of |dot(axis, obbAxis)| * halfExtent
     const float c = Dot(center, axis);
     const float r =
         Abs(Dot(axisX, axis)) * half.x +
@@ -42,7 +47,7 @@ inline void ProjectOBB(const glm::vec2 &center,
     outMax = c + r;
 }
 
-inline bool OverlapIntervals(float aMin, float aMax, float bMin, float bMax, float &outOverlap)
+inline bool OverlapIntervals(float aMin, float aMax, float bMin, float bMax, float& outOverlap)
 {
     const float left = std::max(aMin, bMin);
     const float right = std::min(aMax, bMax);
@@ -50,22 +55,20 @@ inline bool OverlapIntervals(float aMin, float aMax, float bMin, float bMax, flo
     return outOverlap > 0.0f;
 }
 
-inline bool SAT_ObbObb(const glm::vec2 &cA, const glm::vec2 &axA, const glm::vec2 &ayA, const glm::vec2 &hA,
-                       const glm::vec2 &cB, const glm::vec2 &axB, const glm::vec2 &ayB, const glm::vec2 &hB,
-                       Manifold &out)
+inline bool SAT_ObbObb(const glm::vec2& cA, const glm::vec2& axA, const glm::vec2& ayA, const glm::vec2& hA,
+                       const glm::vec2& cB, const glm::vec2& axB, const glm::vec2& ayB, const glm::vec2& hB,
+                       Manifold& out)
 {
     const glm::vec2 axes[4] = {axA, ayA, axB, ayB};
 
     float minPen = 1e30f;
     glm::vec2 bestAxis{0, 0};
 
-    // Direction from A to B to orient the normal consistently
     const glm::vec2 d = cB - cA;
 
-    for (const glm::vec2 &axisRaw : axes)
+    for (const glm::vec2& axisRaw : axes)
     {
         glm::vec2 axis = axisRaw;
-        // Ensure normalized
         const float len2 = Dot(axis, axis);
         if (len2 < 1e-8f)
             continue;
@@ -82,7 +85,6 @@ inline bool SAT_ObbObb(const glm::vec2 &cA, const glm::vec2 &axA, const glm::vec
         if (overlap < minPen)
         {
             minPen = overlap;
-            // Orient axis to point from A to B
             bestAxis = (Dot(d, axis) >= 0.0f) ? axis : -axis;
         }
     }
@@ -97,3 +99,5 @@ inline float DegToRad(float deg)
 {
     return deg * (3.14159265358979323846f / 180.0f);
 }
+
+} // namespace Axion

@@ -1,11 +1,12 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
-#include "axion_engine/runtime/components/camera/CameraComponent.hpp"
+#include "axion_engine/Axion.hpp"
 #include <glm/glm.hpp>
 #include <vector>
 #include <cmath>
+
+namespace Axion
+{
 
 class InfiniteBackgroundScript : public ScriptableComponent
 {
@@ -58,3 +59,5 @@ public:
         }
     }
 };
+
+} // namespace Axion

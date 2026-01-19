@@ -1,8 +1,10 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
+#include "axion_engine/Axion.hpp"
 #include <glm/glm.hpp>
+
+namespace Axion
+{
 
 class CameraFollowScript : public ScriptableComponent
 {
@@ -42,3 +44,5 @@ public:
         tr->SetPosition(smoothedPos);
     }
 };
+
+} // namespace Axion

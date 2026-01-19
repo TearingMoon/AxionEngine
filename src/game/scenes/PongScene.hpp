@@ -1,15 +1,12 @@
 #pragma once
 
-#include "axion_engine/runtime/classes/scene/Scene.hpp"
-#include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
-#include "axion_engine/runtime/components/camera/CameraComponent.hpp"
-#include "axion_engine/runtime/components/renderer/SquareRenderComponent.hpp"
-#include "axion_engine/runtime/components/renderer/TextRenderComponent.hpp"
-#include "axion_engine/runtime/components/collider/AABBColliderComponent.hpp"
-
+#include "axion_engine/Axion.hpp"
 #include "game/scripts/PlayerPaddle.hpp"
 #include "game/scripts/AIPaddle.hpp"
 #include "game/scripts/Ball.hpp"
+
+namespace Axion
+{
 
 class PongScene : public Scene
 {
@@ -30,11 +27,13 @@ private:
     GameObject* player2ScoreText = nullptr;
     GameObject* ballObject = nullptr;
     GameObject* winnerText = nullptr;
-    
+
     int player1Score = 0;
     int player2Score = 0;
-    
+
     bool gameOver = false;
     float gameOverTimer = 0.0f;
     const float restartDelay = 3.0f;
 };
+
+} // namespace Axion

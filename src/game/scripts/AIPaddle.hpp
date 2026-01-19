@@ -1,18 +1,19 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/components/transform/TransformComponent.hpp"
-#include "axion_engine/managers/time/TimeManager.hpp"
+#include "axion_engine/Axion.hpp"
+
+namespace Axion
+{
 
 class AIPaddle : public ScriptableComponent
 {
 public:
-    void OnMounted(EngineContext &context) override
+    void OnMounted(EngineContext& context) override
     {
         transform = GetOwner()->GetTransform();
     }
 
-    void Update(EngineContext &context) override
+    void Update(EngineContext& context) override
     {
         if (!transform || !ballTransform) return;
 
@@ -49,3 +50,5 @@ private:
     float minY = -250.0f;
     float maxY = 250.0f;
 };
+
+} // namespace Axion

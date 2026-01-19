@@ -11,6 +11,29 @@
 #include "axion_engine/runtime/components/camera/CameraComponent.hpp"
 #include "axion_engine/platform/window/Window.hpp"
 
+namespace Axion
+{
+
+/**
+ * @brief Base class for game scenes.
+ * 
+ * A Scene contains and manages GameObjects, handling their lifecycle,
+ * updates, and rendering. Derive from Scene to create custom game levels
+ * or screens.
+ * 
+ * @par Usage:
+ * @code
+ * class MyScene : public Axion::Scene {
+ * public:
+ *     using Scene::Scene;
+ *     
+ *     void OnSceneEnter() override {
+ *         auto player = CreateGameObject();
+ *         // Configure player...
+ *     }
+ * };
+ * @endcode
+ */
 class Scene : public ContextAware
 {
     friend class SceneManager;
@@ -21,36 +44,61 @@ public:
 
     virtual ~Scene() = default;
 
+    /** @brief Updates all GameObjects in the scene. */
     void Tick();
+    
+    /** @brief Renders all GameObjects in the scene. */
     void Draw();
 
-    GameObject *CreateGameObject();
-    void DestroyGameObject(GameObject &object);
+    /**
+     * @brief Creates a new GameObject in this scene.
+     * @return Pointer to the newly created GameObject
+     */
+    GameObject* CreateGameObject();
+    
+    /**
+     * @brief Marks a GameObject for destruction at frame end.
+     * @param object The GameObject to destroy
+     */
+    void DestroyGameObject(GameObject& object);
 
-    std::vector<GameObject *> GetGameObjects() const
+    /** @brief Returns all active GameObjects in the scene. */
+    std::vector<GameObject*> GetGameObjects() const
     {
-        std::vector<GameObject *> ptrs;
+        std::vector<GameObject*> ptrs;
         ptrs.reserve(objects_.size());
-        for (const auto &obj : objects_)
-        {
+        for (const auto& obj : objects_)
             ptrs.push_back(obj.get());
-        }
         return ptrs;
     }
 
-    EngineContext &GetContext() { return ctx_; }
-    CameraComponent *GetCurrentCamera() const { return currentCamera_; }
+    /** @brief Returns the engine context. */
+    EngineContext& GetContext() { return ctx_; }
+    
+    /** @brief Returns the current active camera, or nullptr if none. */
+    CameraComponent* GetCurrentCamera() const { return currentCamera_; }
 
+    /** @brief World gravity vector applied to rigidbodies. */
     glm::vec3 Gravity = glm::vec3(0.0f, 9.81f, 0.0f);
 
 protected:
+    /** @brief Override to set up the scene when it becomes active. */
     virtual void OnSceneEnter() {}
+    
+    /** @brief Override to clean up when the scene becomes inactive. */
     virtual void OnSceneExit() {}
 
+    /** @brief Override for per-frame scene logic. */
     virtual void OnSceneUpdate() {}
+    
+    /** @brief Override for custom rendering. */
     virtual void OnSceneRender() {}
 
-    void SetCurrentCamera(CameraComponent *camera) { currentCamera_ = camera; }
+    /**
+     * @brief Sets the active camera for rendering.
+     * @param camera The camera component to use
+     */
+    void SetCurrentCamera(CameraComponent* camera) { currentCamera_ = camera; }
 
 private:
     void Enter()
@@ -64,15 +112,13 @@ private:
     {
         OnSceneExit();
         EmitDisabledEvent();
-        EmitDestroyedEvent(); // TODO: Destroy all objects
+        EmitDestroyedEvent();
     }
 
     void EmitMountedEvent();
     void EmitEnabledEvent();
-
     void EmitDestroyedEvent();
     void EmitDisabledEvent();
-
     void EmitFixedUpdateEvent();
 
     void ProcessDestroyQueue();
@@ -80,29 +126,23 @@ private:
     
     void ClearAllObjects()
     {
-        // Clear spawn queue
         spawnQueue_.clear();
-        
-        // Clear destroy queue
         destroyQueue_.clear();
         
-        // Destroy all objects
-        for (auto &obj : objects_)
+        for (auto& obj : objects_)
         {
             if (obj)
-            {
                 obj->OnDestroy();
-            }
         }
         objects_.clear();
-        
-        // Reset camera
         currentCamera_ = nullptr;
     }
 
     std::vector<std::unique_ptr<GameObject>> objects_;
-    std::vector<std::unique_ptr<GameObject>> spawnQueue_; // Objects created during frame
-    std::vector<GameObject *> destroyQueue_;
+    std::vector<std::unique_ptr<GameObject>> spawnQueue_;
+    std::vector<GameObject*> destroyQueue_;
 
-    CameraComponent *currentCamera_ = nullptr;
+    CameraComponent* currentCamera_ = nullptr;
 };
+
+} // namespace Axion

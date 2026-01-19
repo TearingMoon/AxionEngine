@@ -1,8 +1,10 @@
 #pragma once
 
-#include "axion_engine/runtime/components/scriptable/ScriptableComponent.hpp"
-#include "axion_engine/runtime/components/rigid_body/RigidBody.hpp"
+#include "axion_engine/Axion.hpp"
 #include <glm/glm.hpp>
+
+namespace Axion
+{
 
 class BulletScript : public ScriptableComponent
 {
@@ -50,3 +52,5 @@ public:
 private:
     float currentLifetime = 0.0f;
 };
+
+} // namespace Axion

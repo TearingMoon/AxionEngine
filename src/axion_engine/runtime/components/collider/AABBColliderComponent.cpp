@@ -4,23 +4,39 @@
 #include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
 #include "axion_engine/runtime/components/transform/TransformComponent.hpp"
 
+namespace Axion
+{
+
+AABBColliderComponent::AABBColliderComponent()
+{
+    shape_ = ColliderShape::AABB;
+}
+
 glm::vec3 AABBColliderComponent::GetSize() const
 {
-    auto *owner = GetOwner();
+    auto* owner = GetOwner();
     if (!owner) return size_;
-    auto *transform = owner->GetTransform();
+    auto* transform = owner->GetTransform();
     if (!transform) return size_;
     return size_ * transform->GetScale();
 }
 
-void AABBColliderComponent::GetMinMax2D(glm::vec2 &outMin, glm::vec2 &outMax) const
+void AABBColliderComponent::GetMinMax2D(glm::vec2& outMin, glm::vec2& outMax) const
 {
-    auto *owner = GetOwner();
-    if (!owner) { outMin = outMax = glm::vec2(0); return; }
-    
-    auto *transform = owner->GetTransform();
-    if (!transform) { outMin = outMax = glm::vec2(0); return; }
-    
+    auto* owner = GetOwner();
+    if (!owner)
+    {
+        outMin = outMax = glm::vec2(0);
+        return;
+    }
+
+    auto* transform = owner->GetTransform();
+    if (!transform)
+    {
+        outMin = outMax = glm::vec2(0);
+        return;
+    }
+
     const glm::vec3 p3 = transform->GetWorldPosition();
     const glm::vec3 s3 = GetSize();
 
@@ -31,20 +47,20 @@ void AABBColliderComponent::GetMinMax2D(glm::vec2 &outMin, glm::vec2 &outMax) co
     outMax = center + half;
 }
 
-bool AABBColliderComponent::Intersects(const ColliderComponent &other, Manifold &out) const
+bool AABBColliderComponent::Intersects(const ColliderComponent& other, Manifold& out) const
 {
-    auto *myOwner = GetOwner();
+    auto* myOwner = GetOwner();
     if (!myOwner || myOwner->IsDestroyed()) return false;
     return other.IntersectsWithAABB(*this, out);
 }
 
-bool AABBColliderComponent::IntersectsWithCircle(const CircleColliderComponent &circle, Manifold &out) const
+bool AABBColliderComponent::IntersectsWithCircle(const CircleColliderComponent& circle, Manifold& out) const
 {
-    auto *circleOwner = circle.GetOwner();
+    auto* circleOwner = circle.GetOwner();
     if (!circleOwner || circleOwner->IsDestroyed()) return false;
-    auto *circleTransform = circleOwner->GetTransform();
+    auto* circleTransform = circleOwner->GetTransform();
     if (!circleTransform) return false;
-    
+
     glm::vec2 aMin, aMax;
     GetMinMax2D(aMin, aMax);
 
@@ -97,7 +113,7 @@ bool AABBColliderComponent::IntersectsWithCircle(const CircleColliderComponent &
     return true;
 }
 
-bool AABBColliderComponent::IntersectsWithAABB(const AABBColliderComponent &other, Manifold &out) const
+bool AABBColliderComponent::IntersectsWithAABB(const AABBColliderComponent& other, Manifold& out) const
 {
     glm::vec2 aMin, aMax, bMin, bMax;
     GetMinMax2D(aMin, aMax);
@@ -134,35 +150,32 @@ bool AABBColliderComponent::IntersectsWithAABB(const AABBColliderComponent &othe
     return true;
 }
 
-bool AABBColliderComponent::IntersectsWithOBB(const OBBColliderComponent &other, Manifold &out) const
+bool AABBColliderComponent::IntersectsWithOBB(const OBBColliderComponent& other, Manifold& out) const
 {
     return other.IntersectsWithAABB(*this, out);
 }
 
-void AABBColliderComponent::Render(const RenderContext &ctx)
+void AABBColliderComponent::Render(const RenderContext& ctx)
 {
-    auto *tr = GetOwner()->GetTransform();
+    auto* tr = GetOwner()->GetTransform();
     if (!tr || !ctx.camera || !ctx.renderer)
         return;
 
-    // World center
     const glm::vec3 center3 = tr->GetWorldPosition();
     const glm::vec2 center(center3.x, center3.y);
 
     const glm::vec3 size3 = GetSize();
     const glm::vec2 half(size3.x * 0.5f, size3.y * 0.5f);
 
-    // Compute 4 corners in world space
     const glm::vec2 w0(center.x - half.x, center.y - half.y);
     const glm::vec2 w1(center.x + half.x, center.y - half.y);
     const glm::vec2 w2(center.x + half.x, center.y + half.y);
     const glm::vec2 w3(center.x - half.x, center.y + half.y);
 
-    // Camera to screen transform
     const glm::vec3 camWorldPos3 = ctx.camera->GetOwner()->GetTransform()->GetWorldPosition();
     const glm::vec2 camWorldPos(camWorldPos3.x, camWorldPos3.y);
 
-    auto WorldToScreen2D = [&](const glm::vec2 &p) -> glm::vec2
+    auto WorldToScreen2D = [&](const glm::vec2& p) -> glm::vec2
     {
         const float x = (p.x - camWorldPos.x) * 1.0f + ctx.windowWidth * 0.5f;
         const float y = (p.y - camWorldPos.y) * 1.0f + ctx.windowHeight * 0.5f;
@@ -174,19 +187,19 @@ void AABBColliderComponent::Render(const RenderContext &ctx)
     const glm::vec2 s2 = WorldToScreen2D(w2);
     const glm::vec2 s3 = WorldToScreen2D(w3);
 
-    // Set color based on collider type
     if (IsTrigger())
-        SDL_SetRenderDrawColor(ctx.renderer, 0, 255, 255, 255); // cyan
+        SDL_SetRenderDrawColor(ctx.renderer, 0, 255, 255, 255);
     else
-        SDL_SetRenderDrawColor(ctx.renderer, 0, 255, 0, 255); // green
+        SDL_SetRenderDrawColor(ctx.renderer, 0, 255, 0, 255);
 
     SDL_RenderDrawLine(ctx.renderer, (int)s0.x, (int)s0.y, (int)s1.x, (int)s1.y);
     SDL_RenderDrawLine(ctx.renderer, (int)s1.x, (int)s1.y, (int)s2.x, (int)s2.y);
     SDL_RenderDrawLine(ctx.renderer, (int)s2.x, (int)s2.y, (int)s3.x, (int)s3.y);
     SDL_RenderDrawLine(ctx.renderer, (int)s3.x, (int)s3.y, (int)s0.x, (int)s0.y);
 
-    // Draw center point
     SDL_SetRenderDrawColor(ctx.renderer, 255, 0, 0, 255);
     const glm::vec2 sc = WorldToScreen2D(center);
     SDL_RenderDrawPoint(ctx.renderer, (int)sc.x, (int)sc.y);
 }
+
+} // namespace Axion
