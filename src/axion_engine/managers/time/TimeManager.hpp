@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "axion_engine/structure/ContextAware.hpp"
+#include "axion_engine/core/interfaces/ITimeProvider.hpp"
 
 namespace Axion
 {
@@ -13,8 +14,10 @@ namespace Axion
  * 
  * TimeManager provides delta time calculation, elapsed time tracking,
  * and FPS measurement. It uses high-resolution clock for accurate timing.
+ * 
+ * Implements ITimeProvider for decoupled time queries.
  */
-class TimeManager : public ContextAware
+class TimeManager : public ContextAware, public ITimeProvider
 {
 public:
     TimeManager(EngineContext& ctx);
@@ -24,13 +27,19 @@ public:
     void Update();
 
     /** @brief Returns the time elapsed since the last frame in seconds. */
-    float GetDeltaTime() const { return deltaTime_; }
+    float GetDeltaTime() const override { return deltaTime_; }
+    
+    /** @brief Returns the total time elapsed since engine start in seconds. */
+    float GetElapsedTime() const override { return timeSinceStart_; }
     
     /** @brief Returns the total time elapsed since engine start in seconds. */
     float GetTimeSinceStart() const { return timeSinceStart_; }
     
     /** @brief Returns the current frames per second. */
-    int GetFPS() const { return currentFps_; }
+    float GetFPS() const override { return static_cast<float>(currentFps_); }
+    
+    /** @brief Returns the current frames per second as integer. */
+    int GetFPSInt() const { return currentFps_; }
 
 private:
     using Clock = std::chrono::high_resolution_clock;

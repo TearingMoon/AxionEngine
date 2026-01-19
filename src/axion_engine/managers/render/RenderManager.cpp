@@ -35,7 +35,7 @@ void RenderManager::Update()
     rctx.camera = camera;
     SDL_GetRendererOutputSize(renderer_, &rctx.windowWidth, &rctx.windowHeight);
 
-    std::vector<IRenderable*> renderables;
+    renderables.clear();
     CollectRenderables(*scene, renderables);
 
     std::sort(renderables.begin(), renderables.end(),

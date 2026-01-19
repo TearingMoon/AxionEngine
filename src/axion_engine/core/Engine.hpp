@@ -17,6 +17,8 @@
 #include "axion_engine/managers/render/RenderManager.hpp"
 #include "axion_engine/managers/assets/AssetsManager.hpp"
 
+#include "axion_engine/core/events/EventBus.hpp"
+
 namespace Axion
 {
 
@@ -97,6 +99,7 @@ private:
 
     std::unique_ptr<Logger> logger_;
     std::unique_ptr<Analyzer> analyzer_;
+    std::unique_ptr<EventBus> events_;
 
     std::unique_ptr<TimeManager> time_;
     std::unique_ptr<InputManager> input_;

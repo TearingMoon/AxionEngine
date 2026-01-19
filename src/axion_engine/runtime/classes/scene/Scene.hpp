@@ -126,6 +126,12 @@ private:
     
     void ClearAllObjects()
     {
+        // Destroy objects in spawn queue that never made it to the scene
+        for (auto& obj : spawnQueue_)
+        {
+            if (obj)
+                obj->OnDestroy();
+        }
         spawnQueue_.clear();
         destroyQueue_.clear();
         

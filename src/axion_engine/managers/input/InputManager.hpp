@@ -4,6 +4,7 @@
 #include <array>
 
 #include "axion_engine/structure/ContextAware.hpp"
+#include "axion_engine/core/interfaces/IInputProvider.hpp"
 
 namespace Axion
 {
@@ -14,8 +15,10 @@ namespace Axion
  * InputManager tracks the state of all keyboard keys and mouse buttons,
  * providing methods to check for key presses, releases, and holds.
  * Input state is updated each frame via BeginFrame/EndFrame.
+ * 
+ * Implements IInputProvider for decoupled input queries.
  */
-class InputManager : public ContextAware
+class InputManager : public ContextAware, public IInputProvider
 {
 public:
     InputManager(EngineContext& ctx);
@@ -31,25 +34,25 @@ public:
     void EndFrame();
 
     /** @brief Returns true if the key is currently held down. */
-    bool IsKeyDown(SDL_Scancode key) const;
+    bool IsKeyDown(SDL_Scancode key) const override;
     
     /** @brief Returns true if the key was pressed this frame. */
-    bool IsKeyJustPressed(SDL_Scancode key) const;
+    bool IsKeyJustPressed(SDL_Scancode key) const override;
     
     /** @brief Returns true if the key was released this frame. */
-    bool IsKeyJustReleased(SDL_Scancode key) const;
+    bool IsKeyJustReleased(SDL_Scancode key) const override;
 
     /** @brief Returns true if the mouse button is currently held down. */
-    bool IsMouseButtonDown(Uint8 button) const;
+    bool IsMouseButtonDown(Uint8 button) const override;
     
     /** @brief Returns true if the mouse button was pressed this frame. */
-    bool IsMouseButtonJustPressed(Uint8 button) const;
+    bool IsMouseButtonJustPressed(Uint8 button) const override;
     
     /** @brief Returns true if the mouse button was released this frame. */
     bool IsMouseButtonJustReleased(Uint8 button) const;
 
     /** @brief Returns the current mouse position in window coordinates. */
-    SDL_Point GetMousePosition() const { return mousePosition_; }
+    SDL_Point GetMousePosition() const override { return mousePosition_; }
 
     /** @brief Returns true if a quit event was received. */
     bool QuitRequested() const { return quitRequested_; }

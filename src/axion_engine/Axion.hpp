@@ -17,6 +17,9 @@
 #include "axion_engine/core/EngineConfig.hpp"
 #include "axion_engine/core/EngineContext.hpp"
 
+#include "axion_engine/core/events/Event.hpp"
+#include "axion_engine/core/events/EventBus.hpp"
+
 // Platform
 #include "axion_engine/platform/window/Window.hpp"
 #include "axion_engine/platform/window/WindowConfig.hpp"

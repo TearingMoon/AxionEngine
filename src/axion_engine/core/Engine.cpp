@@ -15,6 +15,9 @@ Engine::Engine(EngineConfig config, WindowConfig windowConfig)
     analyzer_ = std::make_unique<Analyzer>(context_);
     context_.analyzer = analyzer_.get();
 
+    events_ = std::make_unique<EventBus>();
+    context_.events = events_.get();
+
     sdlManager_.InitSDL();
 
     window_.Start(windowConfig);
@@ -80,10 +83,18 @@ void Engine::AppLoop()
 {
     time_->Update();
     analyzer_->Update();
-    scene_->Update();
-    physics_->Update(time_->GetDeltaTime());
-    render_->Update();
+    
+    // 1. Process pending spawn/destroy from previous frame
     scene_->ProcessRequests();
+    
+    // 2. Fixed timestep physics update
+    physics_->Update(time_->GetDeltaTime());
+    
+    // 3. Game logic update
+    scene_->Update();
+    
+    // 4. Render
+    render_->Update();
 }
 
 } // namespace Axion

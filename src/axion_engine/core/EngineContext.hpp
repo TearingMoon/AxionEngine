@@ -12,6 +12,7 @@ class PhysicsManager;
 class RenderManager;
 class AssetsManager;
 class Window;
+class EventBus;
 
 /**
  * @brief Central context providing access to all engine subsystems.
@@ -33,6 +34,7 @@ struct EngineContext
     RenderManager* render = nullptr;    ///< Rendering subsystem
     AssetsManager* assets = nullptr;    ///< Asset loading and caching
     Window* window = nullptr;           ///< Window and renderer access
+    EventBus* events = nullptr;         ///< Event publish-subscribe system
 };
 
 } // namespace Axion
