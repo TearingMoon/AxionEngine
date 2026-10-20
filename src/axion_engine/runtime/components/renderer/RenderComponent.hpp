@@ -7,7 +7,7 @@
 
 namespace Axion
 {
-
+//FIXME: Coordinate system of renderers is not consistent. Some use world coordinates, some use screen coordinates. Need to standardize this. WorldToScreen function might be useful for this.
 /**
  * @brief Base class for components that render visual content.
  * 
@@ -33,6 +33,8 @@ public:
     
     /** @brief Returns the order within the layer. */
     int GetOrderInLayer() const override { return orderInLayer_; }
+
+
 
 protected:
     RenderLayer layer_ = RenderLayer::Default;

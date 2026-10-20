@@ -63,8 +63,13 @@ bool Window::Initialize(const WindowConfig &config)
 
 void Window::Reset() noexcept
 {
+    if (renderer_)
+    {
+        SDL_DestroyRenderer(renderer_);
+        renderer_ = nullptr;
+    }
+
     window_.reset();
-    renderer_ = nullptr;
     initialized_ = false;
 }
 

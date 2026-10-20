@@ -46,9 +46,6 @@ public:
 
     /** @brief Updates all GameObjects in the scene. */
     void Tick();
-    
-    /** @brief Renders all GameObjects in the scene. */
-    void Draw();
 
     /**
      * @brief Creates a new GameObject in this scene.

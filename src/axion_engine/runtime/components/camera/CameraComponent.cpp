@@ -5,6 +5,7 @@
 #include "axion_engine/runtime/classes/gameObject/GameObject.hpp"
 #include "axion_engine/runtime/components/transform/TransformComponent.hpp"
 
+//TODO: Renderers doesn't use the camera's matrixs, must change this to use the camera's view and projection matrixs instead of calculating them again in the renderers. This will allow for more complex camera setups, like multiple cameras, split screen, etc.
 namespace Axion
 {
 

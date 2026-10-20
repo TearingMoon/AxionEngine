@@ -13,7 +13,8 @@
 
 namespace Axion
 {
-
+//FIXME: SetFontSize doesnt update already loaded fonts.
+//TODO: Configure Custom Fonts instead of hardcoded routes
 /**
  * @brief Text rendering component using SDL_ttf.
  *

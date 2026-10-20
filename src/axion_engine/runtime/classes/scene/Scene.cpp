@@ -18,11 +18,6 @@ void Scene::Tick()
     }
 }
 
-void Scene::Draw()
-{
-    // TODO: Implement Draw logic
-}
-
 GameObject *Scene::CreateGameObject()
 {
     auto newObject = std::make_unique<GameObject>(*this);
