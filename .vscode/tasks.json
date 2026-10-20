@@ -1,91 +1,94 @@
+
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "Configure (Windows)",
-			"type": "shell",
-			"command": "cmake --preset windows-vcpkg-debug",
-			"problemMatcher": [],
-			"group": {
-				"kind": "build",
-				"isDefault": false
-			}
-		},
-		{
-			"label": "Build All",
-			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug",
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"dependsOn": [
-				"Configure (Windows)"
-			]
-		},
-		{
-			"label": "Build Pong",
-			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug --target Pong",
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": "build",
-			"dependsOn": [
-				"Configure (Windows)"
-			]
-		},
-		{
-			"label": "Build TwinStickShooter",
-			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug --target TwinStickShooter",
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": "build",
-			"dependsOn": [
-				"Configure (Windows)"
-			]
-		},
-		{
-			"label": "Build Game Debug",
-			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug --target GameDebug",
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": "build",
-			"dependsOn": [
-				"Configure (Windows)"
-			]
-		},
-		{
-			"label": "Build Launcher",
-			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug --target GameLauncher",
-			"problemMatcher": [
-				"$msCompile"
-			],
-			"group": "build",
-			"dependsOn": [
-				"Configure (Windows)"
-			]
-		},
-		{
-			"label": "Clean",
-			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug --target clean",
-			"problemMatcher": []
-		},
-		{
-			"label": "Build All Debug",
-			"type": "shell",
-			"command": "cmake --build build/windows-debug --config Debug",
-			"isBackground": false,
-			"group": "build"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configure",
+      "type": "process",
+      "command": "cmake",
+      "args": ["--preset", "linux"],
+      "windows": {
+        "args": ["--preset", "windows"]
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build All",
+      "type": "process",
+      "command": "cmake",
+      "args": ["--build", "--preset", "linux"],
+      "windows": {
+        "args": ["--build", "--preset", "windows"],
+        "problemMatcher": ["$msCompile"]
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build Pong",
+      "type": "process",
+      "command": "cmake",
+      "args": ["--build", "--preset", "linux", "--target", "Pong"],
+      "windows": {
+        "args": ["--build", "--preset", "windows", "--target", "Pong"],
+        "problemMatcher": ["$msCompile"]
+      },
+      "problemMatcher": ["$gcc"],
+      "group": "build",
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build TwinStickShooter",
+      "type": "process",
+      "command": "cmake",
+      "args": ["--build", "--preset", "linux", "--target", "TwinStickShooter"],
+      "windows": {
+        "args": ["--build", "--preset", "windows", "--target", "TwinStickShooter"],
+        "problemMatcher": ["$msCompile"]
+      },
+      "problemMatcher": ["$gcc"],
+      "group": "build",
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build Game Debug",
+      "type": "process",
+      "command": "cmake",
+      "args": ["--build", "--preset", "linux", "--target", "GameDebug"],
+      "windows": {
+        "args": ["--build", "--preset", "windows", "--target", "GameDebug"],
+        "problemMatcher": ["$msCompile"]
+      },
+      "problemMatcher": ["$gcc"],
+      "group": "build",
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build Launcher",
+      "type": "process",
+      "command": "cmake",
+      "args": ["--build", "--preset", "linux", "--target", "GameLauncher"],
+      "windows": {
+        "args": ["--build", "--preset", "windows", "--target", "GameLauncher"],
+        "problemMatcher": ["$msCompile"]
+      },
+      "problemMatcher": ["$gcc"],
+      "group": "build",
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Clean",
+      "type": "process",
+      "command": "cmake",
+      "args": ["--build", "--preset", "linux", "--target", "clean"],
+      "windows": {
+        "args": ["--build", "--preset", "windows", "--target", "clean"]
+      },
+      "problemMatcher": []
+    }
+  ]
 }

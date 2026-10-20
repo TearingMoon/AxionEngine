@@ -1,0 +1,11 @@
+
+{
+  "name": "axion-engine",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "glm",
+    "sdl2",
+    "sdl2-image",
+    "sdl2-ttf"
+  ]
+}

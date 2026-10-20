@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <array>
 #include <cmath>
 
 #include <SDL.h>
@@ -85,10 +86,15 @@ public:
 
         if (!font_ && !ownedFont_)
         {
-            const char* fontPaths[] = {
+            const std::array<const char*, 8> fontPaths = {
                 "C:/Windows/Fonts/arial.ttf",
                 "C:/Windows/Fonts/calibri.ttf",
-                "C:/Windows/Fonts/segoeui.ttf"
+                "C:/Windows/Fonts/segoeui.ttf",
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+                "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+                "/System/Library/Fonts/Supplemental/Arial.ttf",
+                "/Library/Fonts/Arial.ttf"
             };
 
             for (const char* path : fontPaths)
@@ -102,7 +108,12 @@ public:
             }
 
             if (!font_)
+            {
+                SDL_LogError(SDL_LOG_CATEGORY_RENDER,
+                             "TextRenderComponent could not load a font: %s",
+                             TTF_GetError());
                 return;
+            }
         }
 
         if (!font_ || text_.empty())

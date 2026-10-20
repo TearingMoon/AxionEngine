@@ -32,6 +32,7 @@ void TwinStickScene::OnSceneEnter()
             tile->GetTransform()->SetPosition({x * tileSize, y * tileSize, -0.5f});
             tile->GetTransform()->SetScale({tileSize, tileSize, 1.0f});
             auto tileRenderer = tile->AddComponent<SpriteRenderComponent>();
+            tileRenderer->SetLayer(RenderLayer::Background);
             tileRenderer->SetTexture(bgTexture);
             infiniteBg->tiles.push_back(tile);
         }
@@ -39,9 +40,10 @@ void TwinStickScene::OnSceneEnter()
 
     // Player GameObject
     player = CreateGameObject();
-    player->GetTransform()->SetPosition({0.0f, 0.0f, 0.0f});
+    player->GetTransform()->SetPosition({0.0f, 0.0f, 1.0f});
     auto playerRenderer = player->AddComponent<SpriteRenderComponent>();
     playerRenderer->SetTexture(assets().LoadTexture("PlayerSprite", "survivor_pistol.png"));
+    playerRenderer->SetLayer(RenderLayer::Default);
     player->GetTransform()->SetScale({100.0f, 100.0f, 1.0f});
     auto playerScript = player->AddComponent<PlayerScript>();
     playerScript->scene = this;
@@ -69,9 +71,10 @@ void TwinStickScene::OnSceneEnter()
 
     // Crosshair GameObject
     auto crosshair = CreateGameObject();
-    crosshair->GetTransform()->SetPosition({100.0f, 100.0f, 0.0f});
+    crosshair->GetTransform()->SetPosition({100.0f, 100.0f, 1.0f});
     auto crosshairRenderer = crosshair->AddComponent<SpriteRenderComponent>();
     crosshairRenderer->SetTexture(assets().LoadTexture("Crosshair", "Reticle-66.png"));
+    crosshairRenderer->SetLayer(RenderLayer::UI);
     crosshair->GetTransform()->SetScale({100.0f, 100.0f, 1.0f});
     auto reticleScript = crosshair->AddComponent<ReticleScript>();
 
@@ -92,6 +95,7 @@ void TwinStickScene::CreateUI()
     auto scoreGO = CreateGameObject();
     scoreGO->GetTransform()->SetPosition({-480.0f, 350.0f, 0.9f});
     auto scoreText = scoreGO->AddComponent<TextRenderComponent>();
+    scoreText->SetLayer(RenderLayer::UI);
     scoreText->SetText("Score: 0");
     scoreText->SetColor({255, 255, 255, 255});
     scoreText->SetFontSize(24);
@@ -101,6 +105,7 @@ void TwinStickScene::CreateUI()
     auto healthGO = CreateGameObject();
     healthGO->GetTransform()->SetPosition({-480.0f, 310.0f, 0.9f});
     auto healthText = healthGO->AddComponent<TextRenderComponent>();
+    healthText->SetLayer(RenderLayer::UI);
     healthText->SetText("Health: 100");
     healthText->SetColor({255, 100, 100, 255});
     healthText->SetFontSize(24);
@@ -110,6 +115,7 @@ void TwinStickScene::CreateUI()
     auto roundGO = CreateGameObject();
     roundGO->GetTransform()->SetPosition({350.0f, 350.0f, 0.9f});
     auto roundText = roundGO->AddComponent<TextRenderComponent>();
+    roundText->SetLayer(RenderLayer::UI);
     roundText->SetText("Round: 1");
     roundText->SetColor({255, 255, 0, 255});
     roundText->SetFontSize(24);
@@ -119,6 +125,7 @@ void TwinStickScene::CreateUI()
     auto gameOverGO = CreateGameObject();
     gameOverGO->GetTransform()->SetPosition({0.0f, 0.0f, 0.95f});
     auto gameOverText = gameOverGO->AddComponent<TextRenderComponent>();
+    gameOverText->SetLayer(RenderLayer::UI);
     gameOverText->SetText("");
     gameOverText->SetColor({255, 0, 0, 255});
     gameOverText->SetFontSize(48);

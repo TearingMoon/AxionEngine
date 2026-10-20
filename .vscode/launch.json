@@ -1,95 +1,117 @@
+
 {
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Game Launcher (Windows)",
-      "type": "cppvsdbg",
+      "name": "Pong (Linux)",
+      "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/windows-debug/bin/GameLauncher.exe",
+      "program": "${workspaceFolder}/build/linux/bin/Pong/Pong",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/windows-debug/bin",
+      "cwd": "${workspaceFolder}/build/linux/bin/Pong",
       "environment": [],
-      "console": "externalTerminal",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "Build Pong",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "TwinStickShooter (Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/linux/bin/TwinStickShooter/TwinStickShooter",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/linux/bin/TwinStickShooter",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "Build TwinStickShooter"
+    },
+    {
+      "name": "GameDebug (Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/linux/bin/GameDebug/GameDebug",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/linux/bin/GameDebug",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "Build Game Debug"
+    },
+    {
+      "name": "GameLauncher (Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/linux/bin/GameLauncher",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/build/linux/bin",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
       "preLaunchTask": "Build Launcher"
     },
     {
-      "name": "Launch Game 1 (Windows)",
+      "name": "Pong (Windows)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/windows-debug/bin/Game/Game.exe",
+      "program": "${workspaceFolder}/build/windows/bin/Pong/Pong.exe",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/windows-debug/bin/Game",
+      "cwd": "${workspaceFolder}/build/windows/bin/Pong",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "Build Game 1"
+      "preLaunchTask": "Build Pong"
     },
     {
-      "name": "Launch Game 2 (Windows)",
+      "name": "TwinStickShooter (Windows)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/windows-debug/bin/Game2/Game2.exe",
+      "program": "${workspaceFolder}/build/windows/bin/TwinStickShooter/TwinStickShooter.exe",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/windows-debug/bin/Game2",
+      "cwd": "${workspaceFolder}/build/windows/bin/TwinStickShooter",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "Build Game 2"
+      "preLaunchTask": "Build TwinStickShooter"
     },
     {
-      "name": "Launch Game Debug (Windows)",
+      "name": "GameDebug (Windows)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/windows-debug/bin/GameDebug/GameDebug.exe",
+      "program": "${workspaceFolder}/build/windows/bin/GameDebug/GameDebug.exe",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/windows-debug/bin/GameDebug",
+      "cwd": "${workspaceFolder}/build/windows/bin/GameDebug",
       "environment": [],
       "console": "integratedTerminal",
       "preLaunchTask": "Build Game Debug"
     },
     {
-      "name": "Launch Game 1 (Linux)",
-      "type": "cppdbg",
+      "name": "GameLauncher (Windows)",
+      "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/linux-debug/bin/Game/Game",
+      "program": "${workspaceFolder}/build/windows/bin/GameLauncher.exe",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/linux-debug/bin/Game",
+      "cwd": "${workspaceFolder}/build/windows/bin",
       "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/gdb",
-      "preLaunchTask": "Build Game 1",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-    },
-    {
-      "name": "Launch Game 2 (Linux)",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/linux-debug/bin/Game2/Game2",
-      "args": [],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build/linux-debug/bin/Game2",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/gdb",
-      "preLaunchTask": "Build Game 2",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build Launcher"
     }
   ]
 }
