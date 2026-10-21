@@ -17,10 +17,15 @@ namespace Axion
     {
         accumulatedTime_ += dt;
 
-        while (accumulatedTime_ >= fixedDeltaTime_)
+        constexpr int maxSubSteps = 8;
+        int subSteps = 0;
+
+        while (accumulatedTime_ >= fixedDeltaTime_ &&
+               subSteps < maxSubSteps)
         {
             FixedUpdate(fixedDeltaTime_);
             accumulatedTime_ -= fixedDeltaTime_;
+            ++subSteps;
         }
     }
 

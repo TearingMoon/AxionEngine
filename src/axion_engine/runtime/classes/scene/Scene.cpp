@@ -3,169 +3,170 @@
 namespace Axion
 {
 
-void Scene::Tick()
-{
-    OnSceneUpdate();
-    
-    // Update all game objects
-    for (auto &object : objects_)
+    void Scene::Tick()
     {
-        // Skip destroyed objects
-        if (object && !object->IsDestroyed())
+        OnSceneUpdate();
+
+        // Update all game objects
+        for (auto &object : objects_)
         {
-            object->Tick();
-        }
-    }
-
-    for (auto &object : objects_)
-    {
-        if (object && !object->IsDestroyed())
-        {
-            object->LateUpdate();
-        }
-    }
-}
-
-GameObject *Scene::CreateGameObject()
-{
-    auto newObject = std::make_unique<GameObject>(*this);
-    GameObject *rawPtr = newObject.get();
-    spawnQueue_.emplace_back(std::move(newObject));
-    return rawPtr;
-}
-
-void Scene::DestroyGameObject(GameObject &object)
-{
-    // Check if already in destroy queue to avoid duplicates
-    for (auto *obj : destroyQueue_)
-    {
-        if (obj == &object)
-            return; // Already queued for destruction
-    }
-    
-    object.Disable();
-    object.MarkAsDestroyed();
-    destroyQueue_.push_back(&object);
-}
-
-void Scene::EmitMountedEvent()
-{
-    for (auto &object : objects_)
-    {
-        if (object && !object->IsDestroyed())
-        {
-            object->Mounted();
-        }
-    }
-}
-
-void Scene::EmitEnabledEvent()
-{
-    for (auto &object : objects_)
-    {
-        if (object && !object->IsDestroyed() && object->IsEnabled())
-        {
-            object->Enable();
-        }
-    }
-}
-
-void Scene::EmitDestroyedEvent()
-{
-    for (auto &object : objects_)
-    {
-        object->Destroy();
-    }
-}
-
-void Scene::EmitDisabledEvent()
-{
-    for (auto &object : objects_)
-    {
-        if (object && !object->IsDestroyed())
-        {
-            object->Disable();
-        }
-    }
-}
-
-void Scene::EmitFixedUpdateEvent()
-{
-    for (auto &object : objects_)
-    {
-        // Skip destroyed objects
-        if (object && !object->IsDestroyed())
-        {
-            object->FixedUpdate();
-        }
-    }
-}
-
-void Scene::ProcessDestroyQueue()
-{
-    // Process each object only once, even if duplicates exist
-    std::unordered_set<GameObject *> processedObjects;
-    
-    for (auto *obj : destroyQueue_)
-    {
-        if (!obj)
-            continue;
-            
-        // Skip if already processed in this batch
-        if (processedObjects.find(obj) != processedObjects.end())
-            continue;
-            
-        processedObjects.insert(obj);
-        
-        // Verify object still exists in objects_ before calling OnDestroy
-        bool exists = false;
-        for (const auto &ownedObj : objects_)
-        {
-            if (ownedObj.get() == obj)
+            // Skip destroyed objects
+            if (object && !object->IsDestroyed())
             {
-                exists = true;
-                break;
+                object->Tick();
             }
         }
-        
-        if (exists)
+
+        for (auto &object : objects_)
         {
-            // Call OnDestroy to execute component cleanup
-            obj->OnDestroy();
-            
-            // Remove from objects list
-            auto it = std::remove_if(objects_.begin(), objects_.end(),
-                                     [obj](const std::unique_ptr<GameObject> &ownedObj)
-                                     { return ownedObj.get() == obj; });
-            objects_.erase(it, objects_.end());
+            if (object && !object->IsDestroyed())
+            {
+                object->LateUpdate();
+            }
         }
     }
-    destroyQueue_.clear();
-}
 
-void Scene::ProcessSpawnQueue()
-{
-    std::vector<std::unique_ptr<GameObject>> pendingObjects;
-    pendingObjects.swap(spawnQueue_);
-
-    for (auto& obj : pendingObjects)
+    GameObject *Scene::CreateGameObject()
     {
-        if (!obj)
-            continue;
+        auto newObject = std::make_unique<GameObject>(*this);
+        GameObject *rawPtr = newObject.get();
+        spawnQueue_.emplace_back(std::move(newObject));
+        return rawPtr;
+    }
 
-        if (obj->IsDestroyed())
+    void Scene::DestroyGameObject(GameObject &object)
+    {
+        // Check if already in destroy queue to avoid duplicates
+        for (auto *obj : destroyQueue_)
         {
-            obj->OnDestroy();
-
-            destroyQueue_.erase(
-                std::remove(destroyQueue_.begin(), destroyQueue_.end(), obj.get()),
-                destroyQueue_.end());
-            continue;
+            if (obj == &object)
+                return; // Already queued for destruction
         }
 
-        obj->Mounted();
-        objects_.emplace_back(std::move(obj));
+        object.Disable();
+        object.MarkAsDestroyed();
+        destroyQueue_.push_back(&object);
     }
-}
+
+    void Scene::EmitMountedEvent()
+    {
+        for (auto &object : objects_)
+        {
+            if (object && !object->IsDestroyed())
+            {
+                object->Mounted();
+            }
+        }
+    }
+
+    void Scene::EmitEnabledEvent()
+    {
+        for (auto &object : objects_)
+        {
+            if (object && !object->IsDestroyed() && object->IsEnabled())
+            {
+                object->Enable();
+            }
+        }
+    }
+
+    void Scene::EmitDestroyedEvent()
+    {
+        for (auto &object : objects_)
+        {
+            object->Destroy();
+        }
+    }
+
+    void Scene::EmitDisabledEvent()
+    {
+        for (auto &object : objects_)
+        {
+            if (object && !object->IsDestroyed())
+            {
+                object->Disable();
+            }
+        }
+    }
+
+    void Scene::EmitFixedUpdateEvent()
+    {
+        for (auto &object : objects_)
+        {
+            // Skip destroyed objects
+            if (object && !object->IsDestroyed())
+            {
+                object->FixedUpdate();
+            }
+        }
+    }
+
+    void Scene::ProcessDestroyQueue()
+    {
+        // Process each object only once, even if duplicates exist
+        std::unordered_set<GameObject *> processedObjects;
+
+        for (auto *obj : destroyQueue_)
+        {
+            if (!obj)
+                continue;
+
+            // Skip if already processed in this batch
+            if (processedObjects.find(obj) != processedObjects.end())
+                continue;
+
+            processedObjects.insert(obj);
+
+            // Verify object still exists in objects_ before calling OnDestroy
+            bool exists = false;
+            for (const auto &ownedObj : objects_)
+            {
+                if (ownedObj.get() == obj)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (exists)
+            {
+                // Call OnDestroy to execute component cleanup
+                obj->OnDestroy();
+
+                // Remove from objects list
+                auto it = std::remove_if(
+                    objects_.begin(), objects_.end(),
+                    [obj](const std::unique_ptr<GameObject> &ownedObj)
+                    { return ownedObj.get() == obj; });
+                objects_.erase(it, objects_.end());
+            }
+        }
+        destroyQueue_.clear();
+    }
+
+    void Scene::ProcessSpawnQueue()
+    {
+        std::vector<std::unique_ptr<GameObject>> pendingObjects;
+        pendingObjects.swap(spawnQueue_);
+
+        for (auto &obj : pendingObjects)
+        {
+            if (!obj)
+                continue;
+
+            if (obj->IsDestroyed())
+            {
+                obj->OnDestroy();
+
+                destroyQueue_.erase(
+                    std::remove(destroyQueue_.begin(), destroyQueue_.end(), obj.get()),
+                    destroyQueue_.end());
+                continue;
+            }
+
+            obj->Mounted();
+            objects_.emplace_back(std::move(obj));
+        }
+    }
 
 } // namespace Axion

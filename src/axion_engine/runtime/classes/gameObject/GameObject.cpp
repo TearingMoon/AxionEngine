@@ -4,276 +4,280 @@
 namespace Axion
 {
 
-size_t GameObject::nextId_ = 0;
+    size_t GameObject::nextId_ = 0;
 
-GameObject::GameObject(Scene& parentScene) : parentScene_(parentScene), id_(nextId_++)
-{
-    transform_ = AddComponent<TransformComponent>();
-}
-
-void GameObject::Tick()
-{
-    if (!isEnabled_ || isDestroyed_)
-        return;
-
-    if (isFirstUpdate_)
+    GameObject::GameObject(Scene &parentScene) : parentScene_(parentScene), id_(nextId_++)
     {
-        for (size_t index = 0; index < components_.size(); ++index)
-        {
-            if (isDestroyed_)
-                return;
-            Component* component = components_[index].get();
-            if (!component)
-                continue;
-            if (auto updatable = dynamic_cast<IUpdateable*>(component))
-            {
-                updatable->Start(ctx_());
-            }
-        }
-        isFirstUpdate_ = false;
-        updatesStarted_ = true;
+        transform_ = AddComponent<TransformComponent>();
     }
-    else
-    {
-        for (size_t index = 0; index < components_.size(); ++index)
-        {
-            if (isDestroyed_)
-                return;
-            Component* component = components_[index].get();
-            if (!component)
-                continue;
-            if (auto updatable = dynamic_cast<IUpdateable*>(component))
-            {
-                updatable->Update(ctx_());
-            }
-        }
-    }
-}
 
-void GameObject::FixedUpdate()
-{
-    if (!isEnabled_ || isDestroyed_)
-        return;
-        
-    for (size_t index = 0; index < components_.size(); ++index)
+    void GameObject::Tick()
     {
-        if (isDestroyed_) // Check if destroyed during FixedUpdate()
+        if (!isEnabled_ || isDestroyed_)
             return;
-        Component* component = components_[index].get();
-        if (!component)
-            continue;
-        if (auto updatable = dynamic_cast<IUpdateable *>(component))
+
+        if (!updatesStarted_)
         {
-            updatable->FixedUpdate(ctx_());
+            for (size_t index = 0; index < components_.size(); ++index)
+            {
+                if (isDestroyed_)
+                    return;
+                Component *component = components_[index].get();
+                if (!component)
+                    continue;
+                if (auto updatable = dynamic_cast<IUpdateable *>(component))
+                {
+                    updatable->Start(ctx_());
+                }
+            }
+            updatesStarted_ = true;
+        }
+        else
+        {
+            for (size_t index = 0; index < components_.size(); ++index)
+            {
+                if (isDestroyed_)
+                    return;
+                Component *component = components_[index].get();
+                if (!component)
+                    continue;
+                if (auto updatable = dynamic_cast<IUpdateable *>(component))
+                {
+                    updatable->Update(ctx_());
+                }
+            }
         }
     }
-}
 
-void GameObject::LateUpdate()
-{
-    if (!isEnabled_ || isDestroyed_)
-        return;
+    void GameObject::FixedUpdate()
+    {
+        if (!isEnabled_ || isDestroyed_)
+            return;
 
-    for (size_t index = 0; index < components_.size(); ++index)
+        for (size_t index = 0; index < components_.size(); ++index)
+        {
+            if (isDestroyed_) // Check if destroyed during FixedUpdate()
+                return;
+            Component *component = components_[index].get();
+            if (!component)
+                continue;
+            if (auto updatable = dynamic_cast<IUpdateable *>(component))
+            {
+                updatable->FixedUpdate(ctx_());
+            }
+        }
+    }
+
+    void GameObject::LateUpdate()
+    {
+        if (!isEnabled_ || isDestroyed_)
+            return;
+
+        for (size_t index = 0; index < components_.size(); ++index)
+        {
+            if (isDestroyed_)
+                return;
+
+            Component *component = components_[index].get();
+            if (!component)
+                continue;
+
+            if (auto updatable = dynamic_cast<IUpdateable *>(component))
+            {
+                updatable->LateUpdate(ctx_());
+            }
+        }
+    }
+
+    void GameObject::Mounted()
+    {
+        if (isMounted_)
+            return;
+
+        isDestroyed_ = false;
+        destroyCallbacksInvoked_ = false;
+        isMounted_ = true;
+
+        for (size_t index = 0; index < components_.size(); ++index)
+        {
+            Component *component = components_[index].get();
+            if (!component || component->mounted_)
+                continue;
+            component->mounted_ = true;
+            component->OnMounted(ctx_());
+        }
+
+        if (isEnabled_)
+        {
+            for (size_t index = 0; index < components_.size(); ++index)
+            {
+                Component *component = components_[index].get();
+                if (!component || component->enabled_)
+                    continue;
+                component->enabled_ = true;
+                component->OnEnabled(ctx_());
+            }
+        }
+    }
+
+    void GameObject::Destroy()
     {
         if (isDestroyed_)
+            return; // Already destroyed, avoid double destruction
+
+        // Register this object for destruction in the scene
+        // This will mark it as destroyed and add it to the destroy queue
+        isDestroyed_ = true;
+        parentScene_.DestroyGameObject(*this);
+    }
+
+    void GameObject::OnDestroy()
+    {
+        if (destroyCallbacksInvoked_)
             return;
 
-        Component* component = components_[index].get();
-        if (!component)
-            continue;
+        destroyCallbacksInvoked_ = true;
 
-        if (auto updatable = dynamic_cast<IUpdateable*>(component))
-        {
-            updatable->LateUpdate(ctx_());
-        }
-    }
-}
-
-void GameObject::Mounted()
-{
-    if (isMounted_)
-        return;
-
-    isDestroyed_ = false;
-    destroyCallbacksInvoked_ = false;
-    isMounted_ = true;
-
-    for (size_t index = 0; index < components_.size(); ++index)
-    {
-        Component* component = components_[index].get();
-        if (!component || component->mounted_)
-            continue;
-        component->mounted_ = true;
-        component->OnMounted(ctx_());
-    }
-
-    if (isEnabled_)
-    {
+        // This is called by Scene::ProcessDestroyQueue
+        // Execute OnDestroy callbacks for all components
         for (size_t index = 0; index < components_.size(); ++index)
         {
-            Component* component = components_[index].get();
+            Component *component = components_[index].get();
+            if (!component)
+                continue;
+            component->OnDestroy(ctx_());
+        }
+    }
+
+    void GameObject::Enable()
+    {
+        if (isEnabled_ || isDestroyed_)
+            return;
+
+        isEnabled_ = true;
+        if (!isMounted_)
+            return;
+
+        for (size_t index = 0; index < components_.size(); ++index)
+        {
+            Component *component = components_[index].get();
             if (!component || component->enabled_)
                 continue;
             component->enabled_ = true;
             component->OnEnabled(ctx_());
         }
     }
-}
 
-void GameObject::Destroy()
-{
-    if (isDestroyed_)
-        return; // Already destroyed, avoid double destruction
-        
-    // Register this object for destruction in the scene
-    // This will mark it as destroyed and add it to the destroy queue
-    parentScene_.DestroyGameObject(*this);
-}
-
-void GameObject::OnDestroy()
-{
-    if (destroyCallbacksInvoked_)
-        return;
-
-    destroyCallbacksInvoked_ = true;
-
-    // This is called by Scene::ProcessDestroyQueue
-    // Execute OnDestroy callbacks for all components
-    for (size_t index = 0; index < components_.size(); ++index)
+    void GameObject::Disable()
     {
-        Component* component = components_[index].get();
-        if (!component)
-            continue;
-        component->OnDestroy(ctx_());
-    }
-}
-
-void GameObject::Enable()
-{
-    if (isEnabled_ || isDestroyed_)
-        return;
-
-    isEnabled_ = true;
-    if (!isMounted_)
-        return;
-
-    for (size_t index = 0; index < components_.size(); ++index)
-    {
-        Component* component = components_[index].get();
-        if (!component || component->enabled_)
-            continue;
-        component->enabled_ = true;
-        component->OnEnabled(ctx_());
-    }
-}
-
-void GameObject::Disable()
-{
-    if (!isEnabled_)
-        return;
-    isEnabled_ = false;
-
-    if (!isMounted_)
-        return;
-
-    for (size_t index = 0; index < components_.size(); ++index)
-    {
-        Component* component = components_[index].get();
-        if (!component || !component->enabled_)
-            continue;
-        component->enabled_ = false;
-        component->OnDisabled(ctx_());
-    }
-}
-
-void GameObject::OnCollisionEnter(GameObject &other)
-{
-    if (isDestroyed_ || other.IsDestroyed())
-        return;
-        
-    for (auto &component : components_)
-    {
-        if (isDestroyed_ || other.IsDestroyed()) // Check again after each callback
+        if (!isEnabled_)
             return;
-        if (!component)
-            continue;
-        if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
-        {
-            collisionListener->OnCollisionEnter(other);
-        }
-    }
-}
+        isEnabled_ = false;
 
-void GameObject::OnCollisionExit(GameObject &other)
-{
-    if (isDestroyed_ || other.IsDestroyed())
-        return;
-        
-    for (auto &component : components_)
-    {
-        if (isDestroyed_ || other.IsDestroyed()) // Check again after each callback
+        if (!isMounted_)
             return;
-        if (!component)
-            continue;
-        if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
+
+        for (size_t index = 0; index < components_.size(); ++index)
         {
-            collisionListener->OnCollisionExit(other);
+            Component *component = components_[index].get();
+            if (!component || !component->enabled_)
+                continue;
+            component->enabled_ = false;
+            component->OnDisabled(ctx_());
         }
     }
-}
 
-void GameObject::OnTriggerEnter(GameObject &other)
-{
-    if (isDestroyed_ || other.IsDestroyed())
-        return;
-        
-    for (auto &component : components_)
+    void GameObject::OnCollisionEnter(GameObject &other)
     {
-        if (isDestroyed_ || other.IsDestroyed()) // Check again after each callback
+        if (isDestroyed_ || other.IsDestroyed())
             return;
-        if (!component)
-            continue;
-        if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
+
+        for (size_t index = 0; index < components_.size(); ++index)
         {
-            collisionListener->OnTriggerEnter(other);
+            if (isDestroyed_ || other.IsDestroyed())
+                return;
+
+            Component *component = components_[index].get();
+            if (!component)
+                continue;
+
+            if (auto *listener = dynamic_cast<ICollisionListener *>(component))
+                listener->OnCollisionEnter(other);
         }
     }
-}
 
-void GameObject::OnTriggerExit(GameObject &other)
-{
-    if (isDestroyed_ || other.IsDestroyed())
-        return;
-        
-    for (auto &component : components_)
+    void GameObject::OnCollisionExit(GameObject &other)
     {
-        if (isDestroyed_ || other.IsDestroyed()) // Check again after each callback
+        if (isDestroyed_ || other.IsDestroyed())
             return;
-        if (!component)
-            continue;
-        if (auto collisionListener = dynamic_cast<ICollisionListener *>(component.get()))
+
+        for (size_t index = 0; index < components_.size(); ++index)
         {
-            collisionListener->OnTriggerExit(other);
+            if (isDestroyed_ || other.IsDestroyed())
+                return;
+
+            Component *component = components_[index].get();
+            if (!component)
+                continue;
+
+            if (auto *listener = dynamic_cast<ICollisionListener *>(component))
+                listener->OnCollisionExit(other);
         }
     }
-}
 
-bool GameObject::HasCollider() const
-{ // TODO: Check if this is the most efficient way, maybe store a bool that is updated when adding/removing components?
-    for (const auto &comp : components_)
+    void GameObject::OnTriggerEnter(GameObject &other)
     {
-        if (dynamic_cast<ColliderComponent *>(comp.get()))
+        if (isDestroyed_ || other.IsDestroyed())
+            return;
+
+        for (size_t index = 0; index < components_.size(); ++index)
         {
-            return true;
+            if (isDestroyed_ || other.IsDestroyed())
+                return;
+
+            Component *component = components_[index].get();
+            if (!component)
+                continue;
+
+            if (auto *listener = dynamic_cast<ICollisionListener *>(component))
+                listener->OnTriggerEnter(other);
         }
     }
-    return false;
-}
 
-EngineContext& GameObject::ctx_()
-{
-    return parentScene_.GetContext();
-}
+    void GameObject::OnTriggerExit(GameObject &other)
+    {
+        if (isDestroyed_ || other.IsDestroyed())
+            return;
+
+        for (size_t index = 0; index < components_.size(); ++index)
+        {
+            if (isDestroyed_ || other.IsDestroyed())
+                return;
+
+            Component *component = components_[index].get();
+            if (!component)
+                continue;
+
+            if (auto *listener = dynamic_cast<ICollisionListener *>(component))
+                listener->OnTriggerExit(other);
+        }
+    }
+
+    bool GameObject::HasCollider() const
+    { // TODO: Check if this is the most efficient way, maybe store a bool that is updated when adding/removing components?
+        for (const auto &comp : components_)
+        {
+            if (dynamic_cast<ColliderComponent *>(comp.get()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    EngineContext &GameObject::ctx_()
+    {
+        return parentScene_.GetContext();
+    }
 
 } // namespace Axion
