@@ -6,12 +6,12 @@ namespace Axion
 TimeManager::TimeManager(EngineContext& ctx) : ContextAware(ctx)
 {
     lastUpdateTime_ = Clock::now();
-    INFO("TimeManager initialized.");
+    AXION_INFO("TimeManager initialized.");
 }
 
 TimeManager::~TimeManager()
 {
-    INFO("TimeManager destroyed.");
+    AXION_INFO("TimeManager destroyed.");
 }
 
 void TimeManager::Update()

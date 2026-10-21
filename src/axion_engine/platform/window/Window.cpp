@@ -9,28 +9,28 @@ Window::Window(EngineContext& ctx) : ContextAware(ctx)
 
 void Window::Start(const WindowConfig &config)
 {
-    INFO("Creating window: {}", config.title.c_str());
+    AXION_INFO("Creating window: {}", config.title.c_str());
     if (Initialize(config))
     {
-        INFO("Window created successfully.");
+        AXION_INFO("Window created successfully.");
     }
     else
     {
-        ERROR("Failed to create window.");
+        AXION_ERROR("Failed to create window.");
     }
 }
 
 void Window::RestartWindow(const WindowConfig &config)
 {
-    INFO("Restarting window: {}", config.title.c_str());
+    AXION_INFO("Restarting window: {}", config.title.c_str());
     Reset();
     if (Initialize(config))
     {
-        INFO("Window restarted successfully.");
+        AXION_INFO("Window restarted successfully.");
     }
     else
     {
-        ERROR("Failed to restart window.");
+        AXION_ERROR("Failed to restart window.");
     }
 }
 
@@ -85,7 +85,7 @@ SDL_Window *Window::CreateWindow(const WindowConfig &config) noexcept
 
     if (!win)
     {
-        ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
+        AXION_ERROR("Window could not be created! SDL_Error: {}", SDL_GetError());
         return nullptr;
     }
 
@@ -100,7 +100,7 @@ SDL_Renderer *Window::CreateRenderer(SDL_Window *window) noexcept
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer)
     {
-        ERROR("Could not create renderer! SDL_Error: {}", SDL_GetError());
+        AXION_ERROR("Could not create renderer! SDL_Error: {}", SDL_GetError());
         return nullptr;
     }
 

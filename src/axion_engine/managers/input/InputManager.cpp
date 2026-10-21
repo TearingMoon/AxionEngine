@@ -7,12 +7,12 @@ InputManager::InputManager(EngineContext& ctx) : ContextAware(ctx)
 {
     currentKeys_.fill(0);
     previousKeys_.fill(0);
-    INFO("InputManager initialized.");
+    AXION_INFO("InputManager initialized.");
 }
 
 InputManager::~InputManager()
 {
-    INFO("InputManager destroyed.");
+    AXION_INFO("InputManager destroyed.");
 }
 
 void InputManager::BeginFrame()

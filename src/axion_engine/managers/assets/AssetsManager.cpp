@@ -6,13 +6,13 @@ namespace Axion
     AssetsManager::AssetsManager(EngineContext &ctx) : ContextAware(ctx)
     {
         assetsRoot_ = GetPath("assets/");
-        INFO("AssetsManager initialized.");
+        AXION_INFO("AssetsManager initialized.");
     }
 
     AssetsManager::~AssetsManager()
     {
         UnloadAllTextures();
-        INFO("AssetsManager destroyed.");
+        AXION_INFO("AssetsManager destroyed.");
     }
 
     SDL_Texture *AssetsManager::LoadTexture(const std::string &id, const std::string &relativePath)

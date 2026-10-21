@@ -5,12 +5,12 @@ namespace Axion
 
 RenderManager::RenderManager(EngineContext& ctx) : ContextAware(ctx)
 {
-    INFO("RenderManager initialized.");
+    AXION_INFO("RenderManager initialized.");
 }
 
 RenderManager::~RenderManager()
 {
-    INFO("RenderManager destroyed.");
+    AXION_INFO("RenderManager destroyed.");
 }
 
 void RenderManager::Update()
@@ -53,9 +53,9 @@ void RenderManager::Update()
     {
         debugMode_ = !debugMode_;
         if (debugMode_)
-            INFO("Debug Render Mode Enabled.");
+            AXION_INFO("Debug Render Mode Enabled.");
         else
-            INFO("Debug Render Mode Disabled.");
+            AXION_INFO("Debug Render Mode Disabled.");
     }
 
     for (IRenderable* r : renderables)

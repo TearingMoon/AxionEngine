@@ -24,9 +24,39 @@
       "problemMatcher": ["$gcc"],
       "group": {
         "kind": "build",
-        "isDefault": true
+        "isDefault": false
       },
       "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Run Tests",
+      "type": "process",
+      "command": "ctest",
+      "args": [
+        "--test-dir",
+        "${workspaceFolder}/build/linux",
+        "--output-on-failure"
+      ],
+      "windows": {
+        "args": [
+          "--test-dir",
+          "${workspaceFolder}/build/windows",
+          "--output-on-failure"
+        ]
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build and Test",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build All",
+        "Run Tests"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     },
     {
       "label": "Build Pong",

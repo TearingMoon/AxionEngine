@@ -71,6 +71,33 @@ target_link_libraries(AxionEngine PUBLIC
     ${SDL2_TTF_TARGET}
 )
 
+include(CTest)
+
+if(BUILD_TESTING)
+    find_package(Catch2 CONFIG REQUIRED)
+
+    file(GLOB_RECURSE AXION_TEST_SOURCES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp"
+    )
+
+    add_executable(AxionEngineTests
+        ${AXION_TEST_SOURCES}
+    )
+
+    target_link_libraries(AxionEngineTests PRIVATE
+        AxionEngine
+        Catch2::Catch2WithMain
+    )
+
+    target_include_directories(AxionEngineTests PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    )
+
+    include(Catch)
+    catch_discover_tests(AxionEngineTests)
+endif()
+
+
 # ======================================
 # Function to Add a Game Executable
 # ======================================

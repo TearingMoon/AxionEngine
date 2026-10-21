@@ -5,12 +5,12 @@ namespace Axion
 
     SceneManager::SceneManager(EngineContext &ctx) : ContextAware(ctx)
     {
-        INFO("SceneManager initialized");
+        AXION_INFO("SceneManager initialized");
     }
 
     SceneManager::~SceneManager()
     {
-        INFO("SceneManager destroyed");
+        AXION_INFO("SceneManager destroyed");
     }
 
     void SceneManager::Update()
@@ -52,11 +52,11 @@ namespace Axion
     {
         if (!IsSceneRegistered(sceneName))
         {
-            WARN("Scene '{}' is not registered. Cannot change scene.", sceneName.c_str());
+            AXION_WARN("Scene '{}' is not registered. Cannot change scene.", sceneName.c_str());
             return;
         }
 
-        INFO("Changing to scene: {}", sceneName.c_str());
+        AXION_INFO("Changing to scene: {}", sceneName.c_str());
 
         if (currentScene_)
         {

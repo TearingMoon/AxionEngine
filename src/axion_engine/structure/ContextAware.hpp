@@ -6,9 +6,9 @@
 namespace Axion
 {
 
-#define INFO(fmt, ...) ctx_.logger->Info(fmt, ##__VA_ARGS__)
-#define WARN(fmt, ...) ctx_.logger->Warn(fmt, ##__VA_ARGS__)
-#define ERROR(fmt, ...) ctx_.logger->Error(fmt, ##__VA_ARGS__)
+#define AXION_INFO(fmt, ...) ctx_.logger->Info(fmt, ##__VA_ARGS__)
+#define AXION_WARN(fmt, ...) ctx_.logger->Warn(fmt, ##__VA_ARGS__)
+#define AXION_ERROR(fmt, ...) ctx_.logger->Error(fmt, ##__VA_ARGS__)
 
 /**
  * @brief Base class for objects that require access to the engine context.
@@ -17,7 +17,8 @@ namespace Axion
  * with engine subsystems. It stores a reference to the EngineContext and
  * provides convenient accessor methods for commonly used managers.
  * 
- * Classes deriving from ContextAware gain access to logging macros (INFO, WARN, ERROR)
+ * Classes deriving from ContextAware gain access to logging macros
+ * (AXION_INFO, AXION_WARN, AXION_ERROR)
  * and shorthand accessors for all engine managers.
  */
 class ContextAware

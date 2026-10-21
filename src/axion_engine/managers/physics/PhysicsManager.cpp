@@ -5,12 +5,12 @@ namespace Axion
 
     PhysicsManager::PhysicsManager(EngineContext &context) : ContextAware(context)
     {
-        INFO("PhysicsManager initialized.");
+        AXION_INFO("PhysicsManager initialized.");
     }
 
     PhysicsManager::~PhysicsManager()
     {
-        INFO("PhysicsManager destroyed.");
+        AXION_INFO("PhysicsManager destroyed.");
     }
 
     void PhysicsManager::Update(float dt)
