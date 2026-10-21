@@ -47,7 +47,7 @@ namespace Axion
             if (obj->HasCollider())
                 colliders_.push_back(obj);
 
-            if (obj->GetComponent<RigidBody>())
+            if (obj->GetComponent<RigidBody>() && !obj->GetComponent<RigidBody>()->IsStatic())
                 rigidBodies_.push_back(obj);
         }
 
@@ -321,7 +321,6 @@ namespace Axion
         if (rigidA)
         {
             glm::vec3 posA = objA.GetTransform()->GetWorldPosition();
-            float invMassA = 1.0f / rigidA->GetMass();
             posA.x -= correction.x * invMassA;
             posA.y -= correction.y * invMassA;
             objA.GetTransform()->SetPosition(posA);
@@ -330,7 +329,7 @@ namespace Axion
         if (rigidB)
         {
             glm::vec3 posB = objB.GetTransform()->GetWorldPosition();
-            float invMassB = 1.0f / rigidB->GetMass();
+
             posB.x += correction.x * invMassB;
             posB.y += correction.y * invMassB;
             objB.GetTransform()->SetPosition(posB);

@@ -64,11 +64,6 @@ namespace Axion
             currentScene_->ClearAllObjects();
         }
 
-        if (currentSceneName_ == sceneName && currentScene_)
-        {
-            currentScene_->ClearAllObjects();
-        }
-
         currentScene_ = scenes_[sceneName].get();
         currentSceneName_ = sceneName;
 
