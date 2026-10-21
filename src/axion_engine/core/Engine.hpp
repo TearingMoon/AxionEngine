@@ -87,6 +87,9 @@ public:
     /** @brief Returns a pointer to the SceneManager subsystem. */
     SceneManager* GetSceneManager() const { return scene_.get(); }
 
+    /** @brief Returns a pointer to the performance analyzer. */
+    Analyzer* GetAnalyzer() const { return analyzer_.get(); }
+
 private:
     EngineConfig config_;
     EngineContext context_;

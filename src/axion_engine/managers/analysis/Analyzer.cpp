@@ -90,6 +90,7 @@ namespace Axion
         frameTimes_.clear();
         fpsHistory_.clear();
         sectionTimes_.clear();
+        sectionMetrics_.clear();
         metrics_ = PerformanceMetrics{};
     }
 
@@ -99,9 +100,25 @@ namespace Axion
         return (it != sectionTimes_.end()) ? it->second : 0.0f;
     }
 
+    const SectionMetrics* Analyzer::GetSectionMetrics(const std::string& name) const
+    {
+        auto it = sectionMetrics_.find(name);
+        return (it != sectionMetrics_.end()) ? &it->second : nullptr;
+    }
+
     void Analyzer::RecordSectionTime(const std::string &name, float timeMs)
     {
         sectionTimes_[name] = timeMs;
+
+        auto& metrics = sectionMetrics_[name];
+        metrics.lastMs = timeMs;
+        metrics.maxMs = std::max(metrics.maxMs, timeMs);
+        metrics.sampleCount++;
+
+        const float previousTotal =
+            metrics.averageMs * static_cast<float>(metrics.sampleCount - 1);
+        metrics.averageMs =
+            (previousTotal + timeMs) / static_cast<float>(metrics.sampleCount);
     }
 
     void Analyzer::CalculateMetrics()

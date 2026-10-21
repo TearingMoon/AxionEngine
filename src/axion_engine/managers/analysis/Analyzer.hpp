@@ -36,6 +36,17 @@ struct PerformanceMetrics
 };
 
 /**
+ * @brief Aggregated timing information for one profiled section.
+ */
+struct SectionMetrics
+{
+    float lastMs = 0.0f;
+    float averageMs = 0.0f;
+    float maxMs = 0.0f;
+    size_t sampleCount = 0;
+};
+
+/**
  * @brief Scoped timer for profiling code sections.
  * 
  * @par Usage:
@@ -94,9 +105,18 @@ public:
     
     /** @brief Returns timing for a profiled section in ms. */
     float GetSectionTime(const std::string& name) const;
+
+    /** @brief Returns aggregated timing for a profiled section. */
+    const SectionMetrics* GetSectionMetrics(const std::string& name) const;
     
     /** @brief Returns all profiled section times. */
     const std::unordered_map<std::string, float>& GetSectionTimes() const { return sectionTimes_; }
+
+    /** @brief Returns aggregated metrics for all profiled sections. */
+    const std::unordered_map<std::string, SectionMetrics>& GetAllSectionMetrics() const
+    {
+        return sectionMetrics_;
+    }
     
     /** @brief Resets all accumulated statistics. */
     void Reset();
@@ -126,6 +146,7 @@ private:
     size_t maxSamples_ = 120;            // ~2 seconds at 60fps
     
     std::unordered_map<std::string, float> sectionTimes_;
+    std::unordered_map<std::string, SectionMetrics> sectionMetrics_;
     
     PerformanceMetrics metrics_;
 };

@@ -87,20 +87,35 @@ void Engine::AppLoop()
 {
     analyzer_->BeginFrame();
     
-    time_->Update();
+    {
+        ScopedTimer timer(analyzer_.get(), "Time");
+        time_->Update();
+    }
     
     // 1. Process pending spawn/destroy from previous frame
-    scene_->ProcessRequests();
+    {
+        ScopedTimer timer(analyzer_.get(), "SceneRequests");
+        scene_->ProcessRequests();
+    }
     
     // 2. Fixed timestep physics update
-    physics_->Update(time_->GetDeltaTime());
+    {
+        ScopedTimer timer(analyzer_.get(), "Physics");
+        physics_->Update(time_->GetDeltaTime());
+    }
     
     // 3. Game logic update
-    scene_->Update();
+    {
+        ScopedTimer timer(analyzer_.get(), "SceneUpdate");
+        scene_->Update();
+    }
     
     // 4. Render
-    render_->Update();
-    
+    {
+        ScopedTimer timer(analyzer_.get(), "Render");
+        render_->Update();
+    }
+
     analyzer_->EndFrame();
 }
 

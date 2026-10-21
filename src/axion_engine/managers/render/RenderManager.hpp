@@ -1,7 +1,10 @@
 #pragma once
 #include <cstdio>
+#include <string>
+#include <vector>
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <glm/glm.hpp>
 
 #include "axion_engine/structure/ContextAware.hpp"
@@ -39,11 +42,29 @@ public:
     void Update();
 
 private:
+    struct ProfilerLine
+    {
+        SDL_Texture* texture = nullptr;
+        int width = 0;
+        int height = 0;
+        SDL_Color color{255, 255, 255, 255};
+    };
+
     std::vector<IRenderable*> renderables;
     void CollectRenderables(Scene& scene, std::vector<IRenderable*>& out);
+    void RenderProfilerOverlay();
+    void DestroyProfilerOverlay();
+    bool LoadProfilerFont(int fontSize);
+    void UpdateProfilerTexture();
 
     SDL_Renderer* renderer_;
     bool debugMode_ = false;
+    bool profilerMode_ = false;
+    TTF_Font* profilerFont_ = nullptr;
+    int profilerFontSize_ = 0;
+    std::vector<ProfilerLine> profilerLines_;
+    std::string profilerText_;
+    float profilerRefreshTimer_ = 0.0f;
 };
 
 } // namespace Axion
