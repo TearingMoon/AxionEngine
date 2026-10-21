@@ -263,18 +263,6 @@ namespace Axion
         }
     }
 
-    bool GameObject::HasCollider() const
-    { // TODO: Check if this is the most efficient way, maybe store a bool that is updated when adding/removing components?
-        for (const auto &comp : components_)
-        {
-            if (dynamic_cast<ColliderComponent *>(comp.get()))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     EngineContext &GameObject::ctx_()
     {
         return parentScene_.GetContext();

@@ -31,165 +31,196 @@ namespace Axion
 
     void PhysicsManager::FixedUpdate(float dt)
     {
-        // Get all game objects with colliders from the current scene
-        Scene *currentScene = ctx_.sceneProvider->GetCurrentScene();
-        if (!currentScene)
+        Scene *scene = ctx_.sceneProvider->GetCurrentScene();
+        if (!scene)
             return;
 
-        // Get all game objects with colliders
-        std::vector<GameObject *> GameObjectsWithCollider = filter_ptr_vector(
-            currentScene->GetGameObjects(),
-            [](GameObject &obj)
-            {
-                return obj.HasCollider() && obj.IsEnabled() && !obj.IsDestroyed();
-            });
+        colliders_.clear();
+        rigidBodies_.clear();
 
-        ProcessCollisions(GameObjectsWithCollider);
+        // Collect active physics objects in a single pass
+        for (GameObject *obj : scene->GetGameObjects())
+        {
+            if (!obj || !obj->IsEnabled() || obj->IsDestroyed())
+                continue;
 
-        // Get all game objects with rigid bodies
-        std::vector<GameObject *> GameObjectsWithRigidBody = filter_ptr_vector(
-            currentScene->GetGameObjects(),
-            [](GameObject &obj)
-            {
-                return obj.GetComponent<RigidBody>() != nullptr && obj.IsEnabled() && !obj.IsDestroyed();
-            });
+            if (obj->HasCollider())
+                colliders_.push_back(obj);
 
-        ProcessForces(GameObjectsWithRigidBody);
+            if (obj->GetComponent<RigidBody>())
+                rigidBodies_.push_back(obj);
+        }
 
-        // Emit physics update event
-        currentScene->EmitFixedUpdateEvent();
+        ProcessCollisions(colliders_);
+        ProcessForces(rigidBodies_, dt);
+
+        scene->EmitFixedUpdateEvent();
     }
 
-    void PhysicsManager::ProcessCollisions(std::vector<GameObject *> &gameObjectsWithCollider)
+    void PhysicsManager::ProcessCollisions(
+        const std::vector<GameObject *> &objects)
     {
-        if (gameObjectsWithCollider.size() < 2)
-            return;
-
         currentCollisions_.clear();
 
-        // Build map of GameObject ID to GameObject pointer
+        // Map object IDs to their corresponding GameObjects for event dispatch
         std::unordered_map<size_t, GameObject *> idToObject;
-        for (auto *obj : gameObjectsWithCollider)
+        idToObject.reserve(objects.size());
+
+        for (GameObject *obj : objects)
         {
-            if (obj && !obj->IsDestroyed())
-                idToObject[obj->GetId()] = obj;
+            if (!obj || obj->IsDestroyed())
+                continue;
+
+            idToObject.emplace(obj->GetId(), obj);
         }
 
-        std::unordered_set<std::pair<size_t, size_t>, PairHashSize> newCollisionIds;
+        // Store collision pairs detected during the current physics step
+        std::unordered_set<
+            std::pair<size_t, size_t>,
+            PairHashSize>
+            newCollisionIds;
 
-        // Store only GameObject IDs, not collider pointers
-        std::vector<size_t> objectIds;
-        objectIds.reserve(gameObjectsWithCollider.size());
+        newCollisionIds.reserve(previousCollisionIds_.size());
 
-        for (auto *obj : gameObjectsWithCollider)
+        // Test each unique pair of GameObjects
+        for (size_t i = 0; i < objects.size(); ++i)
         {
-            if (obj && !obj->IsDestroyed())
-                objectIds.push_back(obj->GetId());
-        }
+            GameObject *objA = objects[i];
 
-        // Double loop through object IDs
-        for (size_t i = 0; i < objectIds.size(); ++i)
-        {
-            for (size_t j = i + 1; j < objectIds.size(); ++j)
+            if (!objA || objA->IsDestroyed() || !objA->IsEnabled())
+                continue;
+
+            const size_t idA = objA->GetId();
+
+            for (size_t j = i + 1; j < objects.size(); ++j)
             {
-                size_t idA = objectIds[i];
-                size_t idB = objectIds[j];
+                // Callbacks may destroy or disable the first object
+                if (objA->IsDestroyed() || !objA->IsEnabled())
+                    break;
 
-                // Get fresh objects from map
-                auto itA = idToObject.find(idA);
-                auto itB = idToObject.find(idB);
+                GameObject *objB = objects[j];
 
-                if (itA == idToObject.end() || itB == idToObject.end())
+                if (!objB || objB->IsDestroyed() || !objB->IsEnabled())
                     continue;
 
-                auto *objA = itA->second;
-                auto *objB = itB->second;
+                const size_t idB = objB->GetId();
 
-                if (!objA || !objB)
-                    continue;
-
-                if (objA->IsDestroyed() || objB->IsDestroyed())
-                {
-                    idToObject.erase(idA);
-                    idToObject.erase(idB);
-                    continue;
-                }
-
-                // Get fresh colliders NOW
+                // Retrieve components only for the current object pair
                 auto collidersA = objA->GetComponents<ColliderComponent>();
                 auto collidersB = objB->GetComponents<ColliderComponent>();
 
-                // Test each collider pair
-                for (auto *colliderA : collidersA)
+                bool stopPair = false;
+
+                for (ColliderComponent *colliderA : collidersA)
                 {
+                    if (objA->IsDestroyed() || objB->IsDestroyed() ||
+                        !objA->IsEnabled() || !objB->IsEnabled())
+                    {
+                        stopPair = true;
+                        break;
+                    }
+
                     if (!colliderA)
                         continue;
 
-                    for (auto *colliderB : collidersB)
+                    for (ColliderComponent *colliderB : collidersB)
                     {
+                        if (objA->IsDestroyed() || objB->IsDestroyed() ||
+                            !objA->IsEnabled() || !objB->IsEnabled())
+                        {
+                            stopPair = true;
+                            break;
+                        }
+
                         if (!colliderB)
                             continue;
 
-                        auto pair = colliderA < colliderB
-                                        ? std::make_pair(colliderA, colliderB)
-                                        : std::make_pair(colliderB, colliderA);
-
                         Manifold manifold;
 
-                        // Double-check objects still valid before Intersects
-                        if (objA->IsDestroyed() || objB->IsDestroyed())
-                            break;
+                        // Perform narrow-phase collision detection
+                        if (!colliderA->Intersects(*colliderB, manifold))
+                            continue;
 
-                        bool intersected = colliderA->Intersects(*colliderB, manifold);
+                        // Normalize collider pair ordering
+                        const auto colliderPair = std::minmax(
+                            colliderA,
+                            colliderB,
+                            std::less<ColliderComponent *>{});
 
-                        if (intersected)
+                        currentCollisions_.insert(colliderPair);
+
+                        // Normalize GameObject ID ordering
+                        const auto idPair = std::minmax(idA, idB);
+
+                        newCollisionIds.insert(idPair);
+
+                        const bool isNewCollision =
+                            previousCollisionIds_.find(idPair) ==
+                            previousCollisionIds_.end();
+
+                        // Dispatch collision events and resolve physics
+                        ResolveCollision(
+                            *objA,
+                            *objB,
+                            *colliderA,
+                            *colliderB,
+                            isNewCollision,
+                            manifold);
+
+                        // Callbacks may destroy the objects
+                        if (objA->IsDestroyed() || objB->IsDestroyed() ||
+                            !objA->IsEnabled() || !objB->IsEnabled())
                         {
-                            currentCollisions_.insert(pair);
-
-                            auto idPair = idA < idB ? std::make_pair(idA, idB) : std::make_pair(idB, idA);
-                            newCollisionIds.insert(idPair);
-
-                            bool isNewCollision = previousCollisionIds_.find(idPair) == previousCollisionIds_.end();
-
-                            ResolveCollision(*objA, *objB, *colliderA, *colliderB, isNewCollision, manifold);
-
-                            // Objects might be destroyed after callback
-                            if (objA->IsDestroyed() || objB->IsDestroyed())
-                            {
-                                idToObject.erase(idA);
-                                idToObject.erase(idB);
-                                goto next_object_pair;
-                            }
+                            stopPair = true;
+                            break;
                         }
                     }
+
+                    if (stopPair)
+                        break;
                 }
 
-            next_object_pair:;
+                // Remove destroyed objects from the event lookup
+                if (objA->IsDestroyed())
+                    idToObject.erase(idA);
+
+                if (objB->IsDestroyed())
+                    idToObject.erase(idB);
+
+                if (objA->IsDestroyed() || !objA->IsEnabled())
+                    break;
             }
         }
 
+        // Dispatch Exit events for pairs no longer colliding
         DetectCollisionEvents(idToObject, newCollisionIds);
+
+        // Save the collision state for the next physics step
         previousCollisionIds_ = std::move(newCollisionIds);
     }
 
-    void PhysicsManager::ProcessForces(std::vector<GameObject *> &gameObjectsWithRigidBody)
+    void PhysicsManager::ProcessForces(
+        const std::vector<GameObject *> &objects,
+        float dt)
     {
-        Scene *currentScene = ctx_.sceneProvider->GetCurrentScene();
-        if (!currentScene)
+        Scene *scene = ctx_.sceneProvider->GetCurrentScene();
+        if (!scene)
             return;
 
-        glm::vec3 gravity = currentScene->Gravity;
+        const glm::vec3 gravity = scene->Gravity;
 
-        for (auto *obj : gameObjectsWithRigidBody)
+        for (GameObject *obj : objects)
         {
-            auto *rigidBody = obj->GetComponent<RigidBody>();
-            if (rigidBody)
-            {
-                // First integrate forces (including gravity) to update velocity
-                rigidBody->IntegrateForces(fixedDeltaTime_, gravity);
-                // Then integrate velocity to update position
-                rigidBody->IntegrateVelocity(fixedDeltaTime_);
-            }
+            if (!obj || obj->IsDestroyed() || !obj->IsEnabled())
+                continue;
+
+            RigidBody *rigidBody = obj->GetComponent<RigidBody>();
+
+            if (!rigidBody)
+                continue;
+
+            rigidBody->IntegrateForces(dt, gravity);
+            rigidBody->IntegrateVelocity(dt);
         }
     }
 

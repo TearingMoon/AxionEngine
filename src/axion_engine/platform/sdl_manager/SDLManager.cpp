@@ -11,6 +11,7 @@ SDLManager::~SDLManager()
 {
     IMG_Quit();
     QuitSDL();
+    TTF_Quit();
 }
 
 void SDLManager::InitSDL()

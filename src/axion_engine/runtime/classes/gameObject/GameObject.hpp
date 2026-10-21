@@ -113,7 +113,7 @@ namespace Axion
         size_t GetId() const { return id_; }
 
         /** @brief Returns whether this object has any collider components. */
-        bool HasCollider() const;
+        bool HasCollider() const { return hasCollider_; }
 
         /** @brief Returns the transform component, or nullptr if destroyed. */
         TransformComponent *GetTransform() const
@@ -136,6 +136,7 @@ namespace Axion
         bool isEnabled_ = true;
         bool isDestroyed_ = false;
         bool isMounted_ = false;
+        bool hasCollider_ = false;
         bool updatesStarted_ = false;
         bool destroyCallbacksInvoked_ = false;
 
@@ -169,6 +170,11 @@ namespace Axion
                 if (auto *updatable = dynamic_cast<IUpdateable *>(rawPtr))
                     updatable->Start(ctx_());
             }
+        }
+
+        if (auto *collider = dynamic_cast<ColliderComponent *>(rawPtr))
+        {
+            hasCollider_ = true;
         }
 
         return rawPtr;
