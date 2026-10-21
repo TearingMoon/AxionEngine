@@ -66,6 +66,12 @@ namespace Axion
          */
         void IntegrateForces(float dt, const glm::vec3 &gravity = glm::vec3(0.0f))
         {
+            if (isStatic || mass <= 0.0f)
+            {
+                accumulatedForce_ = glm::vec3(0.0f);
+                return;
+            }
+
             glm::vec3 acceleration = accumulatedForce_ / mass;
             acceleration += gravity;
             velocity_ += acceleration * dt;
@@ -92,8 +98,6 @@ namespace Axion
                 GetOwner()->GetTransform()->Translate(0.0f, 0.0f, deltaPos.z);
         }
 
-        // TODO: Implement locks usage
-        
         /** @brief Sets the velocity directly. */
         void SetVelocity(const glm::vec3 &vel)
         {
