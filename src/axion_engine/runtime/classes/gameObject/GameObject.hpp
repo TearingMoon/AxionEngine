@@ -41,6 +41,9 @@ public:
     /** @brief Runs fixed-timestep physics updates on components. */
     void FixedUpdate();
 
+    /** @brief Runs post-update callbacks on components. */
+    void LateUpdate();
+
     /** @brief Called when the object is added to the scene. */
     void Mounted();
     
@@ -131,7 +134,10 @@ private:
 
     bool isEnabled_ = true;
     bool isDestroyed_ = false;
+    bool isMounted_ = false;
     bool isFirstUpdate_ = true;
+    bool updatesStarted_ = false;
+    bool destroyCallbacksInvoked_ = false;
 
     std::vector<std::unique_ptr<Component>> components_;
 };
@@ -146,6 +152,25 @@ inline T* GameObject::AddComponent(Args&&... args)
 
     T* rawPtr = comp.get();
     components_.emplace_back(std::move(comp));
+
+    if (isMounted_)
+    {
+        rawPtr->mounted_ = true;
+        rawPtr->OnMounted(ctx_());
+
+        if (isEnabled_)
+        {
+            rawPtr->enabled_ = true;
+            rawPtr->OnEnabled(ctx_());
+        }
+
+        if (updatesStarted_)
+        {
+            if (auto* updatable = dynamic_cast<IUpdateable*>(rawPtr))
+                updatable->Start(ctx_());
+        }
+    }
+
     return rawPtr;
 }
 

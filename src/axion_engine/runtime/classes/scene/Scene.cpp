@@ -16,6 +16,14 @@ void Scene::Tick()
             object->Tick();
         }
     }
+
+    for (auto &object : objects_)
+    {
+        if (object && !object->IsDestroyed())
+        {
+            object->LateUpdate();
+        }
+    }
 }
 
 GameObject *Scene::CreateGameObject()

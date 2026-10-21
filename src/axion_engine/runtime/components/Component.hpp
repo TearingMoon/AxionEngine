@@ -15,6 +15,8 @@ class GameObject;
  */
 class Component
 {
+    friend class GameObject;
+
 public:
     virtual ~Component() = default;
 
@@ -41,6 +43,8 @@ public:
 
 private:
     GameObject* owner_ = nullptr;
+    bool mounted_ = false;
+    bool enabled_ = false;
 };
 
 } // namespace Axion

@@ -18,28 +18,31 @@ void GameObject::Tick()
 
     if (isFirstUpdate_)
     {
-        for (auto& component : components_)
+        for (size_t index = 0; index < components_.size(); ++index)
         {
             if (isDestroyed_)
                 return;
+            Component* component = components_[index].get();
             if (!component)
                 continue;
-            if (auto updatable = dynamic_cast<IUpdateable*>(component.get()))
+            if (auto updatable = dynamic_cast<IUpdateable*>(component))
             {
                 updatable->Start(ctx_());
             }
         }
         isFirstUpdate_ = false;
+        updatesStarted_ = true;
     }
     else
     {
-        for (auto& component : components_)
+        for (size_t index = 0; index < components_.size(); ++index)
         {
             if (isDestroyed_)
                 return;
+            Component* component = components_[index].get();
             if (!component)
                 continue;
-            if (auto updatable = dynamic_cast<IUpdateable*>(component.get()))
+            if (auto updatable = dynamic_cast<IUpdateable*>(component))
             {
                 updatable->Update(ctx_());
             }
@@ -52,31 +55,67 @@ void GameObject::FixedUpdate()
     if (!isEnabled_ || isDestroyed_)
         return;
         
-    for (auto &component : components_)
+    for (size_t index = 0; index < components_.size(); ++index)
     {
         if (isDestroyed_) // Check if destroyed during FixedUpdate()
             return;
+        Component* component = components_[index].get();
         if (!component)
             continue;
-        if (auto updatable = dynamic_cast<IUpdateable *>(component.get()))
+        if (auto updatable = dynamic_cast<IUpdateable *>(component))
         {
             updatable->FixedUpdate(ctx_());
         }
     }
 }
 
+void GameObject::LateUpdate()
+{
+    if (!isEnabled_ || isDestroyed_)
+        return;
+
+    for (size_t index = 0; index < components_.size(); ++index)
+    {
+        if (isDestroyed_)
+            return;
+
+        Component* component = components_[index].get();
+        if (!component)
+            continue;
+
+        if (auto updatable = dynamic_cast<IUpdateable*>(component))
+        {
+            updatable->LateUpdate(ctx_());
+        }
+    }
+}
+
 void GameObject::Mounted()
 {
+    if (isMounted_)
+        return;
+
     isDestroyed_ = false;
-    for (auto &component : components_)
+    destroyCallbacksInvoked_ = false;
+    isMounted_ = true;
+
+    for (size_t index = 0; index < components_.size(); ++index)
     {
+        Component* component = components_[index].get();
+        if (!component || component->mounted_)
+            continue;
+        component->mounted_ = true;
         component->OnMounted(ctx_());
     }
 
     if (isEnabled_)
     {
-        for (auto &component : components_)
+        for (size_t index = 0; index < components_.size(); ++index)
         {
+            Component* component = components_[index].get();
+            if (!component || component->enabled_)
+                continue;
+            component->enabled_ = true;
             component->OnEnabled(ctx_());
         }
     }
@@ -94,21 +133,37 @@ void GameObject::Destroy()
 
 void GameObject::OnDestroy()
 {
+    if (destroyCallbacksInvoked_)
+        return;
+
+    destroyCallbacksInvoked_ = true;
+
     // This is called by Scene::ProcessDestroyQueue
     // Execute OnDestroy callbacks for all components
-    for (auto &component : components_)
+    for (size_t index = 0; index < components_.size(); ++index)
     {
+        Component* component = components_[index].get();
+        if (!component)
+            continue;
         component->OnDestroy(ctx_());
     }
 }
 
 void GameObject::Enable()
 {
-    if (isEnabled_)
+    if (isEnabled_ || isDestroyed_)
         return;
+
     isEnabled_ = true;
-    for (auto &component : components_)
+    if (!isMounted_)
+        return;
+
+    for (size_t index = 0; index < components_.size(); ++index)
     {
+        Component* component = components_[index].get();
+        if (!component || component->enabled_)
+            continue;
+        component->enabled_ = true;
         component->OnEnabled(ctx_());
     }
 }
@@ -118,8 +173,16 @@ void GameObject::Disable()
     if (!isEnabled_)
         return;
     isEnabled_ = false;
-    for (auto &component : components_)
+
+    if (!isMounted_)
+        return;
+
+    for (size_t index = 0; index < components_.size(); ++index)
     {
+        Component* component = components_[index].get();
+        if (!component || !component->enabled_)
+            continue;
+        component->enabled_ = false;
         component->OnDisabled(ctx_());
     }
 }
