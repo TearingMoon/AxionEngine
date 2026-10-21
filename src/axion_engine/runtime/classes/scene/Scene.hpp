@@ -101,8 +101,7 @@ private:
     void Enter()
     {
         OnSceneEnter();
-        EmitMountedEvent();
-        EmitEnabledEvent();
+        ProcessSpawnQueue();
     }
 
     void Exit()

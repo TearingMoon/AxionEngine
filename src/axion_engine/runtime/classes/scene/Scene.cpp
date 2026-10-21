@@ -137,15 +137,27 @@ void Scene::ProcessDestroyQueue()
 
 void Scene::ProcessSpawnQueue()
 {
-    for (auto& obj : spawnQueue_)
+    std::vector<std::unique_ptr<GameObject>> pendingObjects;
+    pendingObjects.swap(spawnQueue_);
+
+    for (auto& obj : pendingObjects)
     {
-        if (obj)
+        if (!obj)
+            continue;
+
+        if (obj->IsDestroyed())
         {
-            obj->Mounted();
-            objects_.emplace_back(std::move(obj));
+            obj->OnDestroy();
+
+            destroyQueue_.erase(
+                std::remove(destroyQueue_.begin(), destroyQueue_.end(), obj.get()),
+                destroyQueue_.end());
+            continue;
         }
+
+        obj->Mounted();
+        objects_.emplace_back(std::move(obj));
     }
-    spawnQueue_.clear();
 }
 
 } // namespace Axion

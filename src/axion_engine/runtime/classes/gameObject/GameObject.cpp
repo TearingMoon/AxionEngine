@@ -72,6 +72,14 @@ void GameObject::Mounted()
     {
         component->OnMounted(ctx_());
     }
+
+    if (isEnabled_)
+    {
+        for (auto &component : components_)
+        {
+            component->OnEnabled(ctx_());
+        }
+    }
 }
 
 void GameObject::Destroy()
