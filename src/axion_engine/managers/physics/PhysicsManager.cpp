@@ -297,32 +297,45 @@ namespace Axion
         if (!rigidA && !rigidB)
             return;
 
-        const float invMassA =
-            rigidA && rigidA->GetMass() > 0.0f
-                ? 1.0f / rigidA->GetMass()
-                : 0.0f;
+        const auto effectiveInverseMass = [](const RigidBody* body)
+        {
+            if (!body || body->IsStatic() || body->GetMass() <= 0.0f)
+                return glm::vec3(0.0f);
 
-        const float invMassB =
-            rigidB && rigidB->GetMass() > 0.0f
-                ? 1.0f / rigidB->GetMass()
-                : 0.0f;
+            const float inverseMass = 1.0f / body->GetMass();
+            const RigidbodyLock locks = body->GetLocks();
+            return glm::vec3(
+                (locks & Lock_PosX) ? 0.0f : inverseMass,
+                (locks & Lock_PosY) ? 0.0f : inverseMass,
+                (locks & Lock_PosZ) ? 0.0f : inverseMass);
+        };
 
-        // Simple collision response: separate objects along the collision normal
-        float totalInverseMass = invMassA + invMassB;
-        if (totalInverseMass == 0.0f)
+        const glm::vec3 invMassA = effectiveInverseMass(rigidA);
+        const glm::vec3 invMassB = effectiveInverseMass(rigidB);
+        const glm::vec2 normal{manifold.normal.x, manifold.normal.y};
+
+        const float inverseMassAlongNormal =
+            invMassA.x * normal.x * normal.x +
+            invMassA.y * normal.y * normal.y +
+            invMassB.x * normal.x * normal.x +
+            invMassB.y * normal.y * normal.y;
+
+        if (inverseMassAlongNormal <= 0.0f)
             return;
 
         // Separate objects based on penetration depth
         float percent = 0.8f; // Penetration percentage to correct (0.2 to 1.0)
         float slop = 0.01f;   // Penetration allowance
-        float correctionMagnitude = glm::max(manifold.penetration - slop, 0.0f) / totalInverseMass * percent;
-        glm::vec2 correction = correctionMagnitude * manifold.normal;
+        const float correctionMagnitude =
+            glm::max(manifold.penetration - slop, 0.0f) /
+            inverseMassAlongNormal * percent;
+        const glm::vec2 correction = correctionMagnitude * normal;
 
         if (rigidA)
         {
             glm::vec3 posA = objA.GetTransform()->GetWorldPosition();
-            posA.x -= correction.x * invMassA;
-            posA.y -= correction.y * invMassA;
+            posA.x -= correction.x * invMassA.x;
+            posA.y -= correction.y * invMassA.y;
             objA.GetTransform()->SetPosition(posA);
         }
 
@@ -330,19 +343,32 @@ namespace Axion
         {
             glm::vec3 posB = objB.GetTransform()->GetWorldPosition();
 
-            posB.x += correction.x * invMassB;
-            posB.y += correction.y * invMassB;
+            posB.x += correction.x * invMassB.x;
+            posB.y += correction.y * invMassB.y;
             objB.GetTransform()->SetPosition(posB);
         }
 
         // Apply impulse for velocity correction
         glm::vec3 relativeVelocity = glm::vec3(0.0f);
         if (rigidA)
-            relativeVelocity -= rigidA->GetVelocity();
+        {
+            const glm::vec3 velocity = rigidA->GetVelocity();
+            if (invMassA.x > 0.0f)
+                relativeVelocity.x -= velocity.x;
+            if (invMassA.y > 0.0f)
+                relativeVelocity.y -= velocity.y;
+        }
         if (rigidB)
-            relativeVelocity += rigidB->GetVelocity();
+        {
+            const glm::vec3 velocity = rigidB->GetVelocity();
+            if (invMassB.x > 0.0f)
+                relativeVelocity.x += velocity.x;
+            if (invMassB.y > 0.0f)
+                relativeVelocity.y += velocity.y;
+        }
 
-        float velocityAlongNormal = glm::dot(glm::vec2(relativeVelocity.x, relativeVelocity.y), manifold.normal);
+        const float velocityAlongNormal =
+            glm::dot(glm::vec2(relativeVelocity.x, relativeVelocity.y), normal);
 
         // Don't resolve if velocities are separating
         if (velocityAlongNormal > 0)
@@ -353,24 +379,24 @@ namespace Axion
 
         // Calculate impulse scalar
         float impulseScalar = -(1.0f + restitution) * velocityAlongNormal;
-        impulseScalar /= totalInverseMass;
+        impulseScalar /= inverseMassAlongNormal;
 
         // Apply impulse
-        glm::vec2 impulse = impulseScalar * manifold.normal;
+        const glm::vec2 impulse = impulseScalar * normal;
 
         if (rigidA)
         {
             glm::vec3 velA = rigidA->GetVelocity();
-            velA.x -= impulse.x * (1.0f / rigidA->GetMass());
-            velA.y -= impulse.y * (1.0f / rigidA->GetMass());
+            velA.x -= impulse.x * invMassA.x;
+            velA.y -= impulse.y * invMassA.y;
             rigidA->SetVelocity(velA);
         }
 
         if (rigidB)
         {
             glm::vec3 velB = rigidB->GetVelocity();
-            velB.x += impulse.x * (1.0f / rigidB->GetMass());
-            velB.y += impulse.y * (1.0f / rigidB->GetMass());
+            velB.x += impulse.x * invMassB.x;
+            velB.y += impulse.y * invMassB.y;
             rigidB->SetVelocity(velB);
         }
     }

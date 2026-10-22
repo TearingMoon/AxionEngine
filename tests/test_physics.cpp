@@ -49,6 +49,37 @@ protected:
     }
 };
 
+class ResolutionScene final : public Axion::Scene
+{
+public:
+    using Axion::Scene::Scene;
+
+    Axion::GameObject* staticObject = nullptr;
+    Axion::GameObject* dynamicObject = nullptr;
+
+protected:
+    void OnSceneEnter() override
+    {
+        Gravity = {0.0f, 0.0f, 0.0f};
+
+        staticObject = CreateGameObject();
+        auto* staticCollider =
+            staticObject->AddComponent<Axion::CircleColliderComponent>();
+        staticCollider->SetRadius(1.0f);
+        staticCollider->SetColliderType(Axion::ColliderType::Physics);
+        auto* staticBody = staticObject->AddComponent<Axion::RigidBody>();
+        staticBody->SetStatic(true);
+
+        dynamicObject = CreateGameObject();
+        dynamicObject->GetTransform()->SetPosition({1.5f, 0.0f, 0.0f});
+        auto* dynamicCollider =
+            dynamicObject->AddComponent<Axion::CircleColliderComponent>();
+        dynamicCollider->SetRadius(1.0f);
+        dynamicCollider->SetColliderType(Axion::ColliderType::Physics);
+        dynamicObject->AddComponent<Axion::RigidBody>();
+    }
+};
+
 struct PhysicsFixture
 {
     Axion::EngineContext context{};
@@ -70,6 +101,30 @@ struct PhysicsFixture
     PhysicsScene& scene()
     {
         return *static_cast<PhysicsScene*>(scenes->GetCurrentScene());
+    }
+};
+
+struct ResolutionFixture
+{
+    Axion::EngineContext context{};
+    Axion::Logger logger;
+    std::unique_ptr<Axion::SceneManager> scenes;
+    std::unique_ptr<Axion::PhysicsManager> physics;
+
+    ResolutionFixture()
+    {
+        context.logger = &logger;
+        scenes = std::make_unique<Axion::SceneManager>(context);
+        context.sceneProvider = scenes.get();
+        physics = std::make_unique<Axion::PhysicsManager>(context);
+        scenes->RegisterScene<ResolutionScene>("resolution");
+        scenes->RequestChange("resolution");
+        scenes->ProcessRequests();
+    }
+
+    ResolutionScene& scene()
+    {
+        return *static_cast<ResolutionScene*>(scenes->GetCurrentScene());
     }
 };
 }
@@ -125,4 +180,41 @@ TEST_CASE("Physics dispatches trigger events without physical collision resoluti
 
     REQUIRE(firstRecorder->triggerExit == 1);
     REQUIRE(secondRecorder->triggerExit == 1);
+}
+
+TEST_CASE("Physics treats static bodies as immovable during resolution")
+{
+    ResolutionFixture fixture;
+    auto& scene = fixture.scene();
+    const glm::vec3 staticStart =
+        scene.staticObject->GetTransform()->GetPosition();
+    const glm::vec3 dynamicStart =
+        scene.dynamicObject->GetTransform()->GetPosition();
+
+    fixture.physics->Update(0.02f);
+
+    const glm::vec3 staticEnd =
+        scene.staticObject->GetTransform()->GetPosition();
+    const glm::vec3 dynamicEnd =
+        scene.dynamicObject->GetTransform()->GetPosition();
+
+    REQUIRE(staticEnd == staticStart);
+    REQUIRE(dynamicEnd.x != dynamicStart.x);
+}
+
+TEST_CASE("Physics locks prevent collision correction on the locked axis")
+{
+    ResolutionFixture fixture;
+    auto& scene = fixture.scene();
+    auto* body = scene.dynamicObject->GetComponent<Axion::RigidBody>();
+    body->SetLocks(Axion::Lock_PosX);
+
+    const glm::vec3 start =
+        scene.dynamicObject->GetTransform()->GetPosition();
+
+    fixture.physics->Update(0.02f);
+
+    const glm::vec3 end =
+        scene.dynamicObject->GetTransform()->GetPosition();
+    REQUIRE(end.x == start.x);
 }
