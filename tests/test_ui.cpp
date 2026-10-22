@@ -46,6 +46,48 @@ TEST_CASE("UI anchors resolve against the viewport", "[ui]")
     REQUIRE(rect.h == 40);
 }
 
+TEST_CASE("Nested UI anchors resolve against the parent rectangle", "[ui]")
+{
+    Axion::UIRenderContext context;
+    context.width = 1280;
+    context.height = 720;
+
+    Axion::UILabel child("nested");
+    child.SetAnchor({1.0f, 1.0f});
+    child.SetPosition({-60.0f, -30.0f});
+    child.SetSize({60.0f, 30.0f});
+
+    const SDL_Rect parent{100, 80, 400, 200};
+    const SDL_Rect rect = child.GetScreenRect(context, parent);
+    REQUIRE(rect.x == 440);
+    REQUIRE(rect.y == 250);
+    REQUIRE(rect.w == 60);
+    REQUIRE(rect.h == 30);
+}
+
+TEST_CASE("UI panels fill their parent and align automatic children", "[ui]")
+{
+    Axion::UIRenderContext context;
+    context.width = 800;
+    context.height = 600;
+
+    Axion::UIPanel panel;
+    panel.SetFillParent(true);
+    panel.SetPadding(10.0f);
+    panel.SetChildAlignment(Axion::UIHorizontalAlignment::Center,
+                            Axion::UIVerticalAlignment::Bottom);
+    auto* child = panel.Add<Axion::UILabel>("centered");
+    child->SetSize({100.0f, 20.0f});
+    child->SetAutoLayout(true);
+
+    panel.Update(context, {0, 0, context.width, context.height});
+
+    REQUIRE(panel.GetScreenRect(context).w == 800);
+    REQUIRE(panel.GetScreenRect(context).h == 600);
+    REQUIRE(child->GetPosition().x == 340.0f);
+    REQUIRE(child->GetPosition().y == 560.0f);
+}
+
 TEST_CASE("UI button reports hover and consumes its click", "[ui]")
 {
     FakeInput input;
@@ -63,7 +105,7 @@ TEST_CASE("UI button reports hover and consumes its click", "[ui]")
 
     bool clicked = false;
     button.SetOnClick([&clicked]() { clicked = true; });
-    button.Update(context, {});
+    button.Update(context, {0, 0, context.width, context.height});
 
     REQUIRE(button.IsHovered());
     REQUIRE(clicked);
@@ -89,7 +131,7 @@ TEST_CASE("Disabled UI buttons do not react to input", "[ui]")
 
     bool clicked = false;
     button.SetOnClick([&clicked]() { clicked = true; });
-    button.Update(context, {});
+    button.Update(context, {0, 0, context.width, context.height});
 
     REQUIRE_FALSE(button.IsHovered());
     REQUIRE_FALSE(clicked);

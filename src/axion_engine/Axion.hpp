@@ -63,6 +63,10 @@
 #include "axion_engine/runtime/components/renderer/SquareRenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/CircleRenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/TextRenderComponent.hpp"
+#include "axion_engine/runtime/ui/UIElement.hpp"
+#include "axion_engine/runtime/ui/UILabel.hpp"
+#include "axion_engine/runtime/ui/UIPanel.hpp"
+#include "axion_engine/runtime/ui/UIButton.hpp"
 #include "axion_engine/runtime/ui/Canvas.hpp"
 
 // Utilities

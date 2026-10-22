@@ -103,7 +103,7 @@ namespace Axion
 
         auto canvas = uiController->AddComponent<Canvas>();
         auto panel = canvas->Add<UIPanel>();
-        panel->SetSize({1024.0f, 768.0f});
+        panel->SetFillParent(true);
         panel->SetColor({0, 0, 0, 0});
 
         // Score and health labels remain screen-space and independent of the camera.
