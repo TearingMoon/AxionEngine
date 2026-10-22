@@ -126,9 +126,6 @@ public:
                 return;
         }
 
-        auto* camTr = ctx.camera->GetOwner()->GetTransform();
-        const glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
-
         int winW = 0, winH = 0;
         SDL_GetRendererOutputSize(ctx.renderer, &winW, &winH);
 
@@ -139,15 +136,18 @@ public:
         const float sx = worldScale.x;
         const float sy = worldScale.y;
 
-        const float zoom = 1.0f;
-        const float screenX = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
-        const float screenY = (worldPos.y - camPos.y) * zoom + winH * 0.5f;
+        const glm::vec2 screenPosition =
+            ctx.camera->WorldToScreen(worldPos, winW, winH);
+        const glm::vec2 screenSize = ctx.camera->WorldSizeToScreen(
+            worldPos, {static_cast<float>(texW_) * sx,
+                       static_cast<float>(texH_) * sy},
+            winW, winH);
 
         SDL_FRect dst;
-        dst.w = texW_ * sx;
-        dst.h = texH_ * sy;
-        dst.x = screenX - dst.w * 0.5f;
-        dst.y = screenY - dst.h * 0.5f;
+        dst.w = screenSize.x;
+        dst.h = screenSize.y;
+        dst.x = screenPosition.x - dst.w * 0.5f;
+        dst.y = screenPosition.y - dst.h * 0.5f;
 
         SDL_FPoint pivot;
         pivot.x = dst.w * 0.5f;

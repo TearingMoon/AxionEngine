@@ -33,9 +33,6 @@ public:
         if (!camOwner || camOwner->IsDestroyed())
             return;
 
-        auto* camTr = camOwner->GetTransform();
-        glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
-
         int winW = 0, winH = 0;
         SDL_GetRendererOutputSize(ctx.renderer, &winW, &winH);
 
@@ -45,11 +42,11 @@ public:
         glm::vec3 basisX = glm::vec3(worldMatrix[0]);
         float scale = glm::length(basisX);
 
-        float zoom = 1.0f;
-        float screenX = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
-        float screenY = winH * 0.5f - (worldPos.y - camPos.y) * zoom;
-
-        float screenRadius = radius_ * scale * zoom;
+        const glm::vec2 screenPosition =
+            ctx.camera->WorldToScreen(worldPos, winW, winH);
+        const float screenRadius = ctx.camera
+            ->WorldSizeToScreen(worldPos, {radius_ * scale, 0.0f}, winW, winH)
+            .x;
 
         SDL_SetRenderDrawColor(ctx.renderer, color_.r, color_.g, color_.b, color_.a);
 
@@ -61,7 +58,9 @@ public:
                 int dy = h - static_cast<int>(screenRadius);
                 if ((dx * dx + dy * dy) <= static_cast<int>(screenRadius * screenRadius))
                 {
-                    SDL_RenderDrawPoint(ctx.renderer, static_cast<int>(screenX + dx), static_cast<int>(screenY + dy));
+                    SDL_RenderDrawPoint(ctx.renderer,
+                                        static_cast<int>(screenPosition.x + dx),
+                                        static_cast<int>(screenPosition.y + dy));
                 }
             }
         }

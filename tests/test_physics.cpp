@@ -60,7 +60,7 @@ public:
 protected:
     void OnSceneEnter() override
     {
-        Gravity = {0.0f, 0.0f, 0.0f};
+        SetGravity({0.0f, 0.0f, 0.0f});
 
         staticObject = CreateGameObject();
         auto* staticCollider =
@@ -182,6 +182,23 @@ TEST_CASE("Physics dispatches trigger events without physical collision resoluti
     REQUIRE(secondRecorder->triggerExit == 1);
 }
 
+TEST_CASE("Physics separates an approaching dynamic body from a static body")
+{
+    ResolutionFixture fixture;
+    auto& scene = fixture.scene();
+    auto* body = scene.dynamicObject->GetComponent<Axion::RigidBody>();
+    body->SetVelocity({-10.0f, 0.0f, 0.0f});
+
+    const glm::vec3 start =
+        scene.dynamicObject->GetTransform()->GetPosition();
+
+    fixture.physics->Update(0.02f);
+
+    const glm::vec3 end =
+        scene.dynamicObject->GetTransform()->GetPosition();
+    REQUIRE(end.x > start.x);
+}
+
 TEST_CASE("Physics treats static bodies as immovable during resolution")
 {
     ResolutionFixture fixture;
@@ -199,7 +216,7 @@ TEST_CASE("Physics treats static bodies as immovable during resolution")
         scene.dynamicObject->GetTransform()->GetPosition();
 
     REQUIRE(staticEnd == staticStart);
-    REQUIRE(dynamicEnd.x != dynamicStart.x);
+    REQUIRE(dynamicEnd.x > dynamicStart.x);
 }
 
 TEST_CASE("Physics locks prevent collision correction on the locked axis")

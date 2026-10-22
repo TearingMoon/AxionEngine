@@ -38,6 +38,7 @@ namespace Axion
     public:
         float mass = 1.0f; ///< Mass in kilograms
         float drag = 0.0f; ///< Linear drag coefficient (0 = no drag)
+        float gravityScale = 1.0f; ///< Multiplier applied to the scene gravity
 
         /**
          * @brief Adds a force to be applied next physics update.
@@ -120,6 +121,12 @@ namespace Axion
 
         /** @brief Returns the static flag. */
         bool IsStatic() const { return isStatic; }
+
+        /** @brief Sets the multiplier applied to scene gravity. */
+        void SetGravityScale(float scale) { gravityScale = scale; }
+
+        /** @brief Returns the multiplier applied to scene gravity. */
+        float GetGravityScale() const { return gravityScale; }
 
     private:
         bool isStatic = false;

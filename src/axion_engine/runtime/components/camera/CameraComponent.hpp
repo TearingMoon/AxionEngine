@@ -85,6 +85,24 @@ public:
         return GetProjectionMatrix() * GetViewMatrix();
     }
 
+    /**
+     * @brief Converts a world position to SDL viewport coordinates.
+     * @param worldPosition Position in world coordinates.
+     * @param viewportWidth Viewport width in pixels.
+     * @param viewportHeight Viewport height in pixels.
+     */
+    glm::vec2 WorldToScreen(const glm::vec3& worldPosition,
+                            int viewportWidth,
+                            int viewportHeight) const;
+
+    /**
+     * @brief Converts a world-space size to a screen-space size.
+     */
+    glm::vec2 WorldSizeToScreen(const glm::vec3& worldPosition,
+                                const glm::vec2& worldSize,
+                                int viewportWidth,
+                                int viewportHeight) const;
+
 private:
     ProjectionType projectionType_ = ProjectionType::Orthographic;
 

@@ -136,3 +136,15 @@ TEST_CASE("RigidBody static and non-positive masses do not integrate forces")
     REQUIRE(NearlyEqual(velocity.y, 0.0f));
     REQUIRE(NearlyEqual(velocity.z, 0.0f));
 }
+
+TEST_CASE("RigidBody exposes an independent gravity scale")
+{
+    Axion::EngineContext context{};
+    Axion::Scene scene(context);
+    Axion::GameObject object(scene);
+    auto* body = object.AddComponent<Axion::RigidBody>();
+
+    body->SetGravityScale(0.0f);
+
+    REQUIRE(body->GetGravityScale() == 0.0f);
+}

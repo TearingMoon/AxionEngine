@@ -22,9 +22,6 @@ public:
         if (!tr)
             return;
 
-        auto* camTr = ctx.camera->GetOwner()->GetTransform();
-        glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
-
         int winW = 0, winH = 0;
         SDL_GetRendererOutputSize(ctx.renderer, &winW, &winH);
 
@@ -38,12 +35,12 @@ public:
 
         float rotation = glm::radians(tr->GetRotation().z);
 
-        float zoom = 1.0f;
-        float screenX = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
-        float screenY = (worldPos.y - camPos.y) * zoom + winH * 0.5f;
-
-        float halfW = (scaleX * zoom) * 0.5f;
-        float halfH = (scaleY * zoom) * 0.5f;
+        const glm::vec2 screenPosition =
+            ctx.camera->WorldToScreen(worldPos, winW, winH);
+        const glm::vec2 screenSize = ctx.camera->WorldSizeToScreen(
+            worldPos, {scaleX, scaleY}, winW, winH);
+        float halfW = screenSize.x * 0.5f;
+        float halfH = screenSize.y * 0.5f;
 
         float cosR = std::cos(rotation);
         float sinR = std::sin(rotation);
@@ -61,8 +58,8 @@ public:
             float rotX = corners[i].x * cosR - corners[i].y * sinR;
             float rotY = corners[i].x * sinR + corners[i].y * cosR;
 
-            vertices[i].position.x = screenX + rotX;
-            vertices[i].position.y = screenY + rotY;
+            vertices[i].position.x = screenPosition.x + rotX;
+            vertices[i].position.y = screenPosition.y + rotY;
             vertices[i].color = color_;
         }
 

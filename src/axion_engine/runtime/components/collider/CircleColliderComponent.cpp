@@ -100,27 +100,14 @@ void CircleColliderComponent::Render(const RenderContext& ctx)
     auto* camOwner = ctx.camera->GetOwner();
     if (!camOwner || camOwner->IsDestroyed()) return;
 
-    auto* camTransform = camOwner->GetTransform();
-    if (!camTransform) return;
-
     const glm::vec3 worldPos = transform->GetWorldPosition();
-    const glm::vec3 camWorldPos = camTransform->GetWorldPosition();
-
-    auto WorldToScreen2D = [&](const glm::vec3& p) -> glm::vec2
-    {
-        const float x = (p.x - camWorldPos.x) * 1.0f + ctx.windowWidth * 0.5f;
-        const float y = ctx.windowHeight * 0.5f - (p.y - camWorldPos.y) * 1.0f;
-        return {x, y};
-    };
-
-    const glm::vec2 screenPos = WorldToScreen2D(worldPos);
+    const glm::vec2 screenPos =
+        ctx.camera->WorldToScreen(worldPos, ctx.windowWidth, ctx.windowHeight);
 
     const float worldRadius = GetRadius();
-    const glm::vec3 radiusWorldPoint = worldPos + glm::vec3(worldRadius, 0.0f, 0.0f);
-
-    const glm::vec2 radiusScreenPoint = WorldToScreen2D(radiusWorldPoint);
-
-    int screenRadius = (int)glm::abs(radiusScreenPoint.x - screenPos.x);
+    int screenRadius = static_cast<int>(ctx.camera->WorldSizeToScreen(
+        worldPos, {worldRadius, 0.0f},
+        ctx.windowWidth, ctx.windowHeight).x);
     if (screenRadius < 1)
         screenRadius = 1;
 

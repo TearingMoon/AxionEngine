@@ -87,6 +87,13 @@ public:
         }
     }
 
+    void OnCollisionEnter(GameObject &other) override
+    {
+        auto* playerScript = other.GetComponent<PlayerScript>();
+        if (playerScript)
+            playerScript->TakeDamage(damageToPlayer);
+    }
+
     void TakeDamage(float damage)
     {
         auto *owner = GetOwner();

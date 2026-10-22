@@ -66,9 +66,6 @@ public:
         if (!tr)
             return;
 
-        auto* camTr = ctx.camera->GetOwner()->GetTransform();
-        glm::vec3 camPos = camTr ? camTr->GetWorldPosition() : glm::vec3(0.0f);
-
         int winW = 0, winH = 0;
         SDL_GetRendererOutputSize(ctx.renderer, &winW, &winH);
 
@@ -82,10 +79,8 @@ public:
 
         float angleRad = std::atan2(worldMatrix[0][1], worldMatrix[0][0]);
         float angleDeg = -glm::degrees(angleRad);
-
-        float zoom = 1.0f;
-        float screenX = (worldPos.x - camPos.x) * zoom + winW * 0.5f;
-        float screenY = winH * 0.5f - (worldPos.y - camPos.y) * zoom;
+        const glm::vec2 screenPosition =
+            ctx.camera->WorldToScreen(worldPos, winW, winH);
 
         SDL_Rect src;
         if (hasSrcRect_)
@@ -99,15 +94,21 @@ public:
             src = {0, 0, texW, texH};
         }
 
-        glm::vec2 sizeWorld = size_ * glm::vec2(scaleX, scaleY);
-        float dstW = (size_.x > 0.0f) ? sizeWorld.x : src.w * scaleX;
-        float dstH = (size_.y > 0.0f) ? sizeWorld.y : src.h * scaleY;
+        const glm::vec2 baseSize =
+            (size_.x > 0.0f && size_.y > 0.0f)
+                ? size_
+                : glm::vec2(static_cast<float>(src.w),
+                            static_cast<float>(src.h));
+        const glm::vec2 screenSize = ctx.camera->WorldSizeToScreen(
+            worldPos, baseSize * glm::vec2(scaleX, scaleY), winW, winH);
+        float dstW = screenSize.x;
+        float dstH = screenSize.y;
 
         SDL_FRect dst;
         dst.w = dstW;
         dst.h = dstH;
-        dst.x = screenX - dst.w * 0.5f;
-        dst.y = screenY - dst.h * 0.5f;
+        dst.x = screenPosition.x - dst.w * 0.5f;
+        dst.y = screenPosition.y - dst.h * 0.5f;
 
         SDL_SetTextureColorMod(texture_, color_.r, color_.g, color_.b);
         SDL_SetTextureAlphaMod(texture_, color_.a);

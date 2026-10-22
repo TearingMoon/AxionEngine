@@ -181,20 +181,14 @@ void OBBColliderComponent::Render(const RenderContext& ctx)
     const glm::vec2 w2 = center + ax * (half.x) + ay * (half.y);
     const glm::vec2 w3 = center + ax * (-half.x) + ay * (half.y);
 
-    const glm::vec3 camWorldPos3 = ctx.camera->GetOwner()->GetTransform()->GetWorldPosition();
-    const glm::vec2 camWorldPos(camWorldPos3.x, camWorldPos3.y);
-
-    auto WorldToScreen2D = [&](const glm::vec2& p) -> glm::vec2
-    {
-        const float x = (p.x - camWorldPos.x) * 1.0f + ctx.windowWidth * 0.5f;
-        const float y = ctx.windowHeight * 0.5f - (p.y - camWorldPos.y) * 1.0f;
-        return {x, y};
-    };
-
-    const glm::vec2 s0 = WorldToScreen2D(w0);
-    const glm::vec2 s1 = WorldToScreen2D(w1);
-    const glm::vec2 s2 = WorldToScreen2D(w2);
-    const glm::vec2 s3 = WorldToScreen2D(w3);
+    const glm::vec2 s0 = ctx.camera->WorldToScreen(
+        {w0.x, w0.y, center3.z}, ctx.windowWidth, ctx.windowHeight);
+    const glm::vec2 s1 = ctx.camera->WorldToScreen(
+        {w1.x, w1.y, center3.z}, ctx.windowWidth, ctx.windowHeight);
+    const glm::vec2 s2 = ctx.camera->WorldToScreen(
+        {w2.x, w2.y, center3.z}, ctx.windowWidth, ctx.windowHeight);
+    const glm::vec2 s3 = ctx.camera->WorldToScreen(
+        {w3.x, w3.y, center3.z}, ctx.windowWidth, ctx.windowHeight);
 
     if (IsTrigger())
         SDL_SetRenderDrawColor(ctx.renderer, 0, 255, 255, 255);
@@ -207,7 +201,8 @@ void OBBColliderComponent::Render(const RenderContext& ctx)
     SDL_RenderDrawLine(ctx.renderer, (int)s3.x, (int)s3.y, (int)s0.x, (int)s0.y);
 
     SDL_SetRenderDrawColor(ctx.renderer, 255, 0, 0, 255);
-    const glm::vec2 sc = WorldToScreen2D(center);
+    const glm::vec2 sc = ctx.camera->WorldToScreen(
+        {center.x, center.y, center3.z}, ctx.windowWidth, ctx.windowHeight);
     SDL_RenderDrawPoint(ctx.renderer, (int)sc.x, (int)sc.y);
 }
 

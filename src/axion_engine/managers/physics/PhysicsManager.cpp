@@ -141,6 +141,19 @@ namespace Axion
                         if (!colliderA->Intersects(*colliderB, manifold))
                             continue;
 
+                        // Collision resolution expects a normal pointing from
+                        // objA to objB. Double dispatch can produce the
+                        // opposite orientation depending on the shape pair.
+                        const glm::vec3 positionA =
+                            objA->GetTransform()->GetWorldPosition();
+                        const glm::vec3 positionB =
+                            objB->GetTransform()->GetWorldPosition();
+                        const glm::vec2 objectDelta{
+                            positionB.x - positionA.x,
+                            positionB.y - positionA.y};
+                        if (glm::dot(manifold.normal, objectDelta) < 0.0f)
+                            manifold.normal = -manifold.normal;
+
                         // Normalize collider pair ordering
                         const auto colliderPair = std::minmax(
                             colliderA,
@@ -207,7 +220,7 @@ namespace Axion
         if (!scene)
             return;
 
-        const glm::vec3 gravity = scene->Gravity;
+        const glm::vec3& gravity = scene->GetGravity();
 
         for (GameObject *obj : objects)
         {
@@ -219,7 +232,7 @@ namespace Axion
             if (!rigidBody)
                 continue;
 
-            rigidBody->IntegrateForces(dt, gravity);
+            rigidBody->IntegrateForces(dt, gravity * rigidBody->GetGravityScale());
             rigidBody->IntegrateVelocity(dt);
         }
     }

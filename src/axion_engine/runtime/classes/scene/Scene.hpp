@@ -76,8 +76,11 @@ namespace Axion
         /** @brief Returns the current active camera, or nullptr if none. */
         CameraComponent *GetCurrentCamera() const { return currentCamera_; }
 
-        /** @brief World gravity vector applied to rigidbodies. */
-        glm::vec3 Gravity = glm::vec3(0.0f, 9.81f, 0.0f);
+        /** @brief Sets the world gravity applied to rigidbodies in this scene. */
+        void SetGravity(const glm::vec3& gravity) { gravity_ = gravity; }
+
+        /** @brief Returns the world gravity applied to rigidbodies in this scene. */
+        const glm::vec3& GetGravity() const { return gravity_; }
 
     protected:
         /** @brief Override to set up the scene when it becomes active. */
@@ -146,6 +149,7 @@ namespace Axion
         std::vector<GameObject *> destroyQueue_;
 
         CameraComponent *currentCamera_ = nullptr;
+        glm::vec3 gravity_{0.0f, 9.81f, 0.0f};
     };
 
 } // namespace Axion
