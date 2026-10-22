@@ -18,6 +18,9 @@ struct EngineConfig
      * still run as fast as possible up to this frequency.
      */
     int maxFps = 0;
+    bool vsync = false;
+    float fixedPhysicsTimestep = 1.0f / 60.0f;
+    int maxPhysicsStepsPerFrame = 8;
 
     /**
      * @brief Legacy fixed delay in milliseconds.

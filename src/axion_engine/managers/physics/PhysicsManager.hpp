@@ -44,10 +44,13 @@ namespace Axion
          * @param dt Delta time since last frame
          */
         void Update(float dt);
+        void SetFixedTimestep(float timestep);
+        void SetMaxSubSteps(int maxSubSteps);
 
     private:
-        float fixedDeltaTime_ = 0.02f;
+        float fixedDeltaTime_ = 1.0f / 60.0f;
         float accumulatedTime_ = 0.0f;
+        int maxSubSteps_ = 8;
 
         std::vector<GameObject *> colliders_;
         std::vector<GameObject *> rigidBodies_;

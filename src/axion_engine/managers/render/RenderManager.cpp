@@ -250,11 +250,12 @@ void RenderManager::UpdateProfilerTexture()
 
     char buffer[1024];
     std::snprintf(buffer, sizeof(buffer),
-                  "%.2f|%.1f|%.2f|%.2f|%.2f|%.2f|%.2f|%.2f|%zu|%zu|%zu",
+                  "%.2f|%.1f|%.2f|%.2f|%.2f|%.2f|%.2f|%.2f|%.2f|%.2f|%zu|%zu|%zu",
                   metrics.frameTime, metrics.fps, metrics.avgFrameTime,
                   sectionTime("Time"), sectionTime("SceneRequests"),
                   sectionTime("Physics"), sectionTime("SceneUpdate"),
-                  sectionTime("Render"), metrics.gameObjectCount,
+                  sectionTime("Render"), metrics.targetFps,
+                  metrics.framePacingWait, metrics.gameObjectCount,
                   metrics.componentCount, metrics.colliderCount);
 
     const std::string text(buffer);
@@ -266,10 +267,11 @@ void RenderManager::UpdateProfilerTexture()
     profilerLines_.clear();
 
     char lineText[128];
-    const std::array<std::pair<const char*, SDL_Color>, 7> labels = {{
+    const std::array<std::pair<const char*, SDL_Color>, 8> labels = {{
         {"AXION PROFILER  [F4]", {120, 205, 255, 255}},
         {"Frame     %6.2f ms    FPS       %6.1f", {235, 240, 250, 255}},
         {"Average   %6.2f ms", {180, 195, 215, 255}},
+        {"Target    %6.1f FPS   Pacing wait %6.2f ms", {180, 195, 215, 255}},
         {"Time      %6.2f ms    Requests  %6.2f ms", {180, 195, 215, 255}},
         {"Physics   %6.2f ms    Scene     %6.2f ms", {255, 205, 125, 255}},
         {"Render    %6.2f ms", {180, 195, 215, 255}},
@@ -288,11 +290,14 @@ void RenderManager::UpdateProfilerTexture()
                           metrics.avgFrameTime);
         else if (i == 3)
             std::snprintf(lineText, sizeof(lineText), labels[i].first,
-                          sectionTime("Time"), sectionTime("SceneRequests"));
+                          metrics.targetFps, metrics.framePacingWait);
         else if (i == 4)
             std::snprintf(lineText, sizeof(lineText), labels[i].first,
-                          sectionTime("Physics"), sectionTime("SceneUpdate"));
+                          sectionTime("Time"), sectionTime("SceneRequests"));
         else if (i == 5)
+            std::snprintf(lineText, sizeof(lineText), labels[i].first,
+                          sectionTime("Physics"), sectionTime("SceneUpdate"));
+        else if (i == 6)
             std::snprintf(lineText, sizeof(lineText), labels[i].first,
                           sectionTime("Render"));
         else

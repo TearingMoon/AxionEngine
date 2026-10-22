@@ -1,4 +1,5 @@
 #include "Engine.hpp"
+#include <algorithm>
 #include <thread>
 
 namespace Axion
@@ -9,6 +10,7 @@ Engine::Engine(EngineConfig config, WindowConfig windowConfig)
     , window_(context_)
 {
     config_ = config;
+    windowConfig.vsync = windowConfig.vsync || config_.vsync;
 
     logger_ = std::make_unique<Logger>(config_.maxLogFiles);
     context_.logger = logger_.get();
@@ -40,6 +42,8 @@ Engine::Engine(EngineConfig config, WindowConfig windowConfig)
 
     physics_ = std::make_unique<PhysicsManager>(context_);
     context_.physics = physics_.get();
+    physics_->SetFixedTimestep(config_.fixedPhysicsTimestep);
+    physics_->SetMaxSubSteps(config_.maxPhysicsStepsPerFrame);
 
     render_ = std::make_unique<RenderManager>(context_);
     context_.render = render_.get();
@@ -77,7 +81,10 @@ void Engine::LimitFrameRate(std::chrono::steady_clock::time_point frameStart)
         targetFps = 1000 / config_.updateDelay;
     }
     if (targetFps <= 0)
+    {
+        analyzer_->SetFramePacing(0.0f, 0.0f);
         return;
+    }
 
     const auto targetFrame = std::chrono::duration<double>(
         1.0 / static_cast<double>(targetFps));
@@ -97,6 +104,10 @@ void Engine::LimitFrameRate(std::chrono::steady_clock::time_point frameStart)
             std::this_thread::yield();
         }
     }
+    const auto waitEnd = std::chrono::steady_clock::now();
+    analyzer_->SetFramePacing(static_cast<float>(targetFps), std::max(
+        0.0f, std::chrono::duration<float, std::milli>(
+            waitEnd - frameStart).count() - analyzer_->GetMetrics().cpuFrameTime));
 }
 
 void Engine::EventLoop()

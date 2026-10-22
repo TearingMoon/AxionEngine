@@ -85,6 +85,12 @@ namespace Axion
         BeginFrame();
     }
 
+    void Analyzer::SetFramePacing(float targetFps, float waitMs)
+    {
+        metrics_.targetFps = targetFps;
+        metrics_.framePacingWait = waitMs;
+    }
+
     void Analyzer::Reset()
     {
         frameTimes_.clear();
@@ -128,6 +134,7 @@ namespace Axion
 
         // Current frame time and FPS
         metrics_.frameTime = frameTimes_.back();
+        metrics_.cpuFrameTime = metrics_.frameTime;
         metrics_.fps = fpsHistory_.back();
 
         // Average frame time

@@ -26,13 +26,15 @@ struct WindowConfig
 
     /** @brief SDL window creation flags (SDL_WINDOW_SHOWN, SDL_WINDOW_RESIZABLE, etc.). */
     Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+    bool vsync = false;
 
     bool operator==(const WindowConfig& other) const
     {
         return position == other.position &&
                size == other.size &&
                title == other.title &&
-               flags == other.flags;
+               flags == other.flags &&
+               vsync == other.vsync;
     }
 };
 

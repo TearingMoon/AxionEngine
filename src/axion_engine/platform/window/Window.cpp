@@ -43,7 +43,7 @@ bool Window::Initialize(const WindowConfig &config)
         return false;
     }
 
-    auto newRenderer = CreateRenderer(newWindow);
+    auto newRenderer = CreateRenderer(newWindow, config.vsync);
     if (!newRenderer)
     {
         Reset();
@@ -95,9 +95,12 @@ SDL_Window *Window::CreateWindow(const WindowConfig &config) noexcept
     return win;
 }
 
-SDL_Renderer *Window::CreateRenderer(SDL_Window *window) noexcept
+SDL_Renderer *Window::CreateRenderer(SDL_Window *window, bool vsync) noexcept
 {
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    Uint32 flags = SDL_RENDERER_ACCELERATED;
+    if (vsync)
+        flags |= SDL_RENDERER_PRESENTVSYNC;
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, flags);
     if (!renderer)
     {
         AXION_ERROR("Could not create renderer! SDL_Error: {}", SDL_GetError());

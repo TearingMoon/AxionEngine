@@ -62,7 +62,7 @@ private:
     bool Initialize(const WindowConfig& config);
     void Reset() noexcept;
     SDL_Window* CreateWindow(const WindowConfig& config) noexcept;
-    SDL_Renderer* CreateRenderer(SDL_Window* window) noexcept;
+    SDL_Renderer* CreateRenderer(SDL_Window* window, bool vsync) noexcept;
 };
 
 } // namespace Axion

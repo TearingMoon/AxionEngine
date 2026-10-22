@@ -21,6 +21,9 @@ struct PerformanceMetrics
     float maxFps = 0.0f;            ///< Maximum FPS in sample window
     float frameTime = 0.0f;         ///< Current frame time in ms
     float avgFrameTime = 0.0f;      ///< Average frame time in ms
+    float cpuFrameTime = 0.0f;      ///< Frame time excluding frame pacing wait
+    float framePacingWait = 0.0f;   ///< Time spent waiting for the frame budget
+    float targetFps = 0.0f;         ///< Configured target FPS, zero when unlimited
     
     // Frame stability
     float frameTimeVariance = 0.0f; ///< Frame time variance (jitter)
@@ -99,6 +102,7 @@ public:
     
     /** @brief Updates analysis metrics (legacy, calls EndFrame + BeginFrame). */
     void Update();
+    void SetFramePacing(float targetFps, float waitMs);
     
     /** @brief Returns the current performance metrics. */
     const PerformanceMetrics& GetMetrics() const { return metrics_; }

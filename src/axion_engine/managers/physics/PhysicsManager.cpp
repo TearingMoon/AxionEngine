@@ -15,18 +15,29 @@ namespace Axion
 
     void PhysicsManager::Update(float dt)
     {
+        dt = std::clamp(dt, 0.0f, fixedDeltaTime_ * static_cast<float>(maxSubSteps_));
         accumulatedTime_ += dt;
 
-        constexpr int maxSubSteps = 8;
         int subSteps = 0;
 
         while (accumulatedTime_ >= fixedDeltaTime_ &&
-               subSteps < maxSubSteps)
+               subSteps < maxSubSteps_)
         {
             FixedUpdate(fixedDeltaTime_);
             accumulatedTime_ -= fixedDeltaTime_;
             ++subSteps;
         }
+    }
+
+    void PhysicsManager::SetFixedTimestep(float timestep)
+    {
+        if (timestep > 0.0f)
+            fixedDeltaTime_ = timestep;
+    }
+
+    void PhysicsManager::SetMaxSubSteps(int maxSubSteps)
+    {
+        maxSubSteps_ = std::max(1, maxSubSteps);
     }
 
     void PhysicsManager::FixedUpdate(float dt)

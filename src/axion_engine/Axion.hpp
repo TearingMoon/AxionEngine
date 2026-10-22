@@ -16,6 +16,7 @@
 #include "axion_engine/core/Engine.hpp"
 #include "axion_engine/core/EngineConfig.hpp"
 #include "axion_engine/core/EngineContext.hpp"
+#include "axion_engine/core/JobSystem.hpp"
 
 #include "axion_engine/core/events/Event.hpp"
 #include "axion_engine/core/events/EventBus.hpp"
