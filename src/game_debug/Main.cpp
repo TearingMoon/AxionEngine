@@ -14,7 +14,7 @@ int main(int argc, char *args[])
 {
 
     EngineConfig engineConfig;
-    engineConfig.updateDelay = 16; // 16 Approx ~60 FPS
+    engineConfig.maxFps = 60;
 
     WindowConfig windowConfig = {
         "Debug - Game",

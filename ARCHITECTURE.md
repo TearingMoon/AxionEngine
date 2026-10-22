@@ -530,7 +530,7 @@ src/my_game/
 int main(int argc, char* args[])
 {
     Axion::EngineConfig engineConfig;
-    engineConfig.updateDelay = 16;  // ~60 FPS
+    engineConfig.maxFps = 60;  // Maximum 60 FPS
 
     Axion::WindowConfig windowConfig = {
         "My Game",                              // Title

@@ -10,7 +10,7 @@ using namespace Axion;
 int main(int argc, char* args[])
 {
     EngineConfig engineConfig;
-    engineConfig.updateDelay = 16;
+    engineConfig.maxFps = 60;
 
     WindowConfig windowConfig = {
         "Axion Pong - Engine Demo",

@@ -1,4 +1,5 @@
 #include "Engine.hpp"
+#include <thread>
 
 namespace Axion
 {
@@ -61,9 +62,40 @@ void Engine::Run()
 
     while (state_ == EngineState::Running)
     {
+        const auto frameStart = std::chrono::steady_clock::now();
         EventLoop();
         AppLoop();
-        SDL_Delay(config_.updateDelay);
+        LimitFrameRate(frameStart);
+    }
+}
+
+void Engine::LimitFrameRate(std::chrono::steady_clock::time_point frameStart)
+{
+    int targetFps = config_.maxFps;
+    if (targetFps <= 0 && config_.updateDelay > 0)
+    {
+        targetFps = 1000 / config_.updateDelay;
+    }
+    if (targetFps <= 0)
+        return;
+
+    const auto targetFrame = std::chrono::duration<double>(
+        1.0 / static_cast<double>(targetFps));
+    const auto deadline = frameStart +
+        std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+            targetFrame);
+
+    while (std::chrono::steady_clock::now() < deadline)
+    {
+        const auto remaining = deadline - std::chrono::steady_clock::now();
+        if (remaining > std::chrono::milliseconds(2))
+        {
+            std::this_thread::sleep_for(remaining - std::chrono::milliseconds(1));
+        }
+        else
+        {
+            std::this_thread::yield();
+        }
     }
 }
 

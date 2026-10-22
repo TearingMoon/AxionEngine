@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <memory>
 
 #include "EngineConfig.hpp"
@@ -41,7 +42,7 @@ enum class EngineState
  * @par Usage Example:
  * @code
  * Axion::EngineConfig config;
- * config.updateDelay = 16;
+ * config.maxFps = 60;
  * 
  * Axion::WindowConfig windowConfig;
  * windowConfig.title = "My Game";
@@ -113,6 +114,7 @@ private:
 
     void EventLoop();
     void AppLoop();
+    void LimitFrameRate(std::chrono::steady_clock::time_point frameStart);
 };
 
 } // namespace Axion
