@@ -40,6 +40,9 @@ Engine::Engine(EngineConfig config, WindowConfig windowConfig)
     context_.scene = scene_.get();
     context_.sceneProvider = scene_.get();  // ISP interface
 
+    jobs_ = std::make_unique<JobSystem>();
+    context_.jobs = jobs_.get();
+
     physics_ = std::make_unique<PhysicsManager>(context_);
     context_.physics = physics_.get();
     physics_->SetFixedTimestep(config_.fixedPhysicsTimestep);

@@ -19,6 +19,7 @@
 #include "axion_engine/managers/assets/AssetsManager.hpp"
 
 #include "axion_engine/core/events/EventBus.hpp"
+#include "axion_engine/core/JobSystem.hpp"
 
 namespace Axion
 {
@@ -111,6 +112,7 @@ private:
     std::unique_ptr<PhysicsManager> physics_;
     std::unique_ptr<RenderManager> render_;
     std::unique_ptr<AssetsManager> assets_;
+    std::unique_ptr<JobSystem> jobs_;
 
     void EventLoop();
     void AppLoop();

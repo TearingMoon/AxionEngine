@@ -1,4 +1,10 @@
 #include "PhysicsManager.hpp"
+#include "axion_engine/core/JobSystem.hpp"
+#include "axion_engine/managers/analysis/Analyzer.hpp"
+
+#include <cmath>
+#include <future>
+#include <thread>
 
 namespace Axion
 {
@@ -38,6 +44,102 @@ namespace Axion
     void PhysicsManager::SetMaxSubSteps(int maxSubSteps)
     {
         maxSubSteps_ = std::max(1, maxSubSteps);
+    }
+
+    std::vector<PhysicsManager::CandidatePair>
+    PhysicsManager::BuildBroadPhaseCandidates(
+        const std::vector<GameObject*>& objects) const
+    {
+        std::vector<BroadPhaseProxy> proxies;
+        proxies.reserve(objects.size());
+
+        for (GameObject* object : objects)
+        {
+            if (!object || object->IsDestroyed() || !object->IsEnabled())
+                continue;
+
+            const glm::vec3 position =
+                object->GetTransform()->GetWorldPosition();
+            float radius = 0.0f;
+            for (ColliderComponent* collider :
+                 object->GetComponents<ColliderComponent>())
+            {
+                if (auto* circle =
+                        dynamic_cast<CircleColliderComponent*>(collider))
+                {
+                    radius = std::max(radius, circle->GetRadius());
+                }
+                else if (auto* aabb =
+                             dynamic_cast<AABBColliderComponent*>(collider))
+                {
+                    const glm::vec3 size = aabb->GetSize();
+                    radius = std::max(radius, 0.5f *
+                        std::sqrt(size.x * size.x + size.y * size.y));
+                }
+                else if (auto* obb =
+                             dynamic_cast<OBBColliderComponent*>(collider))
+                {
+                    const glm::vec3 size = obb->GetSize();
+                    radius = std::max(radius, 0.5f *
+                        std::sqrt(size.x * size.x + size.y * size.y));
+                }
+            }
+
+            if (radius > 0.0f)
+                proxies.push_back({object, {position.x, position.y}, radius});
+        }
+
+        if (proxies.size() < 2)
+            return {};
+
+        const std::size_t workerCount =
+            ctx_.jobs ? std::max<std::size_t>(1, std::thread::hardware_concurrency())
+                      : 1;
+        const std::size_t chunkSize =
+            std::max<std::size_t>(1, (proxies.size() + workerCount - 1) /
+                                      workerCount);
+        std::vector<std::future<std::vector<CandidatePair>>> futures;
+
+        auto buildChunk = [&proxies](std::size_t begin, std::size_t end)
+        {
+            std::vector<CandidatePair> result;
+            for (std::size_t i = begin; i < end; ++i)
+            {
+                for (std::size_t j = i + 1; j < proxies.size(); ++j)
+                {
+                    const glm::vec2 delta =
+                        proxies[j].center - proxies[i].center;
+                    const float radius = proxies[i].radius + proxies[j].radius;
+                    if (glm::dot(delta, delta) <= radius * radius)
+                        result.emplace_back(proxies[i].object,
+                                            proxies[j].object);
+                }
+            }
+            return result;
+        };
+
+        for (std::size_t begin = 0; begin < proxies.size(); begin += chunkSize)
+        {
+            const std::size_t end = std::min(proxies.size(), begin + chunkSize);
+            if (ctx_.jobs)
+                futures.push_back(ctx_.jobs->Submit(
+                    [begin, end, &buildChunk]() {
+                        return buildChunk(begin, end);
+                    }));
+            else
+                futures.push_back(std::async(std::launch::deferred,
+                    [begin, end, &buildChunk]() {
+                        return buildChunk(begin, end);
+                    }));
+        }
+
+        std::vector<CandidatePair> candidates;
+        for (auto& future : futures)
+        {
+            auto chunk = future.get();
+            candidates.insert(candidates.end(), chunk.begin(), chunk.end());
+        }
+        return candidates;
     }
 
     void PhysicsManager::FixedUpdate(float dt)
@@ -85,6 +187,27 @@ namespace Axion
             idToObject.emplace(obj->GetId(), obj);
         }
 
+        std::vector<CandidatePair> broadPhaseCandidates;
+        if (ctx_.analyzer)
+        {
+            ScopedTimer timer(ctx_.analyzer, "PhysicsBroadPhase");
+            broadPhaseCandidates = BuildBroadPhaseCandidates(objects);
+        }
+        else
+        {
+            broadPhaseCandidates = BuildBroadPhaseCandidates(objects);
+        }
+        std::unordered_set<std::pair<size_t, size_t>, PairHashSize>
+            candidateIds;
+        candidateIds.reserve(broadPhaseCandidates.size());
+        for (const auto& candidate : broadPhaseCandidates)
+        {
+            if (candidate.first && candidate.second)
+                candidateIds.emplace(
+                    std::min(candidate.first->GetId(), candidate.second->GetId()),
+                    std::max(candidate.first->GetId(), candidate.second->GetId()));
+        }
+
         // Store collision pairs detected during the current physics step
         std::unordered_set<
             std::pair<size_t, size_t>,
@@ -115,6 +238,8 @@ namespace Axion
                     continue;
 
                 const size_t idB = objB->GetId();
+                if (candidateIds.find(std::minmax(idA, idB)) == candidateIds.end())
+                    continue;
 
                 // Retrieve components only for the current object pair
                 auto collidersA = objA->GetComponents<ColliderComponent>();

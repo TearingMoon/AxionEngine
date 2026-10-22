@@ -18,6 +18,7 @@ class RenderManager;
 class AssetsManager;
 class Window;
 class EventBus;
+class JobSystem;
 
 /**
  * @brief Central context providing access to all engine subsystems.
@@ -56,6 +57,7 @@ struct EngineContext
     AssetsManager* assets = nullptr;    ///< Asset loading and caching
     Window* window = nullptr;           ///< Window and renderer access
     EventBus* events = nullptr;         ///< Event publish-subscribe system
+    JobSystem* jobs = nullptr;          ///< CPU-only worker pool
 };
 
 } // namespace Axion

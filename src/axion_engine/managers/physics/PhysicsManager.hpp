@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <algorithm>
 #include <vector>
+#include <utility>
 
 #include "axion_engine/structure/ContextAware.hpp"
 #include "axion_engine/core/EngineContext.hpp"
@@ -55,6 +56,15 @@ namespace Axion
         std::vector<GameObject *> colliders_;
         std::vector<GameObject *> rigidBodies_;
 
+        struct BroadPhaseProxy
+        {
+            GameObject* object = nullptr;
+            glm::vec2 center{0.0f};
+            float radius = 0.0f;
+        };
+
+        using CandidatePair = std::pair<GameObject*, GameObject*>;
+
         std::unordered_set<
             std::pair<ColliderComponent *, ColliderComponent *>,
             PairHash>
@@ -68,6 +78,8 @@ namespace Axion
         void FixedUpdate(float dt);
 
         void ProcessCollisions(const std::vector<GameObject *> &objects);
+        std::vector<CandidatePair> BuildBroadPhaseCandidates(
+            const std::vector<GameObject*>& objects) const;
         void ProcessForces(const std::vector<GameObject *> &objects, float dt);
         void DetectCollisionEvents(const std::unordered_map<size_t, GameObject *> &idToObject,
                                    const std::unordered_set<std::pair<size_t, size_t>, PairHashSize> &currentCollisionIds);
