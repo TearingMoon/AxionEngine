@@ -29,6 +29,7 @@ public:
     
     /** @brief Returns true if the mouse button was just pressed this frame. */
     virtual bool IsMouseButtonJustPressed(Uint8 button) const = 0;
+    virtual void ConsumeMouseButton(Uint8 button) = 0;
     
     /** @brief Returns the current mouse position in screen coordinates. */
     virtual SDL_Point GetMousePosition() const = 0;

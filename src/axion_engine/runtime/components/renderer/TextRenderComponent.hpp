@@ -9,12 +9,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "RenderComponent.hpp"
+#include "axion_engine/managers/assets/AssetsManager.hpp"
 #include "axion_engine/runtime/components/transform/TransformComponent.hpp"
 
 namespace Axion
 {
-//FIXME: SetFontSize doesnt update already loaded fonts.
-//TODO: Configure Custom Fonts instead of hardcoded routes
 /**
  * @brief Text rendering component using SDL_ttf.
  *
@@ -63,6 +62,21 @@ public:
     void SetFont(TTF_Font* font)
     {
         font_ = font;
+        fontAssetId_.clear();
+        dirty_ = true;
+    }
+
+    void SetFontAsset(const std::string& id,
+                      const std::string& relativePath = "fonts/default.ttf")
+    {
+        fontAssetId_ = id;
+        fontAssetPath_ = relativePath;
+        if (ownedFont_)
+        {
+            TTF_CloseFont(ownedFont_);
+            ownedFont_ = nullptr;
+        }
+        font_ = nullptr;
         dirty_ = true;
     }
 
@@ -72,7 +86,15 @@ public:
      */
     void SetFontSize(int size)
     {
-        fontSize_ = size;
+        fontSize_ = std::max(1, size);
+        if (loadedFontSize_ != fontSize_)
+        {
+            if (ownedFont_)
+                TTF_CloseFont(ownedFont_);
+            ownedFont_ = nullptr;
+            font_ = nullptr;
+            loadedFontSize_ = 0;
+        }
         dirty_ = true;
     }
 
@@ -84,6 +106,12 @@ public:
         auto* tr = GetOwner()->GetComponent<TransformComponent>();
         if (!tr)
             return;
+
+        if (!font_ && !ownedFont_ && ctx.assets && !fontAssetId_.empty())
+        {
+            font_ = ctx.assets->LoadFont(
+                fontAssetId_, fontAssetPath_, fontSize_);
+        }
 
         if (!font_ && !ownedFont_)
         {
@@ -104,9 +132,13 @@ public:
                 if (ownedFont_)
                 {
                     font_ = ownedFont_;
+                    loadedFontSize_ = fontSize_;
                     break;
                 }
             }
+
+            if (font_)
+                loadedFontSize_ = fontSize_;
 
             if (!font_)
             {
@@ -205,6 +237,9 @@ private:
 
     TTF_Font* font_ = nullptr;
     TTF_Font* ownedFont_ = nullptr;
+    std::string fontAssetId_ = "default";
+    std::string fontAssetPath_ = "fonts/default.ttf";
+    int loadedFontSize_ = 0;
 
     SDL_Texture* texture_ = nullptr;
     float texW_ = 0.0f;

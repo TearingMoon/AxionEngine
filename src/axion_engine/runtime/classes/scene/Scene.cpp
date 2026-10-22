@@ -1,10 +1,22 @@
 #include "Scene.hpp"
+#include "axion_engine/runtime/ui/Canvas.hpp"
 
 namespace Axion
 {
 
     void Scene::Tick()
     {
+        for (auto &object : objects_)
+        {
+            if (!object || object->IsDestroyed())
+                continue;
+            for (const auto &component : object->GetAllComponents())
+            {
+                if (auto *canvas = dynamic_cast<Canvas *>(component.get()))
+                    canvas->ProcessInput(ctx_);
+            }
+        }
+
         OnSceneUpdate();
 
         // Update all game objects

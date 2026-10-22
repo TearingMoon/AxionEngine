@@ -19,6 +19,7 @@ void InputManager::BeginFrame()
 {
     previousKeys_ = currentKeys_;
     previousMouseButtons_ = currentMouseButtons_;
+    consumedMouseButtons_ = 0;
 }
 
 void InputManager::ProcessEvent(const SDL_Event& e)
@@ -81,9 +82,16 @@ bool InputManager::IsMouseButtonDown(Uint8 button) const
 
 bool InputManager::IsMouseButtonJustPressed(Uint8 button) const
 {
+    if ((consumedMouseButtons_ & SDL_BUTTON(button)) != 0)
+        return false;
     bool now = (currentMouseButtons_ & SDL_BUTTON(button)) != 0;
     bool before = (previousMouseButtons_ & SDL_BUTTON(button)) != 0;
     return now && !before;
+}
+
+void InputManager::ConsumeMouseButton(Uint8 button)
+{
+    consumedMouseButtons_ |= SDL_BUTTON(button);
 }
 
 bool InputManager::IsMouseButtonJustReleased(Uint8 button) const

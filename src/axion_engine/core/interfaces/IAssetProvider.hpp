@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <string>
 
 namespace Axion
@@ -30,6 +31,13 @@ public:
      * @return SDL_Texture pointer or nullptr if not found
      */
     virtual SDL_Texture* GetTexture(const std::string& name) const = 0;
+
+    virtual TTF_Font* LoadFont(const std::string& name,
+                               const std::string& path,
+                               int pointSize) = 0;
+
+    virtual TTF_Font* GetFont(const std::string& name,
+                              int pointSize) const = 0;
 };
 
 } // namespace Axion

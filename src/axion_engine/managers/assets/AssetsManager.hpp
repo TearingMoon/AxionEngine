@@ -3,8 +3,10 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <filesystem>
 
 #include "axion_engine/structure/ContextAware.hpp"
@@ -46,6 +48,11 @@ public:
      */
     SDL_Texture* GetTexture(const std::string& id) const override;
 
+    TTF_Font* LoadFont(const std::string& id,
+                       const std::string& relativePath,
+                       int pointSize);
+    TTF_Font* GetFont(const std::string& id, int pointSize) const;
+
     /**
      * @brief Unloads a specific texture and frees its memory.
      * @param id Texture identifier to unload
@@ -58,6 +65,8 @@ public:
 private:
     std::string assetsRoot_;
     std::unordered_map<std::string, SDL_Texture*> textures_;
+    std::unordered_map<std::string, TTF_Font*> fonts_;
+    std::unordered_set<std::string> failedFonts_;
 };
 
 } // namespace Axion

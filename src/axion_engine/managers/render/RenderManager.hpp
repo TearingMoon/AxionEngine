@@ -61,6 +61,7 @@ private:
     bool debugMode_ = false;
     bool profilerMode_ = false;
     TTF_Font* profilerFont_ = nullptr;
+    bool profilerFontOwned_ = false;
     int profilerFontSize_ = 0;
     std::vector<ProfilerLine> profilerLines_;
     std::string profilerText_;

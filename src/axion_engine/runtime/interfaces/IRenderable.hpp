@@ -4,6 +4,8 @@
 
 namespace Axion
 {
+class AssetsManager;
+class IInputProvider;
 
 /**
  * @brief Context passed to renderable components during rendering.
@@ -14,6 +16,8 @@ struct RenderContext
     CameraComponent* camera = nullptr;
     int windowWidth = 0;
     int windowHeight = 0;
+    AssetsManager* assets = nullptr;
+    IInputProvider* input = nullptr;
 };
 
 /**

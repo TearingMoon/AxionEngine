@@ -1,4 +1,5 @@
 #include "RenderManager.hpp"
+#include "axion_engine/managers/assets/AssetsManager.hpp"
 
 #include <algorithm>
 #include <array>
@@ -40,6 +41,8 @@ void RenderManager::Update()
     RenderContext rctx;
     rctx.renderer = renderer_;
     rctx.camera = camera;
+    rctx.assets = ctx_.assets;
+    rctx.input = ctx_.inputProvider;
     SDL_GetRendererOutputSize(renderer_, &rctx.windowWidth, &rctx.windowHeight);
 
     renderables.clear();
@@ -189,8 +192,23 @@ bool RenderManager::LoadProfilerFont(int fontSize)
 
     if (profilerFont_)
     {
-        TTF_CloseFont(profilerFont_);
+        if (profilerFontOwned_)
+            TTF_CloseFont(profilerFont_);
         profilerFont_ = nullptr;
+        profilerFontOwned_ = false;
+    }
+
+    if (ctx_.assets)
+    {
+        profilerFont_ = ctx_.assets->LoadFont(
+            "AxionProfiler", "fonts/default.ttf", fontSize);
+        if (profilerFont_)
+        {
+            profilerFontOwned_ = false;
+            profilerFontSize_ = fontSize;
+            profilerText_.clear();
+            return true;
+        }
     }
 
     const std::array<const char*, 8> fontPaths = {
@@ -208,6 +226,7 @@ bool RenderManager::LoadProfilerFont(int fontSize)
         profilerFont_ = TTF_OpenFont(path, fontSize);
         if (profilerFont_)
         {
+            profilerFontOwned_ = true;
             profilerFontSize_ = fontSize;
             profilerText_.clear();
             return true;
@@ -317,8 +336,10 @@ void RenderManager::DestroyProfilerOverlay()
 
     if (profilerFont_)
     {
-        TTF_CloseFont(profilerFont_);
+        if (profilerFontOwned_)
+            TTF_CloseFont(profilerFont_);
         profilerFont_ = nullptr;
+        profilerFontOwned_ = false;
     }
 
     profilerFontSize_ = 0;

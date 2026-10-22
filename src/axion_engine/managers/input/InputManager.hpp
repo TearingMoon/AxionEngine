@@ -47,6 +47,7 @@ public:
     
     /** @brief Returns true if the mouse button was pressed this frame. */
     bool IsMouseButtonJustPressed(Uint8 button) const override;
+    void ConsumeMouseButton(Uint8 button) override;
     
     /** @brief Returns true if the mouse button was released this frame. */
     bool IsMouseButtonJustReleased(Uint8 button) const;
@@ -63,6 +64,7 @@ private:
 
     Uint32 currentMouseButtons_ = 0;
     Uint32 previousMouseButtons_ = 0;
+    Uint32 consumedMouseButtons_ = 0;
     SDL_Point mousePosition_{0, 0};
 
     bool quitRequested_ = false;

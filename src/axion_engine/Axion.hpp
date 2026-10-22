@@ -63,6 +63,7 @@
 #include "axion_engine/runtime/components/renderer/SquareRenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/CircleRenderComponent.hpp"
 #include "axion_engine/runtime/components/renderer/TextRenderComponent.hpp"
+#include "axion_engine/runtime/ui/Canvas.hpp"
 
 // Utilities
 #include "axion_utilities/path/PathFinder.hpp"

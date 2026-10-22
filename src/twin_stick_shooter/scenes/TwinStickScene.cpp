@@ -101,45 +101,46 @@ namespace Axion
         auto uiController = CreateGameObject();
         gameUI = uiController->AddComponent<GameUIScript>();
 
-        // Score Text
-        auto scoreGO = CreateGameObject();
-        scoreGO->GetTransform()->SetPosition({-480.0f, 350.0f, 0.9f});
-        auto scoreText = scoreGO->AddComponent<TextRenderComponent>();
-        scoreText->SetLayer(RenderLayer::UI);
-        scoreText->SetText("Score: 0");
+        auto canvas = uiController->AddComponent<Canvas>();
+        auto panel = canvas->Add<UIPanel>();
+        panel->SetSize({1024.0f, 768.0f});
+        panel->SetColor({0, 0, 0, 0});
+
+        // Score and health labels remain screen-space and independent of the camera.
+        auto scoreText = panel->Add<UILabel>("Score: 0");
+        scoreText->SetPosition({24.0f, 20.0f});
         scoreText->SetColor({255, 255, 255, 255});
         scoreText->SetFontSize(24);
         gameUI->scoreText = scoreText;
 
-        // Health Text
-        auto healthGO = CreateGameObject();
-        healthGO->GetTransform()->SetPosition({-480.0f, 310.0f, 0.9f});
-        auto healthText = healthGO->AddComponent<TextRenderComponent>();
-        healthText->SetLayer(RenderLayer::UI);
-        healthText->SetText("Health: 100");
+        auto healthText = panel->Add<UILabel>("Health: 100");
+        healthText->SetPosition({24.0f, 56.0f});
         healthText->SetColor({255, 100, 100, 255});
         healthText->SetFontSize(24);
         gameUI->healthText = healthText;
 
-        // Round Text
-        auto roundGO = CreateGameObject();
-        roundGO->GetTransform()->SetPosition({350.0f, 350.0f, 0.9f});
-        auto roundText = roundGO->AddComponent<TextRenderComponent>();
-        roundText->SetLayer(RenderLayer::UI);
-        roundText->SetText("Round: 1");
+        auto roundText = panel->Add<UILabel>("Round: 1");
+        roundText->SetAnchor({1.0f, 0.0f});
+        roundText->SetPosition({-180.0f, 20.0f});
         roundText->SetColor({255, 255, 0, 255});
         roundText->SetFontSize(24);
         gameUI->roundText = roundText;
 
-        // Game Over Text (hidden initially)
-        auto gameOverGO = CreateGameObject();
-        gameOverGO->GetTransform()->SetPosition({0.0f, 0.0f, 0.95f});
-        auto gameOverText = gameOverGO->AddComponent<TextRenderComponent>();
-        gameOverText->SetLayer(RenderLayer::UI);
-        gameOverText->SetText("");
+        auto gameOverText = panel->Add<UILabel>("GAME OVER");
+        gameOverText->SetAnchor({0.5f, 0.5f});
+        gameOverText->SetPosition({-130.0f, -60.0f});
         gameOverText->SetColor({255, 0, 0, 255});
         gameOverText->SetFontSize(48);
+        gameOverText->SetVisible(false);
         gameUI->gameOverText = gameOverText;
+
+        auto restartButton = panel->Add<UIButton>("Restart");
+        restartButton->SetAnchor({0.5f, 0.5f});
+        restartButton->SetPosition({-80.0f, 10.0f});
+        restartButton->SetSize({160.0f, 48.0f});
+        restartButton->SetVisible(false);
+        restartButton->SetOnClick([this]() { RestartGame(); });
+        gameUI->restartButton = restartButton;
     }
 
     void TwinStickScene::OnSceneUpdate()
